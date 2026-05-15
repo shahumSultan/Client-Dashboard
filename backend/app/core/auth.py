@@ -56,11 +56,17 @@ async def get_current_user(
 
     if not user:
         # Auto-provision user on first login
-        email = payload.get("email") or payload.get("email_address", "")
+        # Clerk puts primary email in different places depending on JWT template
+        email = (
+            payload.get("email")
+            or payload.get("primary_email_address")
+            or ""
+        )
         if not email:
-            # Try nested structure Clerk sometimes uses
-            emails = payload.get("email_addresses", [])
-            email = emails[0].get("email_address", "") if emails else ""
+            emails = payload.get("email_addresses") or []
+            if emails and isinstance(emails, list):
+                first = emails[0]
+                email = first.get("email_address", "") if isinstance(first, dict) else str(first)
 
         user = User(
             clerk_id=clerk_id,

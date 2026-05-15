@@ -94,7 +94,7 @@ services:
         NEXT_PUBLIC_CLERK_SIGN_IN_URL: /sign-in
         NEXT_PUBLIC_CLERK_SIGN_UP_URL: /sign-up
         NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: /dashboard
-        NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: /onboarding
+        NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: /dashboard
     container_name: ec_frontend
     restart: unless-stopped
     depends_on:

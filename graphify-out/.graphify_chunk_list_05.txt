@@ -1,0 +1,4 @@
+/home/shahum-sultan/Code/Client-Dashboard/frontend/public/window.svg
+/home/shahum-sultan/Code/Client-Dashboard/frontend/public/globe.svg
+/home/shahum-sultan/Code/Client-Dashboard/frontend/public/vercel.svg
+/home/shahum-sultan/Code/Client-Dashboard/frontend/public/file.svg

@@ -77,7 +77,7 @@ def upgrade() -> None:
     sa.Column('email', sa.String(length=255), nullable=False),
     sa.Column('full_name', sa.String(length=255), nullable=True),
     sa.Column('avatar_url', sa.String(length=500), nullable=True),
-    sa.Column('role', sa.Enum('ADMIN', 'CLIENT_OWNER', 'CLIENT_MEMBER', name='userrole'), nullable=False),
+    sa.Column('role', sa.Enum('admin', 'client_owner', 'client_member', name='userrole'), nullable=False),
     sa.Column('organization_id', sa.String(), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.Column('last_seen', sa.DateTime(), nullable=True),

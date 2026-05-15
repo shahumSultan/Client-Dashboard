@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.api.v1 import (
     projects, milestones, requests, files,
-    notifications, analytics, onboarding, organizations, users, ai
+    notifications, analytics, onboarding, organizations, users, ai, admin
 )
 
 app = FastAPI(
@@ -33,6 +33,7 @@ for router in [
     analytics.router,
     onboarding.router,
     ai.router,
+    admin.router,
 ]:
     app.include_router(router, prefix="/api/v1")
 

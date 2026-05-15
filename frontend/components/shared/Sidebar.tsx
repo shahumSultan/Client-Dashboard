@@ -10,6 +10,7 @@ import {
   BarChart3,
   Zap,
   X,
+  ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCurrentUser } from "@/hooks/useAuth";
@@ -51,7 +52,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         {/* Logo */}
         <div className="flex items-center justify-between px-5 py-5 border-b border-slate-800">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center shadow-lg">
+            <div className="w-8 h-8 rounded-lg bg-[#A92E2E] flex items-center justify-center shadow-lg shadow-[#A92E2E]/30">
               <Zap size={16} className="text-white" strokeWidth={2.5} />
             </div>
             <div>
@@ -81,7 +82,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                 className={cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 group",
                   active
-                    ? "bg-indigo-600 text-white shadow-sm"
+                    ? "bg-[#A92E2E] text-white shadow-sm shadow-[#A92E2E]/30"
                     : "text-slate-400 hover:text-slate-100 hover:bg-slate-800"
                 )}
               >
@@ -101,10 +102,24 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           })}
         </nav>
 
+        {/* Admin panel link */}
+        {user?.role === "admin" && (
+          <div className="px-3 pb-2">
+            <Link
+              href="/admin"
+              onClick={onClose}
+              className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium text-[#FFB3B3] hover:bg-slate-800 hover:text-white transition-all"
+            >
+              <ShieldCheck size={17} className="text-[#FFB3B3]" />
+              Admin Panel
+            </Link>
+          </div>
+        )}
+
         {/* User footer */}
         <div className="px-4 py-4 border-t border-slate-800">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-semibold shrink-0">
+            <div className="w-8 h-8 rounded-full bg-[#A92E2E] flex items-center justify-center text-white text-xs font-semibold shrink-0">
               {user?.full_name?.[0]?.toUpperCase() ?? user?.email?.[0]?.toUpperCase() ?? "?"}
             </div>
             <div className="flex-1 min-w-0">

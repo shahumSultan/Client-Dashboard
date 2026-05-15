@@ -1,0 +1,572 @@
+{
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/components.json": {
+    "mtime": 1777031133.6520746,
+    "ast_hash": "8fb36071a912ce4c6bbb74037e692cfe",
+    "semantic_hash": "8fb36071a912ce4c6bbb74037e692cfe"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/next.config.ts": {
+    "mtime": 1777031133.6628747,
+    "ast_hash": "24b5dd234ad38eb42778bed0765a8aec",
+    "semantic_hash": "24b5dd234ad38eb42778bed0765a8aec"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/vercel.json": {
+    "mtime": 1777031133.6664746,
+    "ast_hash": "6bda68a0f4da9b656c71f9e2843f9174",
+    "semantic_hash": "6bda68a0f4da9b656c71f9e2843f9174"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/proxy.ts": {
+    "mtime": 1777031133.6628747,
+    "ast_hash": "e86184f81776078b2713a5c5d3ac34be",
+    "semantic_hash": "e86184f81776078b2713a5c5d3ac34be"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/eslint.config.mjs": {
+    "mtime": 1777031133.6628747,
+    "ast_hash": "dfa1f5f6a7037bf39dc510f30b180002",
+    "semantic_hash": "dfa1f5f6a7037bf39dc510f30b180002"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/tsconfig.json": {
+    "mtime": 1777031133.6664746,
+    "ast_hash": "02fc19ad21338c2ab820a70136310db4",
+    "semantic_hash": "02fc19ad21338c2ab820a70136310db4"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/package.json": {
+    "mtime": 1777031133.6628747,
+    "ast_hash": "f0de55d9eccab5b8de9703f5ffb2ea76",
+    "semantic_hash": "f0de55d9eccab5b8de9703f5ffb2ea76"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/next-env.d.ts": {
+    "mtime": 1777019183.598197,
+    "ast_hash": "2a74d3909800ca5467fa83b0ab4a4890",
+    "semantic_hash": "2a74d3909800ca5467fa83b0ab4a4890"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/postcss.config.mjs": {
+    "mtime": 1777031133.6628747,
+    "ast_hash": "239f3ebf717465dc636818a1a619398d",
+    "semantic_hash": "239f3ebf717465dc636818a1a619398d"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/hooks/useAuth.ts": {
+    "mtime": 1777031133.6628747,
+    "ast_hash": "5dc87b6ba7d1b482233d9f9b64c67cfa",
+    "semantic_hash": "5dc87b6ba7d1b482233d9f9b64c67cfa"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/hooks/useProjects.ts": {
+    "mtime": 1777031133.6628747,
+    "ast_hash": "588c7572e27a7f888277656583f7babe",
+    "semantic_hash": "588c7572e27a7f888277656583f7babe"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/hooks/useNotifications.ts": {
+    "mtime": 1777031133.6628747,
+    "ast_hash": "a957590ae9592afbfb28ef4cbdfea61e",
+    "semantic_hash": "a957590ae9592afbfb28ef4cbdfea61e"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/app/layout.tsx": {
+    "mtime": 1777031133.6520746,
+    "ast_hash": "1a80be649eccbe43a7588d8829e91ef0",
+    "semantic_hash": "1a80be649eccbe43a7588d8829e91ef0"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/app/page.tsx": {
+    "mtime": 1777031133.6520746,
+    "ast_hash": "7b20eeb89adc7a262ade23c2923bd10a",
+    "semantic_hash": "7b20eeb89adc7a262ade23c2923bd10a"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/app/(admin)/layout.tsx": {
+    "mtime": 1777033585.041205,
+    "ast_hash": "c01fa4bae04cde570ed9e77bed267fa3",
+    "semantic_hash": "c01fa4bae04cde570ed9e77bed267fa3"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/app/(admin)/admin/page.tsx": {
+    "mtime": 1777033632.2517385,
+    "ast_hash": "18ab19975228eb1fbb2d41c4784b74a4",
+    "semantic_hash": "18ab19975228eb1fbb2d41c4784b74a4"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/app/(admin)/admin/clients/page.tsx": {
+    "mtime": 1777033655.3763819,
+    "ast_hash": "962ddcc5894d31919cc5eca91fb5325e",
+    "semantic_hash": "962ddcc5894d31919cc5eca91fb5325e"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/app/(admin)/admin/clients/[id]/page.tsx": {
+    "mtime": 1777033674.463582,
+    "ast_hash": "656bf6a627c7797233ba28010d8b4bd6",
+    "semantic_hash": "656bf6a627c7797233ba28010d8b4bd6"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/app/(admin)/admin/users/page.tsx": {
+    "mtime": 1777033795.3620605,
+    "ast_hash": "a2386366cf999a4b1259fefc169ba3f5",
+    "semantic_hash": "a2386366cf999a4b1259fefc169ba3f5"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/app/(admin)/admin/requests/page.tsx": {
+    "mtime": 1777033780.3317375,
+    "ast_hash": "a894a5da2f4a52c23fe3b7746fa0e800",
+    "semantic_hash": "a894a5da2f4a52c23fe3b7746fa0e800"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/app/(admin)/admin/projects/page.tsx": {
+    "mtime": 1777033689.7987688,
+    "ast_hash": "57cf4e37d9d6f0ef9fc9c4eb2e853d9b",
+    "semantic_hash": "57cf4e37d9d6f0ef9fc9c4eb2e853d9b"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/app/(admin)/admin/projects/[id]/page.tsx": {
+    "mtime": 1777033760.9457374,
+    "ast_hash": "ef5332fb75745bc6af3e1e7d25100063",
+    "semantic_hash": "ef5332fb75745bc6af3e1e7d25100063"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/app/(admin)/admin/projects/new/page.tsx": {
+    "mtime": 1777033707.6871688,
+    "ast_hash": "9542530ad9e2b0a38fb2cc587c632e89",
+    "semantic_hash": "9542530ad9e2b0a38fb2cc587c632e89"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/app/sign-up/[[...sign-up]]/page.tsx": {
+    "mtime": 1777031133.6520746,
+    "ast_hash": "9dabbbc7df6b1ccf69b0d0ea2578f65e",
+    "semantic_hash": "9dabbbc7df6b1ccf69b0d0ea2578f65e"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/app/sign-in/[[...sign-in]]/page.tsx": {
+    "mtime": 1777031133.6520746,
+    "ast_hash": "a59dc16a1322c3cc1b8578ee25860442",
+    "semantic_hash": "a59dc16a1322c3cc1b8578ee25860442"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/app/(dashboard)/layout.tsx": {
+    "mtime": 1777031133.6484747,
+    "ast_hash": "05c8b87e20a1a7bb4fdfd7437d7610f3",
+    "semantic_hash": "05c8b87e20a1a7bb4fdfd7437d7610f3"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/app/(dashboard)/dashboard/page.tsx": {
+    "mtime": 1777031133.6484747,
+    "ast_hash": "e76524cb3ea98f5314ae5dc07f017cab",
+    "semantic_hash": "e76524cb3ea98f5314ae5dc07f017cab"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/app/(dashboard)/files/page.tsx": {
+    "mtime": 1777031133.6484747,
+    "ast_hash": "a77283d8b244ff7ab910581750f9e99f",
+    "semantic_hash": "a77283d8b244ff7ab910581750f9e99f"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/app/(dashboard)/requests/page.tsx": {
+    "mtime": 1777031133.6484747,
+    "ast_hash": "d721ea45059d818d8cc4aedabec4db41",
+    "semantic_hash": "d721ea45059d818d8cc4aedabec4db41"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/app/(dashboard)/milestones/page.tsx": {
+    "mtime": 1777031133.6484747,
+    "ast_hash": "d7f834631bd0a33f1e12afc4b9c978fc",
+    "semantic_hash": "d7f834631bd0a33f1e12afc4b9c978fc"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/app/(dashboard)/analytics/page.tsx": {
+    "mtime": 1777031133.6484747,
+    "ast_hash": "e4b60c2603c1d4fd492fa82b411d23c2",
+    "semantic_hash": "e4b60c2603c1d4fd492fa82b411d23c2"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/app/(dashboard)/projects/page.tsx": {
+    "mtime": 1777031133.6484747,
+    "ast_hash": "3c3801e88ad53f1121c74811f59c931a",
+    "semantic_hash": "3c3801e88ad53f1121c74811f59c931a"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/app/(dashboard)/projects/[id]/page.tsx": {
+    "mtime": 1777031133.6484747,
+    "ast_hash": "90beb540b588d375459118a8a29e302c",
+    "semantic_hash": "90beb540b588d375459118a8a29e302c"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/lib/types.ts": {
+    "mtime": 1777031133.6628747,
+    "ast_hash": "c7f2686376998a1c30c3af22abb40c58",
+    "semantic_hash": "c7f2686376998a1c30c3af22abb40c58"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/lib/utils.ts": {
+    "mtime": 1777031133.6628747,
+    "ast_hash": "fe32f454f0c32c8a318a112b9c11820f",
+    "semantic_hash": "fe32f454f0c32c8a318a112b9c11820f"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/lib/api.ts": {
+    "mtime": 1777031133.6628747,
+    "ast_hash": "4546cc5e721c1058418d142f92e97c49",
+    "semantic_hash": "4546cc5e721c1058418d142f92e97c49"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/components/dashboard/StatsCard.tsx": {
+    "mtime": 1777031133.6520746,
+    "ast_hash": "889caa08844ac2edcafd0014390caf52",
+    "semantic_hash": "889caa08844ac2edcafd0014390caf52"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/components/dashboard/ProjectCard.tsx": {
+    "mtime": 1777031133.6520746,
+    "ast_hash": "3f4e77f5100c762b4a81fc006e90439c",
+    "semantic_hash": "3f4e77f5100c762b4a81fc006e90439c"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/components/shared/QueryProvider.tsx": {
+    "mtime": 1777031133.6556747,
+    "ast_hash": "2315eb424d8fbb0d78981116bff44bed",
+    "semantic_hash": "2315eb424d8fbb0d78981116bff44bed"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/components/shared/Sidebar.tsx": {
+    "mtime": 1777033810.281887,
+    "ast_hash": "018a274c3d0fa743512f7e86b6a454e5",
+    "semantic_hash": "018a274c3d0fa743512f7e86b6a454e5"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/components/shared/Topbar.tsx": {
+    "mtime": 1777031133.6556747,
+    "ast_hash": "04f61f1449867b9c04f2437aa65b0aa4",
+    "semantic_hash": "04f61f1449867b9c04f2437aa65b0aa4"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/components/shared/NotificationBell.tsx": {
+    "mtime": 1777031133.6520746,
+    "ast_hash": "c56ae35f6f6074709b5e5e2474034a1c",
+    "semantic_hash": "c56ae35f6f6074709b5e5e2474034a1c"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/components/landing/LandingPage.tsx": {
+    "mtime": 1777031133.6520746,
+    "ast_hash": "b144b397463929ae4d7210a47fef9aea",
+    "semantic_hash": "b144b397463929ae4d7210a47fef9aea"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/components/admin/AdminSidebar.tsx": {
+    "mtime": 1777033534.5692775,
+    "ast_hash": "c2d52fa71e550af5c7994fd5a249098d",
+    "semantic_hash": "c2d52fa71e550af5c7994fd5a249098d"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/components/ui/textarea.tsx": {
+    "mtime": 1777031133.6556747,
+    "ast_hash": "6eb8633e9e461056b9bf88dfaf25fc6d",
+    "semantic_hash": "6eb8633e9e461056b9bf88dfaf25fc6d"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/components/ui/skeleton.tsx": {
+    "mtime": 1777031133.6556747,
+    "ast_hash": "36d672ed18ad46d03a3dd385391605d8",
+    "semantic_hash": "36d672ed18ad46d03a3dd385391605d8"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/components/ui/dialog.tsx": {
+    "mtime": 1777031133.6556747,
+    "ast_hash": "1c4b2c017fa2fb9b911437ed2627f7f6",
+    "semantic_hash": "1c4b2c017fa2fb9b911437ed2627f7f6"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/components/ui/select.tsx": {
+    "mtime": 1777031133.6556747,
+    "ast_hash": "a3e67022a356770c24a77cec681059b2",
+    "semantic_hash": "a3e67022a356770c24a77cec681059b2"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/components/ui/input.tsx": {
+    "mtime": 1777031133.6556747,
+    "ast_hash": "a9698fedc390fabfca3bd5c4573a21ff",
+    "semantic_hash": "a9698fedc390fabfca3bd5c4573a21ff"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/components/ui/card.tsx": {
+    "mtime": 1777031133.6556747,
+    "ast_hash": "ad8077d593443e878403b0ddacdf437b",
+    "semantic_hash": "ad8077d593443e878403b0ddacdf437b"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/components/ui/label.tsx": {
+    "mtime": 1777031133.6556747,
+    "ast_hash": "31812bf8944a2c8103c387aed6515efb",
+    "semantic_hash": "31812bf8944a2c8103c387aed6515efb"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/components/ui/tabs.tsx": {
+    "mtime": 1777031133.6556747,
+    "ast_hash": "d34d9c33e3d6ac211064a008e9def482",
+    "semantic_hash": "d34d9c33e3d6ac211064a008e9def482"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/components/ui/button.tsx": {
+    "mtime": 1777031133.6556747,
+    "ast_hash": "381d4a1e719dccabf7f905a080c17bc1",
+    "semantic_hash": "381d4a1e719dccabf7f905a080c17bc1"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/components/ui/progress.tsx": {
+    "mtime": 1777031133.6556747,
+    "ast_hash": "6d615ebb94293a0e81df318bbe84cb3b",
+    "semantic_hash": "6d615ebb94293a0e81df318bbe84cb3b"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/components/ui/sonner.tsx": {
+    "mtime": 1777031133.6556747,
+    "ast_hash": "f084303f7523d7382cb7776c1204102a",
+    "semantic_hash": "f084303f7523d7382cb7776c1204102a"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/components/ui/badge.tsx": {
+    "mtime": 1777031133.6556747,
+    "ast_hash": "036d18b95ca160cb9f12a85f11173482",
+    "semantic_hash": "036d18b95ca160cb9f12a85f11173482"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/components/projects/MilestoneTimeline.tsx": {
+    "mtime": 1777031133.6520746,
+    "ast_hash": "88491bf16976d0b05e09824aa329b644",
+    "semantic_hash": "88491bf16976d0b05e09824aa329b644"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/components/projects/NewRequestDialog.tsx": {
+    "mtime": 1777031133.6520746,
+    "ast_hash": "f3c039a8c8fe15ff6d19607bb7b9e9d4",
+    "semantic_hash": "f3c039a8c8fe15ff6d19607bb7b9e9d4"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/alembic/env.py": {
+    "mtime": 1777031133.6376746,
+    "ast_hash": "cb4fc5c5f1054d29876c32b7af8047a2",
+    "semantic_hash": "cb4fc5c5f1054d29876c32b7af8047a2"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/alembic/versions/a3407be93806_initial_schema.py": {
+    "mtime": 1777031133.6376746,
+    "ast_hash": "e63127edd6954325c824625009cc2c0a",
+    "semantic_hash": "e63127edd6954325c824625009cc2c0a"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/main.py": {
+    "mtime": 1777033359.2061613,
+    "ast_hash": "a3f522523dfe431af286343152e113a4",
+    "semantic_hash": "a3f522523dfe431af286343152e113a4"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/config.py": {
+    "mtime": 1777031133.6412747,
+    "ast_hash": "434ca92052a13be71ad069afa8b1d5d1",
+    "semantic_hash": "434ca92052a13be71ad069afa8b1d5d1"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/database.py": {
+    "mtime": 1777031133.6412747,
+    "ast_hash": "12ca9c3691a04c672e4dfb16b898e3ff",
+    "semantic_hash": "12ca9c3691a04c672e4dfb16b898e3ff"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/services/ai.py": {
+    "mtime": 1777031133.6448746,
+    "ast_hash": "49c6ae650c32aa44c3ff4404ba4f66a2",
+    "semantic_hash": "49c6ae650c32aa44c3ff4404ba4f66a2"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/services/notifications.py": {
+    "mtime": 1777031133.6448746,
+    "ast_hash": "3082eccfebe6ef6a80572a7dfd7ae3db",
+    "semantic_hash": "3082eccfebe6ef6a80572a7dfd7ae3db"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/services/__init__.py": {
+    "mtime": 1777031133.6448746,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/services/storage.py": {
+    "mtime": 1777031133.6448746,
+    "ast_hash": "33e8fa4db98fe10bb7f922b946eeb0bd",
+    "semantic_hash": "33e8fa4db98fe10bb7f922b946eeb0bd"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/schemas/milestone.py": {
+    "mtime": 1777031133.6448746,
+    "ast_hash": "55e26741648510e16e65d36b3ba022e6",
+    "semantic_hash": "55e26741648510e16e65d36b3ba022e6"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/schemas/organization.py": {
+    "mtime": 1777031133.6448746,
+    "ast_hash": "76bff5c3059309f785d07dd1ff8c9ed6",
+    "semantic_hash": "76bff5c3059309f785d07dd1ff8c9ed6"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/schemas/file.py": {
+    "mtime": 1777031133.6448746,
+    "ast_hash": "b99c84e4864b89b449ce2da4a9f1a21d",
+    "semantic_hash": "b99c84e4864b89b449ce2da4a9f1a21d"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/schemas/project.py": {
+    "mtime": 1777031133.6448746,
+    "ast_hash": "75f4f754b44ac6ffb8b47db15dd5cb68",
+    "semantic_hash": "75f4f754b44ac6ffb8b47db15dd5cb68"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/schemas/__init__.py": {
+    "mtime": 1777031133.6448746,
+    "ast_hash": "a36748ae2605c465c1d755fc8bd2978f",
+    "semantic_hash": "a36748ae2605c465c1d755fc8bd2978f"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/schemas/user.py": {
+    "mtime": 1777031133.6448746,
+    "ast_hash": "03fe8ae814dcff291f9fe8ccf93dfd6d",
+    "semantic_hash": "03fe8ae814dcff291f9fe8ccf93dfd6d"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/schemas/analytics.py": {
+    "mtime": 1777031133.6448746,
+    "ast_hash": "6d2649b7c1e6c19a908075f536b82c5d",
+    "semantic_hash": "6d2649b7c1e6c19a908075f536b82c5d"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/schemas/request.py": {
+    "mtime": 1777031133.6448746,
+    "ast_hash": "4e6e7c5660b2b39f038d005828d7720e",
+    "semantic_hash": "4e6e7c5660b2b39f038d005828d7720e"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/schemas/notification.py": {
+    "mtime": 1777031133.6448746,
+    "ast_hash": "807055a6b41bb50ac83b9f499d8ddd5d",
+    "semantic_hash": "807055a6b41bb50ac83b9f499d8ddd5d"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/schemas/onboarding.py": {
+    "mtime": 1777031133.6448746,
+    "ast_hash": "c6e83d61311b5921332824398cdd3f42",
+    "semantic_hash": "c6e83d61311b5921332824398cdd3f42"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/models/milestone.py": {
+    "mtime": 1777031133.6412747,
+    "ast_hash": "2d8920a5373e1de51b57c5501756435c",
+    "semantic_hash": "2d8920a5373e1de51b57c5501756435c"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/models/organization.py": {
+    "mtime": 1777031133.6412747,
+    "ast_hash": "2aea8797af7ed16292739832de2ec13a",
+    "semantic_hash": "2aea8797af7ed16292739832de2ec13a"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/models/file.py": {
+    "mtime": 1777031133.6412747,
+    "ast_hash": "f461909cdd7761f06c3c6de94a8932d3",
+    "semantic_hash": "f461909cdd7761f06c3c6de94a8932d3"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/models/project.py": {
+    "mtime": 1777031133.6412747,
+    "ast_hash": "9f68575eb4db9bb54a79672dc4284c23",
+    "semantic_hash": "9f68575eb4db9bb54a79672dc4284c23"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/models/__init__.py": {
+    "mtime": 1777031133.6412747,
+    "ast_hash": "e3f4dbb6dc2b7c5c856a0ee0456eaeeb",
+    "semantic_hash": "e3f4dbb6dc2b7c5c856a0ee0456eaeeb"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/models/user.py": {
+    "mtime": 1777031133.6448746,
+    "ast_hash": "fa10e62d0ef7b67efa30c98b6bed229b",
+    "semantic_hash": "fa10e62d0ef7b67efa30c98b6bed229b"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/models/analytics.py": {
+    "mtime": 1777031133.6412747,
+    "ast_hash": "2d39c3540339b9b0587d7e75edfc3373",
+    "semantic_hash": "2d39c3540339b9b0587d7e75edfc3373"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/models/request.py": {
+    "mtime": 1777031133.6448746,
+    "ast_hash": "2bb259177f7de1f5b482c38eeead3a84",
+    "semantic_hash": "2bb259177f7de1f5b482c38eeead3a84"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/models/notification.py": {
+    "mtime": 1777031133.6412747,
+    "ast_hash": "8cce3b1e42a5a5cdf32d705bb5b6af32",
+    "semantic_hash": "8cce3b1e42a5a5cdf32d705bb5b6af32"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/models/onboarding.py": {
+    "mtime": 1777031133.6412747,
+    "ast_hash": "52fb74cf016ebf2728d9a356bab4bb0c",
+    "semantic_hash": "52fb74cf016ebf2728d9a356bab4bb0c"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/core/auth.py": {
+    "mtime": 1777033609.463605,
+    "ast_hash": "5e199ca68b33ffe252348f5edc964ba3",
+    "semantic_hash": "5e199ca68b33ffe252348f5edc964ba3"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/core/__init__.py": {
+    "mtime": 1777031133.6412747,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/core/permissions.py": {
+    "mtime": 1777031133.6412747,
+    "ast_hash": "986ffc55180c6a4eaf114453582a814c",
+    "semantic_hash": "986ffc55180c6a4eaf114453582a814c"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/api/__init__.py": {
+    "mtime": 1777031133.6376746,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/api/v1/admin.py": {
+    "mtime": 1777033353.4317613,
+    "ast_hash": "c43013c9c29c49ada8bbdab50f10310c",
+    "semantic_hash": "c43013c9c29c49ada8bbdab50f10310c"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/api/v1/requests.py": {
+    "mtime": 1777031133.6412747,
+    "ast_hash": "c06c1e4f415d1f3256aeed12d9fbca7e",
+    "semantic_hash": "c06c1e4f415d1f3256aeed12d9fbca7e"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/api/v1/organizations.py": {
+    "mtime": 1777031133.6412747,
+    "ast_hash": "0fd6075f3c32a5b19fc17fcddb898845",
+    "semantic_hash": "0fd6075f3c32a5b19fc17fcddb898845"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/api/v1/ai.py": {
+    "mtime": 1777031133.6376746,
+    "ast_hash": "9dd123df8b7d6349221fb336f9097522",
+    "semantic_hash": "9dd123df8b7d6349221fb336f9097522"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/api/v1/milestones.py": {
+    "mtime": 1777031133.6376746,
+    "ast_hash": "d3a1de7f4fc5feee35a87e2e3e8ef10a",
+    "semantic_hash": "d3a1de7f4fc5feee35a87e2e3e8ef10a"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/api/v1/notifications.py": {
+    "mtime": 1777031133.6376746,
+    "ast_hash": "ccb644c5ac65160f5c0ddf515ebee3fa",
+    "semantic_hash": "ccb644c5ac65160f5c0ddf515ebee3fa"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/api/v1/users.py": {
+    "mtime": 1777031133.6412747,
+    "ast_hash": "240952724d2e9708335e320f16f163c2",
+    "semantic_hash": "240952724d2e9708335e320f16f163c2"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/api/v1/__init__.py": {
+    "mtime": 1777031133.6376746,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/api/v1/analytics.py": {
+    "mtime": 1777031133.6376746,
+    "ast_hash": "480e330de57766b53b5b347aa5e7dbfd",
+    "semantic_hash": "480e330de57766b53b5b347aa5e7dbfd"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/api/v1/files.py": {
+    "mtime": 1777031133.6376746,
+    "ast_hash": "e92f08d1ccee011ab8ba83f6feac53bf",
+    "semantic_hash": "e92f08d1ccee011ab8ba83f6feac53bf"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/api/v1/projects.py": {
+    "mtime": 1777031133.6412747,
+    "ast_hash": "7dd3a021200fe897e04353d87b885165",
+    "semantic_hash": "7dd3a021200fe897e04353d87b885165"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/app/api/v1/onboarding.py": {
+    "mtime": 1777031133.6412747,
+    "ast_hash": "b26e2a352a3e23dbcdaf4b3ef8cc7871",
+    "semantic_hash": "b26e2a352a3e23dbcdaf4b3ef8cc7871"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/docker-compose.yml": {
+    "mtime": 1777031133.6448746,
+    "ast_hash": "a5feb9228d5f883bcdc1d45977b80b5e",
+    "semantic_hash": "a5feb9228d5f883bcdc1d45977b80b5e"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/README.md": {
+    "mtime": 1777031133.6376746,
+    "ast_hash": "961d4d7fde191d874940c835d7c16943",
+    "semantic_hash": "961d4d7fde191d874940c835d7c16943"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/CLAUDE.md": {
+    "mtime": 1777031133.6484747,
+    "ast_hash": "5c27369b226fcf2be8a6cfe52224e767",
+    "semantic_hash": "5c27369b226fcf2be8a6cfe52224e767"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/README.md": {
+    "mtime": 1777031133.6484747,
+    "ast_hash": "f15aaa42d5d299d091b1171097ea56ad",
+    "semantic_hash": "f15aaa42d5d299d091b1171097ea56ad"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/AGENTS.md": {
+    "mtime": 1777031133.6484747,
+    "ast_hash": "9e09241799026ac05be315a2f0b50055",
+    "semantic_hash": "9e09241799026ac05be315a2f0b50055"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/backend/requirements.txt": {
+    "mtime": 1777031133.6448746,
+    "ast_hash": "e43500ebee17cb88a09aeda973192f41",
+    "semantic_hash": "e43500ebee17cb88a09aeda973192f41"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/public/next.svg": {
+    "mtime": 1777031133.6664746,
+    "ast_hash": "8e061864f388b47f33a1c3780831193e",
+    "semantic_hash": "8e061864f388b47f33a1c3780831193e"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/public/window.svg": {
+    "mtime": 1777031133.6664746,
+    "ast_hash": "a2760511c65806022ad20adf74370ff3",
+    "semantic_hash": "a2760511c65806022ad20adf74370ff3"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/public/globe.svg": {
+    "mtime": 1777031133.6664746,
+    "ast_hash": "2aaafa6a49b6563925fe440891e32717",
+    "semantic_hash": "2aaafa6a49b6563925fe440891e32717"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/public/vercel.svg": {
+    "mtime": 1777031133.6664746,
+    "ast_hash": "c0af2f507b369b085b35ef4bbe3bcf1e",
+    "semantic_hash": "c0af2f507b369b085b35ef4bbe3bcf1e"
+  },
+  "/home/shahum-sultan/Code/Client-Dashboard/frontend/public/file.svg": {
+    "mtime": 1777031133.6664746,
+    "ast_hash": "d09f95206c3fa0bb9bd9fefabfd0ea71",
+    "semantic_hash": "d09f95206c3fa0bb9bd9fefabfd0ea71"
+  }
+}

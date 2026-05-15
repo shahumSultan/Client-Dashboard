@@ -20,7 +20,10 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     full_name: Mapped[str | None] = mapped_column(String(255))
     avatar_url: Mapped[str | None] = mapped_column(String(500))
-    role: Mapped[UserRole] = mapped_column(Enum(UserRole), default=UserRole.CLIENT_MEMBER)
+    role: Mapped[UserRole] = mapped_column(
+        Enum(UserRole, values_callable=lambda x: [e.value for e in x]),
+        default=UserRole.CLIENT_MEMBER,
+    )
     organization_id: Mapped[str | None] = mapped_column(String, ForeignKey("organizations.id"))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     last_seen: Mapped[datetime | None] = mapped_column(DateTime)
