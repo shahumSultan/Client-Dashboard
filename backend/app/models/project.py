@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime, date
+from app.core.time import utcnow
 from sqlalchemy import String, DateTime, Boolean, ForeignKey, Enum, Text, Integer, Date
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import enum
@@ -29,8 +30,8 @@ class Project(Base):
     delivered_date: Mapped[date | None] = mapped_column(Date)
     project_type: Mapped[str | None] = mapped_column(String(100))  # e.g. "ScoreForge", "ContentFlow"
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, onupdate=utcnow)
 
     organization: Mapped["Organization"] = relationship("Organization", back_populates="projects")
     milestones: Mapped[list["Milestone"]] = relationship("Milestone", back_populates="project", cascade="all, delete-orphan")
@@ -47,7 +48,7 @@ class ProjectUpdate(Base):
     project_id: Mapped[str] = mapped_column(String, ForeignKey("projects.id"), nullable=False)
     author_id: Mapped[str] = mapped_column(String, ForeignKey("users.id"), nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
     project: Mapped["Project"] = relationship("Project", back_populates="updates")
     author: Mapped["User"] = relationship("User")

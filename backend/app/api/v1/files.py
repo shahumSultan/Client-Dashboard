@@ -33,7 +33,7 @@ async def get_upload_url(
     project_id: str,
     original_name: str = Form(...),
     file_type: str = Form(...),
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
     await assert_project_access(user, project_id, db)
@@ -55,10 +55,18 @@ async def confirm_upload(
     description: str = Form(None),
     milestone_id: str = Form(None),
     is_deliverable: bool = Form(False),
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
     await assert_project_access(user, project_id, db)
+
+    # storage_key comes back from the client after the presigned PUT, so it is
+    # untrusted input. Pin it to this project's prefix rather than letting a
+    # caller register a row that points at another project's objects.
+    expected_prefix = f"projects/{project_id}/"
+    if not storage_key.startswith(expected_prefix) or ".." in storage_key:
+        raise HTTPException(status_code=422, detail="storage_key does not belong to this project")
+
     from app.config import settings
     public_url = f"{settings.STORAGE_PUBLIC_URL}/{storage_key}" if settings.STORAGE_PUBLIC_URL else None
 

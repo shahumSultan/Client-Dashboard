@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+from app.core.time import utcnow
 from sqlalchemy import String, DateTime, ForeignKey, Text, Integer, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
@@ -21,7 +22,7 @@ class File(Base):
     description: Mapped[str | None] = mapped_column(Text)
     version: Mapped[int] = mapped_column(Integer, default=1)
     is_deliverable: Mapped[bool] = mapped_column(Boolean, default=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
     project: Mapped["Project"] = relationship("Project", back_populates="files")
     milestone: Mapped["Milestone"] = relationship(

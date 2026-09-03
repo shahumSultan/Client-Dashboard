@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime, date
+from app.core.time import utcnow
 from sqlalchemy import String, DateTime, Boolean, ForeignKey, Enum, Text, Date
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import enum
@@ -24,8 +25,8 @@ class Milestone(Base):
     due_date: Mapped[date | None] = mapped_column(Date)
     completed_date: Mapped[date | None] = mapped_column(Date)
     order_index: Mapped[int] = mapped_column(default=0)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, onupdate=utcnow)
 
     project: Mapped["Project"] = relationship("Project", back_populates="milestones")
     deliverables: Mapped[list["File"]] = relationship(

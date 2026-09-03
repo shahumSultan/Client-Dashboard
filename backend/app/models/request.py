@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+from app.core.time import utcnow
 from sqlalchemy import String, DateTime, ForeignKey, Enum, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import enum
@@ -42,8 +43,8 @@ class Request(Base):
     priority: Mapped[RequestPriority] = mapped_column(Enum(RequestPriority), default=RequestPriority.MEDIUM)
     admin_response: Mapped[str | None] = mapped_column(Text)
     resolved_at: Mapped[datetime | None] = mapped_column(DateTime)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, onupdate=utcnow)
 
     project: Mapped["Project"] = relationship("Project", back_populates="requests")
     submitter: Mapped["User"] = relationship("User", foreign_keys=[submitted_by])

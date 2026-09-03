@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime, date
+from app.core.time import utcnow
 from sqlalchemy import String, DateTime, ForeignKey, Text, Float, Date, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
@@ -23,6 +24,6 @@ class AnalyticsEntry(Base):
     metrics: Mapped[dict | None] = mapped_column(JSON)  # {"calls_handled": 120, "avg_response_time": 2.3}
 
     summary: Mapped[str | None] = mapped_column(Text)  # AI-generated or manual summary
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
     project: Mapped["Project"] = relationship("Project", back_populates="analytics")

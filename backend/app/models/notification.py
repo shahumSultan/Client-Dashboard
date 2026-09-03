@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+from app.core.time import utcnow
 from sqlalchemy import String, DateTime, ForeignKey, Enum, Text, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import enum
@@ -13,6 +14,8 @@ class NotificationType(str, enum.Enum):
     PROJECT_UPDATE = "project_update"
     NEW_MESSAGE = "new_message"
     ONBOARDING_STEP = "onboarding_step"
+    COMMENT_ADDED = "comment_added"
+    COMMENT_REPLY = "comment_reply"
 
 
 class Notification(Base):
@@ -25,6 +28,6 @@ class Notification(Base):
     body: Mapped[str | None] = mapped_column(Text)
     link: Mapped[str | None] = mapped_column(String(500))  # relative URL to navigate to
     is_read: Mapped[bool] = mapped_column(Boolean, default=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
     user: Mapped["User"] = relationship("User", back_populates="notifications")

@@ -3,7 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.api.v1 import (
     projects, milestones, requests, files,
-    notifications, analytics, onboarding, organizations, users, ai, admin
+    notifications, analytics, onboarding, organizations, users, ai, admin,
+    comments,
 )
 
 app = FastAPI(
@@ -15,7 +16,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.FRONTEND_URL],
+    allow_origins=settings.allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -28,6 +29,7 @@ for router in [
     projects.router,
     milestones.router,
     requests.router,
+    comments.router,
     files.router,
     notifications.router,
     analytics.router,
