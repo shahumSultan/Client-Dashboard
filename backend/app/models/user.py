@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+from app.core.time import utcnow
 from sqlalchemy import String, DateTime, Boolean, ForeignKey, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import enum
@@ -27,8 +28,8 @@ class User(Base):
     organization_id: Mapped[str | None] = mapped_column(String, ForeignKey("organizations.id"))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     last_seen: Mapped[datetime | None] = mapped_column(DateTime)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, onupdate=utcnow)
 
     organization: Mapped["Organization"] = relationship("Organization", back_populates="users")
     notifications: Mapped[list["Notification"]] = relationship("Notification", back_populates="user")

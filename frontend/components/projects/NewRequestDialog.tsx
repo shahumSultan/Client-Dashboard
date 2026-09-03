@@ -2,17 +2,25 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select } from "@/components/ui/select";
+import { Field } from "@/components/ui/field";
 import { useCreateRequest } from "@/hooks/useProjects";
 
 const CATEGORIES = [
-  { value: "feature", label: "Feature Request" },
-  { value: "bug", label: "Bug Report" },
-  { value: "change", label: "Change Request" },
+  { value: "feature", label: "Feature request" },
+  { value: "bug", label: "Bug report" },
+  { value: "change", label: "Change request" },
   { value: "question", label: "Question" },
   { value: "other", label: "Other" },
 ];
@@ -30,103 +38,141 @@ interface NewRequestDialogProps {
   onOpenChange: (v: boolean) => void;
 }
 
-export function NewRequestDialog({ projectId, open, onOpenChange }: NewRequestDialogProps) {
+export function NewRequestDialog({
+  projectId,
+  open,
+  onOpenChange,
+}: NewRequestDialogProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("other");
   const [priority, setPriority] = useState("medium");
+  const [errors, setErrors] = useState<{ title?: string; description?: string }>({});
   const createRequest = useCreateRequest();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  function reset() {
+    setTitle("");
+    setDescription("");
+    setCategory("other");
+    setPriority("medium");
+    setErrors({});
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!title.trim() || !description.trim()) return;
+
+    const found: typeof errors = {};
+    if (!title.trim()) found.title = "Give your request a short title.";
+    if (!description.trim()) found.description = "Describe what you need, so the team can act on it.";
+    if (Object.keys(found).length > 0) {
+      setErrors(found);
+      document.getElementById(`req-${Object.keys(found)[0]}`)?.focus();
+      return;
+    }
 
     try {
-      await createRequest.mutateAsync({ project_id: projectId, title, description, category, priority });
-      toast.success("Request submitted successfully");
+      await createRequest.mutateAsync({
+        project_id: projectId,
+        title: title.trim(),
+        description: description.trim(),
+        category,
+        priority,
+      });
+      toast.success("Request submitted", {
+        description: "The Enigma-Cube team has been notified.",
+      });
       onOpenChange(false);
-      setTitle("");
-      setDescription("");
-      setCategory("other");
-      setPriority("medium");
+      reset();
     } catch {
-      toast.error("Failed to submit request");
+      toast.error("Couldn't submit your request", {
+        description: "Please try again in a moment.",
+      });
     }
-  };
+  }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange} label="New request">
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>New Request</DialogTitle>
+          <DialogTitle>New request</DialogTitle>
           <DialogDescription>
-            Submit a feature request, bug report, or change request to the Enigma-Cube team.
+            Ask for a feature, report a bug, or request a change. You&apos;ll get a
+            reply here and a notification when it moves.
           </DialogDescription>
           <DialogClose onClick={() => onOpenChange(false)} />
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="px-6 pb-2 space-y-4">
-          <div>
-            <Label htmlFor="req-title">Title</Label>
+        <form id="new-request-form" onSubmit={handleSubmit} noValidate className="space-y-5 px-6 pb-5">
+          <Field label="Title" htmlFor="req-title" required error={errors.title}>
             <Input
               id="req-title"
-              placeholder="Briefly describe your request..."
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
+              onChange={(e) => {
+                setTitle(e.target.value);
+                setErrors((p) => ({ ...p, title: undefined }));
+              }}
+              aria-invalid={!!errors.title}
+              placeholder="Add an export button to the report view"
             />
-          </div>
+          </Field>
 
-          <div>
-            <Label htmlFor="req-description">Description</Label>
-            <textarea
+          <Field
+            label="Details"
+            htmlFor="req-description"
+            required
+            error={errors.description}
+            hint="What should happen, and why? Specifics help us get it right first time."
+          >
+            <Textarea
               id="req-description"
               rows={4}
-              placeholder="Provide as much detail as possible..."
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none"
+              onChange={(e) => {
+                setDescription(e.target.value);
+                setErrors((p) => ({ ...p, description: undefined }));
+              }}
+              aria-invalid={!!errors.description}
+              placeholder="Describe the change you'd like…"
             />
-          </div>
+          </Field>
 
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="req-category">Category</Label>
-              <select
+            <Field label="Category" htmlFor="req-category">
+              <Select
                 id="req-category"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
               >
                 {CATEGORIES.map((c) => (
-                  <option key={c.value} value={c.value}>{c.label}</option>
+                  <option key={c.value} value={c.value}>
+                    {c.label}
+                  </option>
                 ))}
-              </select>
-            </div>
-            <div>
-              <Label htmlFor="req-priority">Priority</Label>
-              <select
+              </Select>
+            </Field>
+
+            <Field label="Priority" htmlFor="req-priority">
+              <Select
                 id="req-priority"
                 value={priority}
                 onChange={(e) => setPriority(e.target.value)}
-                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
               >
                 {PRIORITIES.map((p) => (
-                  <option key={p.value} value={p.value}>{p.label}</option>
+                  <option key={p.value} value={p.value}>
+                    {p.label}
+                  </option>
                 ))}
-              </select>
-            </div>
+              </Select>
+            </Field>
           </div>
         </form>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button
-            onClick={(e) => handleSubmit(e as unknown as React.FormEvent)}
-            disabled={createRequest.isPending || !title.trim() || !description.trim()}
-          >
-            {createRequest.isPending ? "Submitting…" : "Submit Request"}
+          <Button variant="ghost" onClick={() => onOpenChange(false)} type="button">
+            Cancel
+          </Button>
+          <Button type="submit" form="new-request-form" loading={createRequest.isPending}>
+            Submit request
           </Button>
         </DialogFooter>
       </DialogContent>

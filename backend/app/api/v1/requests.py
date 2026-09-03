@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from datetime import datetime
+from app.core.time import utcnow
 from app.database import get_db
 from app.core.auth import get_current_user, require_admin
 from app.core.permissions import assert_project_access
@@ -73,7 +74,7 @@ async def update_request(
         setattr(req, field, value)
 
     if data.status in (RequestStatus.COMPLETED, RequestStatus.REJECTED):
-        req.resolved_at = datetime.utcnow()
+        req.resolved_at = utcnow()
 
     await db.commit()
     await db.refresh(req)

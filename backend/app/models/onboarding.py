@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+from app.core.time import utcnow
 from sqlalchemy import String, DateTime, ForeignKey, Text, Integer, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
@@ -30,7 +31,7 @@ class OnboardingData(Base):
     # Step 4: Notes / additional
     notes: Mapped[str | None] = mapped_column(Text)
 
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, onupdate=utcnow)
 
     organization: Mapped["Organization"] = relationship("Organization")

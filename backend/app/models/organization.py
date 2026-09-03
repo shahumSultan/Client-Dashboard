@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+from app.core.time import utcnow
 from sqlalchemy import String, DateTime, Boolean, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
@@ -16,8 +17,8 @@ class Organization(Base):
     industry: Mapped[str | None] = mapped_column(String(100))
     description: Mapped[str | None] = mapped_column(Text)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, onupdate=utcnow)
 
     users: Mapped[list["User"]] = relationship("User", back_populates="organization")
     projects: Mapped[list["Project"]] = relationship("Project", back_populates="organization")

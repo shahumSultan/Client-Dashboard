@@ -13,7 +13,7 @@ A premium, multi-tenant client portal for the Enigma-Cube AI agency. Clients log
 | Database | PostgreSQL 16 | Railway / Docker |
 | Auth | Clerk | Clerk Cloud |
 | Storage | Cloudflare R2 / S3 | Cloudflare |
-| AI | Claude (Anthropic) | Anthropic API |
+| AI | Groq (Llama 3.3 70B) | Groq API |
 | Email | Resend | Resend |
 
 ---
@@ -28,8 +28,11 @@ A premium, multi-tenant client portal for the Enigma-Cube AI agency. Clients log
 - **Multi-tenant** — each organization sees only their own data
 - **RBAC** — admin (Enigma-Cube), client owner, client member roles
 - **Onboarding flow** — step-by-step client setup
+- **Comments & remarks** — clients comment on any milestone, update, file, or the project itself; admins reply in-thread and mark threads resolved
+- **Admin comment inbox** — every client remark across all projects in one reply queue (`/admin/comments`)
+- **Self-serve signup** — name + company creates the client's organization and workspace automatically
 - **Notifications** — in-app bell with unread count, mark-all-read
-- **AI Assistant** — Claude-powered project Q&A inside the portal
+- **AI Assistant** — Groq-powered project Q&A inside the portal
 
 ---
 
@@ -79,14 +82,14 @@ cd Client-Dashboard
 cp .env.example .env
 ```
 
-Open `.env` and fill in your Clerk keys and Anthropic API key (the only required secrets for local dev):
+Open `.env` and fill in your Clerk keys and Groq API key (the only required secrets for local dev):
 
 ```env
 CLERK_SECRET_KEY=sk_test_...
 CLERK_PUBLISHABLE_KEY=pk_test_...
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
 CLERK_JWT_ISSUER=https://your-app.clerk.accounts.dev
-ANTHROPIC_API_KEY=sk-ant-...
+GROQ_API_KEY=gsk_...
 ```
 
 ### 2. Start everything
@@ -97,10 +100,19 @@ docker compose up --build
 
 This starts:
 - PostgreSQL on `localhost:5432`
+- MinIO (S3-compatible storage) on `localhost:9000`, console on `:9001`
 - FastAPI backend on `localhost:8000`
 - Next.js frontend on `localhost:3000`
 
 Alembic migrations run automatically on backend startup.
+
+Both app services run in **dev mode against your working tree** — the source is
+bind-mounted, so backend edits hot-reload via uvicorn and frontend edits via
+Next. No rebuild needed while developing. Generated migrations land on the host:
+
+```bash
+docker compose exec backend alembic revision --autogenerate -m "your change"
+```
 
 ### 3. Open the app
 
@@ -110,12 +122,24 @@ http://localhost:3000
 
 Sign up with any email. Your first user will be `client_member` role.
 
-**To make yourself admin**, run:
+### 4. Become an admin
+
+There is no seeded admin account, and the `users` table starts empty — a row is
+created lazily on a user's first authenticated API call, not at Clerk sign-up.
+So the order matters:
+
+1. Sign up at `/sign-up`.
+2. **Complete the `/welcome` form** — this is what creates your organization and
+   your `users` row.
+3. Promote yourself:
 
 ```bash
-docker compose exec postgres psql -U enigma -d client_portal \
-  -c "UPDATE users SET role = 'admin' WHERE email = 'your@email.com';"
+./scripts/make-admin.sh your@email.com
 ```
+
+Hard-refresh, and **Admin panel** appears in the sidebar.
+
+Run the script with no arguments to list the users it can see.
 
 ---
 
@@ -180,7 +204,10 @@ npm run dev
 | `CLERK_PUBLISHABLE_KEY` | Yes | Clerk publishable key |
 | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Yes | Same key, exposed to browser |
 | `CLERK_JWT_ISSUER` | Yes | Your Clerk JWT issuer URL |
-| `ANTHROPIC_API_KEY` | No | Enables AI assistant + summaries |
+| `GROQ_API_KEY` | No | Enables AI assistant + summaries |
+| `GROQ_MODEL` | No | Chat model (default `llama-3.3-70b-versatile`) |
+| `GROQ_FAST_MODEL` | No | Summary model (default `llama-3.1-8b-instant`) |
+| `EXTRA_ALLOWED_ORIGINS` | No | Extra CORS origins, comma-separated (e.g. Vercel previews) |
 | `STORAGE_BUCKET` | No | R2/S3 bucket for file uploads |
 | `STORAGE_ENDPOINT` | No | R2/S3 endpoint URL |
 | `STORAGE_ACCESS_KEY` | No | R2/S3 access key |
@@ -191,13 +218,42 @@ npm run dev
 
 ---
 
+## Design system
+
+Dark-only, glassmorphic, locked to the enigma-cube.com palette. Tokens live in
+`frontend/app/globals.css`; components consume them by role, never as raw hex.
+
+| Token | Value | Use |
+|---|---|---|
+| `--bg-base` | `#0D0D0D` | Page background |
+| `--bg-elevated` | `#1C1C1C` | Modals, popovers |
+| `--glass` / `--glass-border` | `rgba(255,255,255,.05)` / `.12` | Glass fill + hairline |
+| `--brand` | `#A92E2E` | Fills and primary actions (white on it = 5.9:1) |
+| `--brand-soft` | `#FFB3B3` | Accent **text** on dark (`--brand` alone only reaches 3:1) |
+| `--fg-muted` / `--fg-subtle` | `rgba(255,255,255,.72)` / `.48` | Body / secondary text |
+
+Type is **Figtree** (UI) + **Fragment Mono** (data, labels, timestamps), both
+loaded via `next/font`. Motion uses one easing curve (`cubic-bezier(.16,1,.3,1)`)
+and is disabled wholesale under `prefers-reduced-motion`.
+
+Glass needs colour behind it to refract, so `.ambient` paints two slow
+brand-tinted pools plus a grain overlay behind every page.
+
+Chart colours (`#e66767` / `#3987e5`) are validated for the dark surface:
+adjacent CVD ΔE 19.2, normal-vision ΔE 29.0, both ≥3:1 against the card.
+
+---
+
 ## Roles
 
 | Role | Who | Permissions |
 |---|---|---|
 | `admin` | Enigma-Cube team | Full access — create/edit all orgs, projects, milestones, analytics |
-| `client_owner` | Primary client contact | View + edit own org, submit requests |
-| `client_member` | Additional client users | View own org, submit requests |
+| `client_owner` | Primary client contact | View own org, edit org profile, submit requests, comment |
+| `client_member` | Additional client users | View own org, submit requests, comment |
+
+Clients are **read-and-comment only** on the work itself — creating or editing
+projects, milestones, analytics and file uploads are all admin-only.
 
 Assign roles via the `PATCH /api/v1/users/{id}/role` endpoint (admin only).
 
@@ -225,4 +281,12 @@ GET        /notifications
 POST       /notifications/read-all
 GET/PUT    /onboarding/{org_id}
 POST       /ai/ask
+
+POST       /users/me/register              self-serve org creation
+GET        /comments/inbox                 (admin) every thread, newest first
+GET/POST   /comments/project/{id}
+POST       /comments/{id}/replies
+PATCH      /comments/{id}                  edit your own
+PATCH      /comments/{id}/resolve          (admin)
+DELETE     /comments/{id}
 ```

@@ -1,147 +1,194 @@
 "use client";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import Link from "next/link";
+import {
+  Building2, FolderOpen, Users, ArrowRight, Plus, Globe, ExternalLink, ArrowLeft,
+} from "lucide-react";
 import api from "@/lib/api";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Avatar } from "@/components/ui/avatar";
+import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
+import { EmptyState } from "@/components/ui/empty-state";
+import { StatusPill, PROJECT_STATUS } from "@/components/ui/status-pill";
 import type { Organization, Project, User } from "@/lib/types";
-import { Building2, FolderOpen, Users, ArrowRight, Plus, Globe, ExternalLink } from "lucide-react";
 
-const STATUS_COLOR: Record<string, string> = {
-  planning: "bg-slate-100 text-slate-600",
-  development: "bg-blue-50 text-blue-700",
-  testing: "bg-amber-50 text-amber-700",
-  review: "bg-purple-50 text-purple-700",
-  delivered: "bg-emerald-50 text-emerald-700",
-  on_hold: "bg-red-50 text-red-600",
+const ROLE_LABEL: Record<string, string> = {
+  admin: "Admin",
+  client_owner: "Owner",
+  client_member: "Member",
 };
 
 export default function ClientDetailPage() {
   const { id } = useParams<{ id: string }>();
 
-  const { data: org, isLoading: orgLoading } = useQuery<Organization>({
+  const { data: org, isLoading } = useQuery<Organization>({
     queryKey: ["org", id],
-    queryFn: () => api.get(`/organizations/${id}`).then(r => r.data),
+    queryFn: () => api.get(`/organizations/${id}`).then((r) => r.data),
   });
-  const { data: projects } = useQuery<Project[]>({
+  const { data: projects = [] } = useQuery<Project[]>({
     queryKey: ["admin-projects"],
-    queryFn: () => api.get("/projects").then(r => r.data),
-    select: (data) => data.filter(p => p.organization_id === id),
+    queryFn: () => api.get("/projects").then((r) => r.data),
+    select: (data) => data.filter((p) => p.organization_id === id),
   });
-  const { data: users } = useQuery<User[]>({
+  const { data: users = [] } = useQuery<User[]>({
     queryKey: ["admin-users"],
-    queryFn: () => api.get("/admin/users").then(r => r.data),
-    select: (data) => data.filter(u => u.organization_id === id),
+    queryFn: () => api.get("/admin/users").then((r) => r.data),
+    select: (data) => data.filter((u) => u.organization_id === id),
   });
 
-  if (orgLoading) {
+  if (isLoading) {
     return (
-      <div className="max-w-4xl mx-auto space-y-4">
-        {[...Array(3)].map((_, i) => <div key={i} className="h-24 bg-slate-100 rounded-xl animate-pulse" />)}
+      <div className="space-y-4" aria-busy="true">
+        {[0, 1, 2].map((i) => <Skeleton key={i} className="h-32 w-full rounded-card" />)}
       </div>
     );
   }
 
-  if (!org) return <p className="text-slate-400">Client not found.</p>;
+  if (!org) {
+    return (
+      <Card>
+        <EmptyState
+          icon={Building2}
+          title="Client not found"
+          description="This workspace may have been removed."
+        />
+      </Card>
+    );
+  }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="bg-white rounded-xl border border-slate-200 p-6">
-        <div className="flex items-start justify-between">
+    <div className="space-y-6">
+      <Link
+        href="/admin/clients"
+        className="inline-flex items-center gap-1.5 text-xs font-medium text-subtle transition-colors hover:text-fg"
+      >
+        <ArrowLeft size={13} aria-hidden="true" />
+        All clients
+      </Link>
+
+      <Card className="p-6">
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-[#FFB3B3]/20 flex items-center justify-center">
-              <Building2 size={24} className="text-[#A92E2E]" />
-            </div>
+            <span className="grid h-14 w-14 place-items-center rounded-2xl bg-brand-wash text-brand-soft">
+              <Building2 size={24} aria-hidden="true" />
+            </span>
             <div>
-              <h1 className="text-xl font-bold text-slate-900">{org.name}</h1>
-              <p className="text-sm text-slate-400">{org.industry ?? "No industry"} · /{org.slug}</p>
+              <h1 className="text-xl font-semibold tracking-tight text-fg">{org.name}</h1>
+              <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-faint">
+                {org.industry ?? "No industry"} · /{org.slug}
+              </p>
             </div>
           </div>
           {org.website && (
-            <a href={org.website} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-[#A92E2E] transition-colors">
-              <Globe size={13} /> {org.website} <ExternalLink size={11} />
+            <a
+              href={org.website}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 text-xs text-subtle transition-colors hover:text-brand-soft"
+            >
+              <Globe size={13} aria-hidden="true" />
+              {org.website}
+              <ExternalLink size={11} aria-hidden="true" />
             </a>
           )}
         </div>
-        {org.description && <p className="mt-4 text-sm text-slate-500 leading-relaxed">{org.description}</p>}
-      </div>
+        {org.description && (
+          <p className="mt-5 text-sm leading-relaxed text-subtle">{org.description}</p>
+        )}
+      </Card>
 
-      {/* Projects */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+      <Card className="overflow-hidden">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-hairline px-5 py-4">
           <div className="flex items-center gap-2">
-            <FolderOpen size={16} className="text-slate-400" />
-            <h2 className="font-semibold text-slate-900">Projects</h2>
-            <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">{projects?.length ?? 0}</span>
+            <FolderOpen size={15} className="text-faint" aria-hidden="true" />
+            <h2 className="text-sm font-semibold tracking-tight text-fg">Projects</h2>
+            <Badge>{projects.length}</Badge>
           </div>
-          <Link
-            href={`/admin/projects/new?org=${id}`}
-            className="flex items-center gap-1.5 text-xs font-semibold bg-[#A92E2E] text-white px-3 py-1.5 rounded-lg hover:bg-[#8B2424] transition-colors"
-          >
-            <Plus size={12} /> New Project
+          <Link href={`/admin/projects/new?org=${id}`}>
+            <Button size="sm">
+              <Plus size={13} aria-hidden="true" />
+              New project
+            </Button>
           </Link>
         </div>
-        {projects?.length === 0 ? (
-          <p className="px-5 py-8 text-sm text-slate-400 text-center">No projects for this client yet.</p>
-        ) : (
-          <div className="divide-y divide-slate-100">
-            {projects?.map(p => (
-              <Link key={p.id} href={`/admin/projects/${p.id}`} className="flex items-center justify-between px-5 py-3.5 hover:bg-slate-50 transition-colors group">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
-                    <FolderOpen size={14} className="text-slate-500" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-slate-900">{p.name}</p>
-                    <p className="text-xs text-slate-400">{p.project_type ?? "AI Project"}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full capitalize ${STATUS_COLOR[p.status] ?? "bg-slate-100 text-slate-600"}`}>
-                    {p.status.replace("_", " ")}
-                  </span>
-                  <div className="flex items-center gap-1.5 text-xs text-slate-400">
-                    <div className="w-14 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-[#A92E2E] rounded-full" style={{ width: `${p.completion_percentage}%` }} />
-                    </div>
-                    {p.completion_percentage}%
-                  </div>
-                  <ArrowRight size={14} className="text-slate-300 group-hover:text-[#A92E2E] transition-colors" />
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
 
-      {/* Users */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        <div className="flex items-center gap-2 px-5 py-4 border-b border-slate-100">
-          <Users size={16} className="text-slate-400" />
-          <h2 className="font-semibold text-slate-900">Members</h2>
-          <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">{users?.length ?? 0}</span>
-        </div>
-        {users?.length === 0 ? (
-          <p className="px-5 py-8 text-sm text-slate-400 text-center">No users assigned to this client yet.</p>
+        {projects.length === 0 ? (
+          <p className="px-5 py-10 text-center text-sm text-subtle">
+            No projects for this client yet.
+          </p>
         ) : (
-          <div className="divide-y divide-slate-100">
-            {users?.map(u => (
-              <div key={u.id} className="flex items-center justify-between px-5 py-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#FFB3B3]/20 flex items-center justify-center text-[#A92E2E] text-xs font-semibold">
-                    {u.full_name?.[0]?.toUpperCase() ?? u.email?.[0]?.toUpperCase() ?? "?"}
+          <ul>
+            {projects.map((p) => (
+              <li key={p.id}>
+                <Link
+                  href={`/admin/projects/${p.id}`}
+                  className="group flex items-center justify-between gap-4 border-b border-hairline px-5 py-3.5 transition-colors last:border-0 hover:bg-white/[0.05]"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-fg">{p.name}</p>
+                    <p className="mt-0.5 text-xs text-faint">
+                      {p.project_type ?? "Project"}
+                    </p>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-slate-900">{u.full_name ?? "—"}</p>
-                    <p className="text-xs text-slate-400">{u.email}</p>
+                  <div className="flex shrink-0 items-center gap-3">
+                    <StatusPill descriptor={PROJECT_STATUS[p.status]} size="sm" />
+                    <div className="hidden w-20 sm:block">
+                      <Progress value={p.completion_percentage} label={`${p.name} progress`} />
+                    </div>
+                    <ArrowRight
+                      size={14}
+                      aria-hidden="true"
+                      className="text-faint transition-colors group-hover:text-brand-soft"
+                    />
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
+
+      <Card className="overflow-hidden">
+        <div className="flex items-center gap-2 border-b border-hairline px-5 py-4">
+          <Users size={15} className="text-faint" aria-hidden="true" />
+          <h2 className="text-sm font-semibold tracking-tight text-fg">Members</h2>
+          <Badge>{users.length}</Badge>
+        </div>
+
+        {users.length === 0 ? (
+          <p className="px-5 py-10 text-center text-sm text-subtle">
+            Nobody has joined this workspace yet.
+          </p>
+        ) : (
+          <ul>
+            {users.map((u) => (
+              <li
+                key={u.id}
+                className="flex items-center justify-between gap-4 border-b border-hairline px-5 py-3 last:border-0"
+              >
+                <div className="flex min-w-0 items-center gap-3">
+                  <Avatar
+                    size="sm"
+                    name={u.full_name}
+                    email={u.email}
+                    src={u.avatar_url}
+                    highlight={u.role === "admin"}
+                  />
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-fg">{u.full_name ?? "—"}</p>
+                    <p className="truncate text-xs text-faint">{u.email}</p>
                   </div>
                 </div>
-                <span className="text-xs font-medium text-slate-500 capitalize">{u.role.replace("_", " ")}</span>
-              </div>
+                <Badge>{ROLE_LABEL[u.role] ?? u.role}</Badge>
+              </li>
             ))}
-          </div>
+          </ul>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

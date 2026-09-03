@@ -6,7 +6,12 @@ export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttribute
     <input
       ref={ref}
       className={cn(
-        "w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all disabled:opacity-50",
+        // 40px tall on desktop, 44px on touch — text-base avoids iOS auto-zoom
+        "h-11 w-full rounded-[10px] border border-hairline bg-white/[0.05] px-3.5 text-base text-fg",
+        "placeholder:text-faint transition-colors duration-200 sm:h-10 sm:text-sm",
+        "hover:border-hairline-strong focus:border-brand-soft/40 focus:bg-white/[0.07] focus:outline-none",
+        "disabled:cursor-not-allowed disabled:opacity-45",
+        "aria-[invalid=true]:border-danger/60",
         className
       )}
       {...props}

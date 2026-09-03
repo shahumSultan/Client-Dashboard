@@ -1,10 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { Topbar } from "@/components/shared/Topbar";
-import { usePathname } from "next/navigation";
-import { useAuthToken, useCurrentUser } from "@/hooks/useAuth";
+import { useCurrentUser } from "@/hooks/useAuth";
+import { PageLoader } from "@/components/shared/PageLoader";
 
 const PAGE_TITLES: Record<string, string> = {
   "/admin": "Overview",
@@ -21,37 +21,35 @@ function getTitle(pathname: string): string {
   return "Admin";
 }
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-
-  useAuthToken();
   const { data: user, isLoading } = useCurrentUser();
 
+  // The API enforces admin on every route; this only avoids rendering an
+  // admin shell that would fail every request behind it.
   useEffect(() => {
     if (!isLoading && user && user.role !== "admin") {
       router.replace("/dashboard");
     }
   }, [user, isLoading, router]);
 
-  if (isLoading || !user) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-slate-950">
-        <div className="w-6 h-6 border-2 border-[#A92E2E] border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  if (user.role !== "admin") return null;
+  if (isLoading || !user) return <PageLoader />;
+  if (user.role !== "admin") return <PageLoader label="Redirecting" />;
 
   return (
-    <div className="flex h-screen bg-slate-50">
+    <div className="flex h-dvh overflow-hidden">
       <AdminSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
+
+      <div className="flex min-w-0 flex-1 flex-col">
         <Topbar title={getTitle(pathname)} onMenuClick={() => setSidebarOpen(true)} />
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6">
-          {children}
+        <main className="flex-1 overflow-y-auto px-4 py-6 lg:px-8 lg:py-8">
+          <div className="mx-auto w-full max-w-6xl">{children}</div>
         </main>
       </div>
     </div>

@@ -125,3 +125,34 @@ export interface Organization {
   is_active: boolean;
   created_at: string;
 }
+
+export type CommentTargetType = "project" | "milestone" | "update" | "file";
+
+export interface CommentAuthor {
+  id: string;
+  full_name: string | null;
+  email: string;
+  avatar_url: string | null;
+  role: UserRole;
+}
+
+export interface Comment {
+  id: string;
+  project_id: string;
+  target_type: CommentTargetType;
+  target_id: string;
+  parent_id: string | null;
+  body: string;
+  is_resolved: boolean;
+  edited_at: string | null;
+  created_at: string;
+  author: CommentAuthor;
+}
+
+export interface CommentThread extends Comment {
+  replies: Comment[];
+}
+
+export interface InboxThread extends CommentThread {
+  project: { id: string; name: string };
+}

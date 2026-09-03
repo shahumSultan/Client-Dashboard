@@ -13,7 +13,9 @@ class Settings(BaseSettings):
 
     # Clerk Auth
     CLERK_SECRET_KEY: str
-    CLERK_PUBLISHABLE_KEY: str
+    # Frontend-only value. Declared so a shared .env validates, but the backend
+    # verifies tokens against the JWKS and never reads it.
+    CLERK_PUBLISHABLE_KEY: str = ""
     CLERK_JWT_ISSUER: str  # e.g. https://your-clerk-domain.clerk.accounts.dev
 
     # Storage (MinIO locally, or Cloudflare R2 / S3 in prod)
@@ -33,8 +35,14 @@ class Settings(BaseSettings):
     GROQ_MODEL: str = "llama-3.3-70b-versatile"
     GROQ_FAST_MODEL: str = "llama-3.1-8b-instant"
 
-    # CORS
+    # CORS — comma-separated list; supports Vercel preview deploys etc.
     FRONTEND_URL: str = "http://localhost:3000"
+    EXTRA_ALLOWED_ORIGINS: str = ""
+
+    @property
+    def allowed_origins(self) -> list[str]:
+        origins = [self.FRONTEND_URL, *self.EXTRA_ALLOWED_ORIGINS.split(",")]
+        return [o.strip().rstrip("/") for o in origins if o.strip()]
 
     class Config:
         env_file = ".env"

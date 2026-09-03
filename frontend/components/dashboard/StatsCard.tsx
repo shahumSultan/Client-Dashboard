@@ -1,31 +1,47 @@
 import * as React from "react";
+import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface StatsCardProps {
-  icon: React.ReactNode;
+  icon: LucideIcon;
   value: number | string;
   label: string;
-  trend?: { value: string; positive: boolean };
+  /** Secondary line — e.g. "3 of 8 complete". */
+  detail?: string;
+  loading?: boolean;
   className?: string;
 }
 
-export function StatsCard({ icon, value, label, trend, className }: StatsCardProps) {
+export function StatsCard({
+  icon: Icon,
+  value,
+  label,
+  detail,
+  loading = false,
+  className,
+}: StatsCardProps) {
   return (
-    <div className={cn("bg-white rounded-xl border border-slate-200/80 shadow-sm p-5", className)}>
+    <Card className={cn("p-5", className)}>
       <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-sm text-slate-500 font-medium">{label}</p>
-          <p className="mt-1.5 text-3xl font-bold text-slate-900 tracking-tight">{value}</p>
-          {trend && (
-            <p className={cn("mt-1 text-xs font-medium", trend.positive ? "text-emerald-600" : "text-red-500")}>
-              {trend.value}
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-subtle">{label}</p>
+          {loading ? (
+            <Skeleton className="mt-2 h-9 w-16" />
+          ) : (
+            <p className="tabular mt-1.5 text-3xl font-semibold tracking-tight text-fg">
+              {value}
             </p>
           )}
+          {detail && !loading && (
+            <p className="mt-1 text-xs text-faint">{detail}</p>
+          )}
         </div>
-        <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600 shrink-0">
-          {icon}
-        </div>
+        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-brand-wash text-brand-soft">
+          <Icon size={18} strokeWidth={2} aria-hidden="true" />
+        </span>
       </div>
-    </div>
+    </Card>
   );
 }

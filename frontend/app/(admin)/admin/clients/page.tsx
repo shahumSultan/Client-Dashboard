@@ -1,136 +1,207 @@
 "use client";
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import api from "@/lib/api";
-import type { Organization } from "@/lib/types";
-import { Plus, Building2, ArrowRight, Globe, X } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Plus, Building2, ArrowRight, Globe } from "lucide-react";
+import api from "@/lib/api";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle,
+  DialogDescription, DialogFooter, DialogClose,
+} from "@/components/ui/dialog";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Field } from "@/components/ui/field";
+import { Skeleton } from "@/components/ui/skeleton";
+import { EmptyState } from "@/components/ui/empty-state";
+import type { Organization } from "@/lib/types";
 
-function CreateClientModal({ onClose }: { onClose: () => void }) {
+const slugify = (name: string) =>
+  name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+function CreateClientDialog({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+}) {
   const qc = useQueryClient();
-  const [form, setForm] = useState({ name: "", slug: "", industry: "", website: "", description: "" });
+  const [form, setForm] = useState({
+    name: "", slug: "", industry: "", website: "", description: "",
+  });
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (data: typeof form) => api.post("/organizations", data).then(r => r.data),
+    mutationFn: (data: typeof form) => api.post("/organizations", data).then((r) => r.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-clients"] });
       qc.invalidateQueries({ queryKey: ["admin-stats"] });
       toast.success("Client created");
-      onClose();
+      setForm({ name: "", slug: "", industry: "", website: "", description: "" });
+      onOpenChange(false);
     },
-    onError: (e: any) => toast.error(e.response?.data?.detail ?? "Failed to create client"),
+    onError: (e: unknown) => {
+      const detail =
+        (e as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
+      toast.error(detail ?? "Couldn't create that client");
+    },
   });
 
-  const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
-  const autoSlug = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const set = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-          <h2 className="font-semibold text-slate-900">New Client</h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-700 transition-colors"><X size={18} /></button>
-        </div>
-        <div className="px-6 py-5 space-y-4">
-          <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1.5">Company Name *</label>
-            <input
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#A92E2E]/30 focus:border-[#A92E2E]"
+    <Dialog open={open} onOpenChange={onOpenChange} label="New client">
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>New client</DialogTitle>
+          <DialogDescription>
+            Creates a workspace. Projects, files and comments are scoped to it.
+          </DialogDescription>
+          <DialogClose onClick={() => onOpenChange(false)} />
+        </DialogHeader>
+
+        <div className="space-y-5 px-6 pb-5">
+          <Field label="Company name" htmlFor="client-name" required>
+            <Input
+              id="client-name"
               value={form.name}
-              onChange={e => { set("name", e.target.value); set("slug", autoSlug(e.target.value)); }}
+              onChange={(e) => {
+                set("name", e.target.value);
+                set("slug", slugify(e.target.value));
+              }}
               placeholder="Acme Law Group"
             />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1.5">Slug *</label>
-            <input
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#A92E2E]/30 focus:border-[#A92E2E]"
+          </Field>
+
+          <Field
+            label="Slug"
+            htmlFor="client-slug"
+            required
+            hint="Used in URLs. Must be unique across all clients."
+          >
+            <Input
+              id="client-slug"
+              className="font-mono"
               value={form.slug}
-              onChange={e => set("slug", e.target.value)}
+              onChange={(e) => set("slug", e.target.value)}
               placeholder="acme-law-group"
             />
+          </Field>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Industry" htmlFor="client-industry">
+              <Input
+                id="client-industry"
+                value={form.industry}
+                onChange={(e) => set("industry", e.target.value)}
+                placeholder="Legal"
+              />
+            </Field>
+            <Field label="Website" htmlFor="client-website">
+              <Input
+                id="client-website"
+                type="url"
+                value={form.website}
+                onChange={(e) => set("website", e.target.value)}
+                placeholder="https://acme.com"
+              />
+            </Field>
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1.5">Industry</label>
-              <input className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#A92E2E]/30 focus:border-[#A92E2E]" value={form.industry} onChange={e => set("industry", e.target.value)} placeholder="Legal" />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1.5">Website</label>
-              <input className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#A92E2E]/30 focus:border-[#A92E2E]" value={form.website} onChange={e => set("website", e.target.value)} placeholder="https://..." />
-            </div>
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1.5">Description</label>
-            <textarea rows={2} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#A92E2E]/30 focus:border-[#A92E2E]" value={form.description} onChange={e => set("description", e.target.value)} placeholder="Brief description..." />
-          </div>
+
+          <Field label="Description" htmlFor="client-description">
+            <Textarea
+              id="client-description"
+              rows={2}
+              value={form.description}
+              onChange={(e) => set("description", e.target.value)}
+              placeholder="What this client does, in a line."
+            />
+          </Field>
         </div>
-        <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-100">
-          <button onClick={onClose} className="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 transition-colors">Cancel</button>
-          <button
+
+        <DialogFooter>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button
             onClick={() => mutate(form)}
-            disabled={isPending || !form.name || !form.slug}
-            className="px-5 py-2 text-sm font-semibold bg-[#A92E2E] hover:bg-[#8B2424] text-white rounded-lg transition-colors disabled:opacity-50"
+            disabled={!form.name.trim() || !form.slug.trim()}
+            loading={isPending}
           >
-            {isPending ? "Creating…" : "Create Client"}
-          </button>
-        </div>
-      </div>
-    </div>
+            Create client
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
 export default function ClientsPage() {
-  const [showCreate, setShowCreate] = useState(false);
-  const { data: clients, isLoading } = useQuery<Organization[]>({
+  const [creating, setCreating] = useState(false);
+  const { data: clients = [], isLoading } = useQuery<Organization[]>({
     queryKey: ["admin-clients"],
-    queryFn: () => api.get("/organizations").then(r => r.data),
+    queryFn: () => api.get("/organizations").then((r) => r.data),
   });
 
   return (
-    <div className="max-w-5xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
+    <div>
+      <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-slate-900">Clients</h1>
-          <p className="text-sm text-slate-500">{clients?.length ?? 0} organization{clients?.length !== 1 ? "s" : ""}</p>
+          <h1 className="text-xl font-semibold tracking-tight text-fg">Clients</h1>
+          <p className="mt-1.5 text-sm text-subtle">
+            {isLoading
+              ? "Loading…"
+              : `${clients.length} ${clients.length === 1 ? "workspace" : "workspaces"}.`}
+          </p>
         </div>
-        <button
-          onClick={() => setShowCreate(true)}
-          className="flex items-center gap-2 bg-[#A92E2E] hover:bg-[#8B2424] text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors"
-        >
-          <Plus size={15} /> New Client
-        </button>
+        <Button onClick={() => setCreating(true)}>
+          <Plus size={15} aria-hidden="true" />
+          New client
+        </Button>
       </div>
 
       {isLoading ? (
-        <div className="grid md:grid-cols-2 gap-4">
-          {[...Array(4)].map((_, i) => <div key={i} className="h-28 bg-slate-100 rounded-xl animate-pulse" />)}
+        <div className="grid gap-4 md:grid-cols-2" aria-busy="true">
+          {[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-32 w-full rounded-card" />)}
         </div>
-      ) : clients?.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <Building2 size={40} className="text-slate-300 mb-3" />
-          <p className="text-slate-500 font-medium">No clients yet</p>
-          <p className="text-sm text-slate-400 mb-4">Add your first client to get started</p>
-          <button onClick={() => setShowCreate(true)} className="flex items-center gap-2 bg-[#A92E2E] text-white text-sm font-semibold px-4 py-2 rounded-lg">
-            <Plus size={14} /> Add Client
-          </button>
-        </div>
+      ) : clients.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={Building2}
+            title="No clients yet"
+            description="Add your first client to create their workspace, or wait for one to sign up themselves."
+            action={
+              <Button onClick={() => setCreating(true)}>
+                <Plus size={14} aria-hidden="true" />
+                Add client
+              </Button>
+            }
+          />
+        </Card>
       ) : (
-        <div className="grid md:grid-cols-2 gap-4">
-          {clients?.map(c => (
-            <Link key={c.id} href={`/admin/clients/${c.id}`} className="group bg-white rounded-xl border border-slate-200 hover:border-[#FFB3B3]/60 hover:shadow-md transition-all p-5">
-              <div className="flex items-start justify-between mb-3">
-                <div className="w-10 h-10 rounded-xl bg-[#FFB3B3]/20 flex items-center justify-center">
-                  <Building2 size={18} className="text-[#A92E2E]" />
-                </div>
-                <ArrowRight size={16} className="text-slate-300 group-hover:text-[#A92E2E] transition-colors mt-1" />
+        <div className="stagger grid gap-4 md:grid-cols-2">
+          {clients.map((c) => (
+            <Link
+              key={c.id}
+              href={`/admin/clients/${c.id}`}
+              className="glass glass-sheen glass-hover group rounded-card p-5"
+            >
+              <div className="mb-4 flex items-start justify-between">
+                <span className="grid h-10 w-10 place-items-center rounded-xl bg-brand-wash text-brand-soft">
+                  <Building2 size={18} aria-hidden="true" />
+                </span>
+                <ArrowRight
+                  size={16}
+                  aria-hidden="true"
+                  className="mt-1 text-faint transition-colors group-hover:text-brand-soft"
+                />
               </div>
-              <p className="font-semibold text-slate-900 mb-1">{c.name}</p>
-              <p className="text-xs text-slate-400">{c.industry ?? "No industry"}</p>
+              <p className="font-semibold tracking-tight text-fg">{c.name}</p>
+              <p className="mt-1 text-xs text-subtle">{c.industry ?? "No industry set"}</p>
               {c.website && (
-                <p className="flex items-center gap-1 text-xs text-slate-400 mt-1">
-                  <Globe size={10} /> {c.website}
+                <p className="mt-1.5 flex items-center gap-1.5 truncate text-xs text-faint">
+                  <Globe size={11} aria-hidden="true" />
+                  {c.website}
                 </p>
               )}
             </Link>
@@ -138,7 +209,7 @@ export default function ClientsPage() {
         </div>
       )}
 
-      {showCreate && <CreateClientModal onClose={() => setShowCreate(false)} />}
+      <CreateClientDialog open={creating} onOpenChange={setCreating} />
     </div>
   );
 }

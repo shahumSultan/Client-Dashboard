@@ -1,154 +1,52 @@
 "use client";
-import { useState } from "react";
-import { use } from "react";
+import { use, useState } from "react";
+import Link from "next/link";
 import {
-  Calendar, Download, FileText, MessageSquare, Plus, TrendingUp, Clock
+  CalendarDays,
+  Clock,
+  Rocket,
+  Plus,
+  MessageSquare,
+  FileText,
+  Download,
+  Megaphone,
+  ArrowLeft,
 } from "lucide-react";
-import {
-  Tabs, TabsList, TabsTrigger, TabsContent,
-} from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { EmptyState } from "@/components/ui/empty-state";
+import {
+  StatusPill,
+  PROJECT_STATUS,
+  REQUEST_STATUS,
+  REQUEST_PRIORITY,
+} from "@/components/ui/status-pill";
 import { MilestoneTimeline } from "@/components/projects/MilestoneTimeline";
+import { ProjectAnalytics } from "@/components/projects/ProjectAnalytics";
 import { NewRequestDialog } from "@/components/projects/NewRequestDialog";
+import { CommentsPanel } from "@/components/comments/CommentsPanel";
+import { CommentsDisclosure } from "@/components/comments/CommentsDisclosure";
 import {
-  useProject, useProjectUpdates, useMilestones, useRequests, useFiles, useAnalytics,
+  useProject,
+  useProjectUpdates,
+  useMilestones,
+  useRequests,
+  useFiles,
 } from "@/hooks/useProjects";
-import {
-  cn, formatDate, timeAgo, STATUS_LABELS, STATUS_COLORS, formatBytes,
-} from "@/lib/utils";
-import {
-  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
-} from "recharts";
-import type { AnalyticsEntry, ClientRequest } from "@/lib/types";
+import { formatDate, timeAgo, formatBytes, STATUS_LABELS } from "@/lib/utils";
+import type { ClientRequest } from "@/lib/types";
 
-const REQUEST_PRIORITY_COLORS: Record<string, string> = {
-  low: "bg-slate-100 text-slate-600",
-  medium: "bg-blue-100 text-blue-700",
-  high: "bg-orange-100 text-orange-700",
-  urgent: "bg-red-100 text-red-700",
-};
-
-function RequestRow({ request }: { request: ClientRequest }) {
-  return (
-    <div className="flex items-start gap-4 p-4 rounded-xl border border-slate-100 hover:border-slate-200 hover:bg-slate-50/60 transition-all">
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1 flex-wrap">
-          <span className="text-sm font-medium text-slate-900">{request.title}</span>
-          <Badge className={cn("text-[10px]", STATUS_COLORS[request.category])}>
-            {STATUS_LABELS[request.category]}
-          </Badge>
-        </div>
-        <p className="text-xs text-slate-500 line-clamp-2">{request.description}</p>
-        {request.admin_response && (
-          <div className="mt-2 p-2.5 rounded-lg bg-indigo-50 border border-indigo-100">
-            <p className="text-xs text-indigo-700 font-medium">Response from Enigma-Cube</p>
-            <p className="text-xs text-indigo-600 mt-0.5">{request.admin_response}</p>
-          </div>
-        )}
-        <p className="text-[11px] text-slate-400 mt-1.5">{timeAgo(request.created_at)}</p>
-      </div>
-      <div className="flex flex-col items-end gap-1.5 shrink-0">
-        <Badge className={cn("text-[10px]", STATUS_COLORS[request.status])}>
-          {STATUS_LABELS[request.status]}
-        </Badge>
-        <Badge className={cn("text-[10px]", REQUEST_PRIORITY_COLORS[request.priority])}>
-          {STATUS_LABELS[request.priority]}
-        </Badge>
-      </div>
-    </div>
-  );
-}
-
-function AnalyticsTab({ projectId }: { projectId: string }) {
-  const { data: entries = [] } = useAnalytics(projectId);
-
-  const chartData = entries
-    .slice()
-    .sort((a, b) => a.period_start.localeCompare(b.period_start))
-    .map((e: AnalyticsEntry) => ({
-      period: e.period_start,
-      leads: e.leads_processed ?? 0,
-      conversions: e.conversions ?? 0,
-      rate: e.conversion_rate ?? 0,
-    }));
-
-  const latest = entries[0];
-
-  return (
-    <div className="space-y-5">
-      {/* Metric cards */}
-      {latest && (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            { label: "Leads Processed", value: latest.leads_processed ?? "—", icon: TrendingUp },
-            { label: "Conversions", value: latest.conversions ?? "—", icon: TrendingUp },
-            {
-              label: "Conversion Rate",
-              value: latest.conversion_rate ? `${latest.conversion_rate.toFixed(1)}%` : "—",
-              icon: TrendingUp,
-            },
-            {
-              label: "Revenue Attributed",
-              value: latest.revenue_attributed ? `$${latest.revenue_attributed.toLocaleString()}` : "—",
-              icon: TrendingUp,
-            },
-          ].map((m) => (
-            <div key={m.label} className="bg-white rounded-xl border border-slate-200 p-4">
-              <p className="text-xs text-slate-500 font-medium">{m.label}</p>
-              <p className="text-2xl font-bold text-slate-900 mt-1">{String(m.value)}</p>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* AI summary */}
-      {latest?.summary && (
-        <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-100 p-4">
-          <p className="text-xs font-semibold text-indigo-600 uppercase tracking-wide mb-1">AI Summary</p>
-          <p className="text-sm text-slate-700">{latest.summary}</p>
-        </div>
-      )}
-
-      {/* Trend chart */}
-      {chartData.length > 1 && (
-        <div className="bg-white rounded-xl border border-slate-200 p-5">
-          <p className="text-sm font-semibold text-slate-900 mb-4">Performance Trends</p>
-          <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-              <XAxis dataKey="period" tick={{ fontSize: 11, fill: "#94a3b8" }} />
-              <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} />
-              <Tooltip
-                contentStyle={{
-                  fontSize: 12,
-                  borderRadius: 8,
-                  border: "1px solid #e2e8f0",
-                  boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
-                }}
-              />
-              <Line type="monotone" dataKey="leads" stroke="#6366f1" strokeWidth={2} dot={false} name="Leads" />
-              <Line type="monotone" dataKey="conversions" stroke="#10b981" strokeWidth={2} dot={false} name="Conversions" />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-
-      {entries.length === 0 && (
-        <div className="text-center py-12 text-slate-400">
-          <TrendingUp size={32} className="mx-auto mb-2 text-slate-200" />
-          <p className="text-sm">No analytics data available yet.</p>
-        </div>
-      )}
-    </div>
-  );
-}
-
-export default function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default function ProjectDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = use(params);
-  const [reqDialogOpen, setReqDialogOpen] = useState(false);
+  const [requestOpen, setRequestOpen] = useState(false);
 
   const { data: project, isLoading } = useProject(id);
   const { data: updates = [] } = useProjectUpdates(id);
@@ -158,195 +56,331 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
 
   if (isLoading) {
     return (
-      <div className="max-w-4xl mx-auto space-y-4">
-        <Skeleton className="h-28 w-full rounded-2xl" />
-        <Skeleton className="h-10 w-80" />
-        <Skeleton className="h-64 w-full rounded-xl" />
+      <div className="space-y-5" aria-busy="true">
+        <Skeleton className="h-40 w-full rounded-card-lg" />
+        <Skeleton className="h-11 w-96 rounded-full" />
+        <Skeleton className="h-64 w-full rounded-card" />
       </div>
     );
   }
 
   if (!project) {
     return (
-      <div className="text-center py-20 text-slate-400">
-        Project not found.
-      </div>
+      <Card>
+        <EmptyState
+          icon={FileText}
+          title="Project not found"
+          description="This project may have been removed, or it belongs to another workspace."
+          action={
+            <Link
+              href="/projects"
+              className="glass inline-flex h-10 items-center gap-2 rounded-[10px] px-4 text-sm font-medium text-fg transition-colors hover:bg-glass-strong"
+            >
+              <ArrowLeft size={14} aria-hidden="true" />
+              Back to projects
+            </Link>
+          }
+        />
+      </Card>
     );
   }
 
+  const openRequests = requests.filter(
+    (r) => r.status === "pending" || r.status === "in_progress"
+  ).length;
+
   return (
-    <div className="max-w-4xl mx-auto space-y-5">
-      {/* Hero card */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-        {/* Status bar accent */}
+    <div className="space-y-6">
+      <Link
+        href="/projects"
+        className="inline-flex items-center gap-1.5 text-xs font-medium text-subtle transition-colors hover:text-fg"
+      >
+        <ArrowLeft size={13} aria-hidden="true" />
+        All projects
+      </Link>
+
+      <section className="glass glass-sheen relative overflow-hidden rounded-card-lg p-6 sm:p-7">
         <div
-          className={cn(
-            "h-1.5 w-full",
-            project.status === "delivered" ? "bg-emerald-500" :
-            project.status === "development" ? "bg-indigo-500" :
-            project.status === "testing" ? "bg-yellow-400" :
-            project.status === "on_hold" ? "bg-slate-400" : "bg-blue-400"
-          )}
+          className="pointer-events-none absolute -right-20 -top-28 h-72 w-72 rounded-full bg-brand/20 blur-[100px]"
+          aria-hidden="true"
         />
-        <div className="p-6">
-          <div className="flex items-start justify-between gap-4 mb-4">
-            <div>
-              <h1 className="text-xl font-bold text-slate-900">{project.name}</h1>
+        <div className="relative">
+          <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
+            <div className="min-w-0">
+              <h1 className="text-xl font-semibold tracking-tight text-fg sm:text-2xl">
+                {project.name}
+              </h1>
               {project.description && (
-                <p className="text-sm text-slate-500 mt-1 max-w-xl">{project.description}</p>
+                <p className="mt-2 max-w-xl text-sm leading-relaxed text-subtle">
+                  {project.description}
+                </p>
               )}
             </div>
-            <Badge className={cn("shrink-0 text-sm py-1 px-3", STATUS_COLORS[project.status])}>
-              {STATUS_LABELS[project.status]}
-            </Badge>
+            <StatusPill descriptor={PROJECT_STATUS[project.status]} />
           </div>
 
-          {/* Progress */}
-          <div className="mb-4">
-            <div className="flex justify-between text-xs font-medium mb-1.5">
-              <span className="text-slate-500">Overall Progress</span>
-              <span className="text-slate-900">{project.completion_percentage}%</span>
+          <div className="mb-5">
+            <div className="mb-2 flex items-baseline justify-between">
+              <span className="text-xs font-medium text-subtle">Overall progress</span>
+              <span className="tabular text-sm font-semibold text-fg">
+                {project.completion_percentage}%
+              </span>
             </div>
-            <Progress value={project.completion_percentage} className="h-2.5" />
+            <Progress
+              value={project.completion_percentage}
+              label={`${project.name} overall progress`}
+              className="h-2"
+            />
           </div>
 
-          {/* Timeline row */}
-          <div className="flex flex-wrap gap-5 text-xs text-slate-500">
+          <dl className="flex flex-wrap gap-x-6 gap-y-2 text-xs">
             {project.start_date && (
-              <div className="flex items-center gap-1.5">
-                <Calendar size={13} className="text-slate-400" />
-                <span>Started {formatDate(project.start_date)}</span>
-              </div>
+              <Fact icon={CalendarDays} label="Started" value={formatDate(project.start_date)} />
             )}
             {project.target_date && (
-              <div className="flex items-center gap-1.5">
-                <Clock size={13} className="text-slate-400" />
-                <span>Target {formatDate(project.target_date)}</span>
-              </div>
+              <Fact icon={Clock} label="Target" value={formatDate(project.target_date)} />
             )}
             {project.delivered_date && (
-              <div className="flex items-center gap-1.5 text-emerald-600 font-medium">
-                <Calendar size={13} />
-                <span>Delivered {formatDate(project.delivered_date)}</span>
-              </div>
+              <Fact
+                icon={Rocket}
+                label="Delivered"
+                value={formatDate(project.delivered_date)}
+                tone="text-success"
+              />
             )}
-          </div>
+          </dl>
         </div>
-      </div>
+      </section>
 
-      {/* Tabs */}
-      <Tabs defaultValue="overview">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="milestones">Milestones ({milestones.length})</TabsTrigger>
-          <TabsTrigger value="requests">Requests ({requests.length})</TabsTrigger>
-          <TabsTrigger value="files">Files ({files.length})</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-        </TabsList>
+      <Tabs defaultValue="timeline">
+        <div className="-mx-4 overflow-x-auto px-4 lg:mx-0 lg:px-0">
+          <TabsList>
+            <TabsTrigger value="timeline">Timeline</TabsTrigger>
+            <TabsTrigger value="updates">Updates ({updates.length})</TabsTrigger>
+            <TabsTrigger value="discussion">Discussion</TabsTrigger>
+            <TabsTrigger value="requests">Requests ({requests.length})</TabsTrigger>
+            <TabsTrigger value="files">Files ({files.length})</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          </TabsList>
+        </div>
 
-        {/* Overview */}
-        <TabsContent value="overview">
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-slate-700 mb-3">Latest Updates</h3>
-            {updates.length === 0 ? (
-              <div className="text-center py-12 text-slate-400 bg-white rounded-xl border border-slate-200">
-                <MessageSquare size={28} className="mx-auto mb-2 text-slate-200" />
-                <p className="text-sm">No updates yet.</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {updates.map((u) => (
-                  <div key={u.id} className="bg-white rounded-xl border border-slate-100 p-4">
-                    <p className="text-sm text-slate-700 leading-relaxed">{u.content}</p>
-                    <p className="text-[11px] text-slate-400 mt-2">{timeAgo(u.created_at)}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+        <TabsContent value="timeline">
+          <MilestoneTimeline milestones={milestones} projectId={id} />
         </TabsContent>
 
-        {/* Milestones */}
-        <TabsContent value="milestones">
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <MilestoneTimeline milestones={milestones} />
-          </div>
+        <TabsContent value="updates">
+          {updates.length === 0 ? (
+            <Card>
+              <EmptyState
+                icon={Megaphone}
+                title="No updates yet"
+                description="Progress notes from the Enigma-Cube team will land here as work moves along."
+              />
+            </Card>
+          ) : (
+            <ul className="stagger space-y-3">
+              {updates.map((u) => (
+                <li key={u.id}>
+                  <Card>
+                    <CardContent className="pt-5">
+                      <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted">
+                        {u.content}
+                      </p>
+                      <p className="mt-3 font-mono text-[10px] uppercase tracking-wider text-faint">
+                        {timeAgo(u.created_at)}
+                      </p>
+                      <CommentsDisclosure
+                        projectId={id}
+                        targetType="update"
+                        targetId={u.id}
+                        label="Comment on this update"
+                      />
+                    </CardContent>
+                  </Card>
+                </li>
+              ))}
+            </ul>
+          )}
         </TabsContent>
 
-        {/* Requests */}
+        <TabsContent value="discussion">
+          <Card>
+            <CardContent className="pt-6">
+              <CommentsPanel
+                projectId={id}
+                targetType="project"
+                title="Project discussion"
+                emptyHint="Anything that doesn't belong to a specific milestone or file — questions, ideas, or things you'd like added."
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="requests">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-slate-500">
-                {requests.filter((r) => r.status === "pending").length} pending
+          <div className="space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm text-subtle">
+                {openRequests === 0
+                  ? "Nothing outstanding."
+                  : `${openRequests} open ${openRequests === 1 ? "request" : "requests"}`}
               </p>
-              <Button size="sm" onClick={() => setReqDialogOpen(true)}>
-                <Plus size={14} />
-                New Request
+              <Button size="sm" onClick={() => setRequestOpen(true)}>
+                <Plus size={14} aria-hidden="true" />
+                New request
               </Button>
             </div>
+
             {requests.length === 0 ? (
-              <div className="text-center py-12 text-slate-400 bg-white rounded-xl border border-slate-200 border-dashed">
-                <MessageSquare size={28} className="mx-auto mb-2 text-slate-200" />
-                <p className="text-sm">No requests yet. Submit one using the button above.</p>
-              </div>
+              <Card>
+                <EmptyState
+                  icon={MessageSquare}
+                  title="No requests yet"
+                  description="Raise a feature request, report a bug, or ask for a change — the team will respond here."
+                  action={
+                    <Button size="sm" onClick={() => setRequestOpen(true)}>
+                      <Plus size={14} aria-hidden="true" />
+                      New request
+                    </Button>
+                  }
+                />
+              </Card>
             ) : (
-              requests.map((r) => <RequestRow key={r.id} request={r} />)
+              <ul className="stagger space-y-3">
+                {requests.map((r) => (
+                  <li key={r.id}>
+                    <RequestRow request={r} />
+                  </li>
+                ))}
+              </ul>
             )}
           </div>
+
           <NewRequestDialog
             projectId={id}
-            open={reqDialogOpen}
-            onOpenChange={setReqDialogOpen}
+            open={requestOpen}
+            onOpenChange={setRequestOpen}
           />
         </TabsContent>
 
-        {/* Files */}
         <TabsContent value="files">
           {files.length === 0 ? (
-            <div className="text-center py-12 text-slate-400 bg-white rounded-xl border border-slate-200 border-dashed">
-              <FileText size={28} className="mx-auto mb-2 text-slate-200" />
-              <p className="text-sm">No files uploaded yet.</p>
-            </div>
+            <Card>
+              <EmptyState
+                icon={FileText}
+                title="No files yet"
+                description="Deliverables and shared documents will appear here as the team publishes them."
+              />
+            </Card>
           ) : (
-            <div className="space-y-2">
+            <ul className="stagger space-y-3">
               {files.map((f) => (
-                <div
-                  key={f.id}
-                  className="flex items-center gap-4 p-3.5 bg-white rounded-xl border border-slate-100 hover:border-slate-200 transition-all"
-                >
-                  <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
-                    <FileText size={16} className="text-slate-500" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-800 truncate">{f.name}</p>
-                    <p className="text-xs text-slate-400">
-                      {f.file_type} · {formatBytes(f.size_bytes)} · {timeAgo(f.created_at)}
-                    </p>
-                  </div>
-                  {f.is_deliverable && (
-                    <Badge className="bg-emerald-50 text-emerald-700 text-[10px]">Deliverable</Badge>
-                  )}
-                  {f.public_url && (
-                    <a
-                      href={f.public_url}
-                      download
-                      className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
-                    >
-                      <Download size={15} />
-                    </a>
-                  )}
-                </div>
+                <li key={f.id}>
+                  <Card>
+                    <CardContent className="pt-5">
+                      <div className="flex items-center gap-4">
+                        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/[0.06] text-subtle">
+                          <FileText size={17} aria-hidden="true" />
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-medium text-fg">{f.name}</p>
+                          <p className="mt-0.5 font-mono text-[10px] uppercase tracking-wider text-faint">
+                            {formatBytes(f.size_bytes)} · {timeAgo(f.created_at)}
+                          </p>
+                        </div>
+                        {f.is_deliverable && (
+                          <Badge className="border-success/25 bg-success-wash text-success">
+                            Deliverable
+                          </Badge>
+                        )}
+                        {f.public_url && (
+                          <a
+                            href={f.public_url}
+                            download
+                            aria-label={`Download ${f.name}`}
+                            className="grid h-10 w-10 shrink-0 place-items-center rounded-[10px] text-subtle transition-colors hover:bg-white/[0.08] hover:text-fg"
+                          >
+                            <Download size={15} aria-hidden="true" />
+                          </a>
+                        )}
+                      </div>
+                      <CommentsDisclosure
+                        projectId={id}
+                        targetType="file"
+                        targetId={f.id}
+                        label="Comment on this file"
+                        emptyHint="Revision notes or feedback on this deliverable."
+                      />
+                    </CardContent>
+                  </Card>
+                </li>
               ))}
-            </div>
+            </ul>
           )}
         </TabsContent>
 
-        {/* Analytics */}
         <TabsContent value="analytics">
-          <AnalyticsTab projectId={id} />
+          <ProjectAnalytics projectId={id} />
         </TabsContent>
       </Tabs>
     </div>
+  );
+}
+
+function Fact({
+  icon: Icon,
+  label,
+  value,
+  tone = "text-muted",
+}: {
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+  label: string;
+  value: string;
+  tone?: string;
+}) {
+  return (
+    <div className="flex items-center gap-1.5">
+      <Icon size={13} className="text-faint" />
+      <dt className="text-faint">{label}</dt>
+      <dd className={tone}>{value}</dd>
+    </div>
+  );
+}
+
+function RequestRow({ request }: { request: ClientRequest }) {
+  return (
+    <Card>
+      <CardContent className="pt-5">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <h4 className="text-sm font-semibold text-fg">{request.title}</h4>
+              <Badge>{STATUS_LABELS[request.category]}</Badge>
+            </div>
+            <p className="mt-1.5 text-sm leading-relaxed text-subtle">
+              {request.description}
+            </p>
+          </div>
+          <div className="flex shrink-0 flex-col items-end gap-1.5">
+            <StatusPill descriptor={REQUEST_STATUS[request.status]} size="sm" />
+            <StatusPill descriptor={REQUEST_PRIORITY[request.priority]} size="sm" />
+          </div>
+        </div>
+
+        {request.admin_response && (
+          <div className="mt-3 rounded-[10px] border border-brand/25 bg-brand-wash p-3">
+            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-brand-soft">
+              Response from Enigma-Cube
+            </p>
+            <p className="mt-1.5 text-sm leading-relaxed text-muted">
+              {request.admin_response}
+            </p>
+          </div>
+        )}
+
+        <p className="mt-3 font-mono text-[10px] uppercase tracking-wider text-faint">
+          {timeAgo(request.created_at)}
+        </p>
+      </CardContent>
+    </Card>
   );
 }

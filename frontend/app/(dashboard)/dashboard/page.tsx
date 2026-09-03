@@ -1,91 +1,114 @@
 "use client";
-import { FolderOpen, MessageSquare, CheckSquare, Plus } from "lucide-react";
+import { FolderOpen, Rocket, Activity } from "lucide-react";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { ProjectCard } from "@/components/dashboard/ProjectCard";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { useProjects } from "@/hooks/useProjects";
 import { useCurrentUser } from "@/hooks/useAuth";
+
+function greeting() {
+  const h = new Date().getHours();
+  if (h < 12) return "Good morning";
+  if (h < 17) return "Good afternoon";
+  return "Good evening";
+}
 
 export default function DashboardPage() {
   const { data: projects = [], isLoading } = useProjects();
   const { data: user } = useCurrentUser();
 
-  const activeProjects = projects.filter((p) => p.is_active && p.status !== "delivered");
-  const deliveredProjects = projects.filter((p) => p.status === "delivered");
+  const active = projects.filter((p) => p.is_active && p.status !== "delivered");
+  const delivered = projects.filter((p) => p.status === "delivered");
 
-  const greeting = () => {
-    const h = new Date().getHours();
-    if (h < 12) return "Good morning";
-    if (h < 17) return "Good afternoon";
-    return "Good evening";
-  };
+  // Average completion across live work — the single number that answers
+  // "how far along is everything?"
+  const overall =
+    active.length > 0
+      ? Math.round(
+          active.reduce((sum, p) => sum + p.completion_percentage, 0) / active.length
+        )
+      : 0;
+
+  const firstName = user?.full_name?.split(" ")[0];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
-      {/* Welcome banner */}
-      <div className="bg-gradient-to-r from-slate-900 to-indigo-900 rounded-2xl p-6 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(99,102,241,0.3),_transparent_60%)]" />
+    <div className="space-y-7">
+      <section className="glass glass-sheen relative overflow-hidden rounded-card-lg px-6 py-7 sm:px-8">
+        {/* Brand pool behind the panel, so the glass has colour to refract */}
+        <div
+          className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full bg-brand/25 blur-[90px]"
+          aria-hidden="true"
+        />
         <div className="relative">
-          <p className="text-indigo-300 text-sm font-medium mb-1">{greeting()}</p>
-          <h2 className="text-xl font-bold tracking-tight">
-            {user?.full_name ? `Welcome back, ${user.full_name.split(" ")[0]}` : "Welcome back"}
+          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-brand-soft">
+            {greeting()}
+          </p>
+          <h2 className="mt-2.5 text-2xl font-semibold tracking-tight text-fg">
+            {firstName ? `Welcome back, ${firstName}` : "Welcome back"}
           </h2>
-          <p className="text-slate-400 text-sm mt-1">
-            Here's an overview of your projects with Enigma-Cube.
+          <p className="mt-2 max-w-lg text-sm leading-relaxed text-subtle">
+            Everything Enigma-Cube is building for you — what&apos;s shipped, what&apos;s
+            in flight, and what&apos;s still ahead.
           </p>
         </div>
+      </section>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <StatsCard
+          icon={FolderOpen}
+          label="Active projects"
+          value={active.length}
+          loading={isLoading}
+          detail={active.length === 1 ? "1 project in flight" : `${active.length} in flight`}
+        />
+        <StatsCard
+          icon={Activity}
+          label="Overall progress"
+          value={`${overall}%`}
+          loading={isLoading}
+          detail="Averaged across active work"
+        />
+        <StatsCard
+          icon={Rocket}
+          label="Delivered"
+          value={delivered.length}
+          loading={isLoading}
+          detail={delivered.length === 0 ? "Nothing shipped yet" : "Completed and handed over"}
+        />
       </div>
 
-      {/* Stats row */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <StatsCard
-          icon={<FolderOpen size={20} />}
-          value={isLoading ? "—" : activeProjects.length}
-          label="Active Projects"
-        />
-        <StatsCard
-          icon={<MessageSquare size={20} />}
-          value="—"
-          label="Open Requests"
-        />
-        <StatsCard
-          icon={<CheckSquare size={20} />}
-          value={isLoading ? "—" : deliveredProjects.length}
-          label="Delivered Projects"
-        />
-      </div>
-
-      {/* Projects section */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-base font-semibold text-slate-900">Your Projects</h2>
-        </div>
+      <section>
+        <h2 className="mb-4 text-sm font-semibold tracking-tight text-fg">
+          Your projects
+        </h2>
 
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white rounded-xl border border-slate-200 p-5 space-y-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-busy="true">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="glass space-y-4 rounded-card p-5">
                 <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-2 w-full" />
+                <Skeleton className="h-1.5 w-full" />
                 <Skeleton className="h-3 w-1/2" />
               </div>
             ))}
           </div>
         ) : projects.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-xl border border-slate-200 border-dashed">
-            <FolderOpen size={36} className="mx-auto text-slate-300 mb-3" />
-            <p className="text-slate-500 font-medium">No projects yet</p>
-            <p className="text-slate-400 text-sm mt-1">Projects assigned to you will appear here.</p>
+          <div className="glass rounded-card">
+            <EmptyState
+              icon={FolderOpen}
+              title="No projects yet"
+              description="Once the Enigma-Cube team sets up your first project, it will appear here with its timeline and progress."
+            />
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="stagger grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {projects.map((project) => (
               <ProjectCard key={project.id} project={project} />
             ))}
           </div>
         )}
-      </div>
+      </section>
     </div>
   );
 }
