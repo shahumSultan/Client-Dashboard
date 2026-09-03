@@ -2,35 +2,45 @@
 import { FolderOpen } from "lucide-react";
 import { ProjectCard } from "@/components/dashboard/ProjectCard";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { PageHeading } from "@/components/shared/ProjectSections";
 import { useProjects } from "@/hooks/useProjects";
 
 export default function ProjectsPage() {
   const { data: projects = [], isLoading } = useProjects();
 
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-lg font-semibold text-slate-900">All Projects</h1>
-        <p className="text-sm text-slate-500 mt-0.5">{projects.length} project{projects.length !== 1 ? "s" : ""} assigned to your organization</p>
-      </div>
+    <div>
+      <PageHeading
+        title="Projects"
+        description={
+          isLoading
+            ? "Loading your workspace…"
+            : `${projects.length} ${projects.length === 1 ? "project" : "projects"} in your workspace.`
+        }
+      />
 
       {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-white rounded-xl border border-slate-200 p-5 space-y-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-busy="true">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="glass space-y-4 rounded-card p-5">
               <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-2 w-full" />
+              <Skeleton className="h-1.5 w-full" />
               <Skeleton className="h-3 w-1/2" />
             </div>
           ))}
         </div>
       ) : projects.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-xl border border-slate-200 border-dashed">
-          <FolderOpen size={36} className="mx-auto text-slate-300 mb-3" />
-          <p className="text-slate-500 font-medium">No projects yet</p>
-        </div>
+        <Card>
+          <EmptyState
+            icon={FolderOpen}
+            title="No projects yet"
+            description="Projects the Enigma-Cube team sets up for you will appear here, each with its own timeline, files and analytics."
+          />
+        </Card>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="stagger grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {projects.map((p) => (
             <ProjectCard key={p.id} project={p} />
           ))}

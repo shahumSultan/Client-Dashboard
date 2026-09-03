@@ -1,105 +1,189 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+import {
+  Building2,
+  FolderOpen,
+  MessageSquare,
+  Users,
+  ArrowRight,
+  Plus,
+} from "lucide-react";
 import api from "@/lib/api";
-import { Building2, FolderOpen, MessageSquare, Users, ArrowRight, Plus } from "lucide-react";
-import type { Organization, Project } from "@/lib/types";
+import { StatsCard } from "@/components/dashboard/StatsCard";
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { StatusPill, PROJECT_STATUS } from "@/components/ui/status-pill";
+import { PageHeading } from "@/components/shared/ProjectSections";
+import type { Organization, Project, CommentThread } from "@/lib/types";
 
-function StatCard({ label, value, icon: Icon, color }: { label: string; value: number | undefined; icon: React.ElementType; color: string }) {
+interface AdminStats {
+  clients?: number;
+  projects?: number;
+  open_requests?: number;
+  total_users?: number;
+}
+
+export default function AdminOverview() {
+  const { data: stats, isLoading: statsLoading } = useQuery<AdminStats>({
+    queryKey: ["admin-stats"],
+    queryFn: () => api.get("/admin/stats").then((r) => r.data),
+  });
+  const { data: clients = [] } = useQuery<Organization[]>({
+    queryKey: ["admin-clients"],
+    queryFn: () => api.get("/organizations").then((r) => r.data),
+  });
+  const { data: projects = [] } = useQuery<Project[]>({
+    queryKey: ["admin-projects"],
+    queryFn: () => api.get("/projects").then((r) => r.data),
+  });
+  const { data: openComments = [] } = useQuery<CommentThread[]>({
+    queryKey: ["comment-inbox", true],
+    queryFn: () => api.get("/comments/inbox", { params: { only_open: true } }).then((r) => r.data),
+  });
+
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-5 flex items-center gap-4">
-      <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${color}`}>
-        <Icon size={20} />
+    <div>
+      <PageHeading
+        title="Overview"
+        description="Clients, projects, and everything waiting on a reply from you."
+      />
+
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <StatsCard icon={Building2} label="Clients" value={stats?.clients ?? 0} loading={statsLoading} />
+        <StatsCard icon={FolderOpen} label="Projects" value={stats?.projects ?? 0} loading={statsLoading} />
+        <StatsCard
+          icon={MessageSquare}
+          label="Open requests"
+          value={stats?.open_requests ?? 0}
+          loading={statsLoading}
+        />
+        <StatsCard icon={Users} label="Users" value={stats?.total_users ?? 0} loading={statsLoading} />
       </div>
-      <div>
-        <p className="text-2xl font-bold text-slate-900">{value ?? "—"}</p>
-        <p className="text-sm text-slate-500">{label}</p>
+
+      {openComments.length > 0 && (
+        <Link href="/admin/comments" className="mt-4 block">
+          <Card interactive className="border-brand/30 bg-brand-wash">
+            <CardContent className="flex items-center gap-4 pt-5">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-brand/20 text-brand-soft">
+                <MessageSquare size={18} aria-hidden="true" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-fg">
+                  {openComments.length} client{" "}
+                  {openComments.length === 1 ? "comment needs" : "comments need"} a reply
+                </p>
+                <p className="mt-0.5 truncate text-xs text-subtle">
+                  Latest: &ldquo;{openComments[0].body.slice(0, 90)}&rdquo;
+                </p>
+              </div>
+              <ArrowRight size={16} className="shrink-0 text-brand-soft" aria-hidden="true" />
+            </CardContent>
+          </Card>
+        </Link>
+      )}
+
+      <div className="mt-8 grid gap-5 lg:grid-cols-2">
+        <Panel
+          title="Clients"
+          href="/admin/clients"
+          actionHref="/admin/clients"
+          actionLabel="New client"
+          empty="No clients yet."
+        >
+          {clients.slice(0, 5).map((c) => (
+            <Link
+              key={c.id}
+              href={`/admin/clients/${c.id}`}
+              className="flex items-center justify-between gap-3 border-b border-hairline px-5 py-3 transition-colors last:border-0 hover:bg-white/[0.05]"
+            >
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium text-fg">{c.name}</p>
+                <p className="mt-0.5 text-xs text-faint">{c.industry ?? "—"}</p>
+              </div>
+              <ArrowRight size={14} className="shrink-0 text-faint" aria-hidden="true" />
+            </Link>
+          ))}
+        </Panel>
+
+        <Panel
+          title="Projects"
+          href="/admin/projects"
+          actionHref="/admin/projects/new"
+          actionLabel="New project"
+          empty="No projects yet."
+        >
+          {projects.slice(0, 5).map((p) => (
+            <Link
+              key={p.id}
+              href={`/admin/projects/${p.id}`}
+              className="flex items-center gap-4 border-b border-hairline px-5 py-3 transition-colors last:border-0 hover:bg-white/[0.05]"
+            >
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-fg">{p.name}</p>
+                <div className="mt-1.5 flex items-center gap-2">
+                  <StatusPill descriptor={PROJECT_STATUS[p.status]} size="sm" />
+                </div>
+              </div>
+              <div className="w-20 shrink-0">
+                <Progress value={p.completion_percentage} label={`${p.name} progress`} />
+                <p className="tabular mt-1 text-right font-mono text-[10px] text-faint">
+                  {p.completion_percentage}%
+                </p>
+              </div>
+            </Link>
+          ))}
+        </Panel>
       </div>
     </div>
   );
 }
 
-export default function AdminOverview() {
-  const { data: stats } = useQuery({
-    queryKey: ["admin-stats"],
-    queryFn: () => api.get("/admin/stats").then(r => r.data),
-  });
-  const { data: clients } = useQuery<Organization[]>({
-    queryKey: ["admin-clients"],
-    queryFn: () => api.get("/organizations").then(r => r.data),
-  });
-  const { data: projects } = useQuery<Project[]>({
-    queryKey: ["admin-projects"],
-    queryFn: () => api.get("/projects").then(r => r.data),
-  });
+function Panel({
+  title,
+  href,
+  actionHref,
+  actionLabel,
+  empty,
+  children,
+}: {
+  title: string;
+  href: string;
+  actionHref: string;
+  actionLabel: string;
+  empty: string;
+  children: React.ReactNode;
+}) {
+  const hasChildren = Array.isArray(children) ? children.length > 0 : !!children;
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
-      {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Total Clients" value={stats?.clients} icon={Building2} color="bg-[#FFB3B3]/30 text-[#A92E2E]" />
-        <StatCard label="Active Projects" value={stats?.projects} icon={FolderOpen} color="bg-blue-50 text-blue-600" />
-        <StatCard label="Open Requests" value={stats?.open_requests} icon={MessageSquare} color="bg-amber-50 text-amber-600" />
-        <StatCard label="Total Users" value={stats?.total_users} icon={Users} color="bg-emerald-50 text-emerald-600" />
+    <Card className="overflow-hidden">
+      <div className="flex items-center justify-between border-b border-hairline px-5 py-4">
+        <h2 className="text-sm font-semibold tracking-tight text-fg">{title}</h2>
+        <Link
+          href={href}
+          className="flex items-center gap-1 text-xs font-medium text-brand-soft transition-colors hover:text-fg"
+        >
+          View all
+          <ArrowRight size={12} aria-hidden="true" />
+        </Link>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6">
-        {/* Recent clients */}
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-            <h2 className="font-semibold text-slate-900">Clients</h2>
-            <Link href="/admin/clients" className="flex items-center gap-1 text-xs text-[#A92E2E] font-medium hover:underline">
-              View all <ArrowRight size={12} />
-            </Link>
-          </div>
-          <div className="divide-y divide-slate-100">
-            {clients?.slice(0, 5).map(c => (
-              <Link key={c.id} href={`/admin/clients/${c.id}`} className="flex items-center justify-between px-5 py-3 hover:bg-slate-50 transition-colors">
-                <div>
-                  <p className="text-sm font-medium text-slate-900">{c.name}</p>
-                  <p className="text-xs text-slate-400">{c.industry ?? "—"}</p>
-                </div>
-                <ArrowRight size={14} className="text-slate-300" />
-              </Link>
-            ))}
-            {!clients?.length && <p className="px-5 py-6 text-sm text-slate-400 text-center">No clients yet</p>}
-          </div>
-          <div className="px-5 py-3 border-t border-slate-100">
-            <Link href="/admin/clients" className="flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-[#A92E2E] transition-colors">
-              <Plus size={13} /> New client
-            </Link>
-          </div>
-        </div>
+      {hasChildren ? (
+        <div>{children}</div>
+      ) : (
+        <p className="px-5 py-8 text-center text-sm text-subtle">{empty}</p>
+      )}
 
-        {/* Recent projects */}
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-            <h2 className="font-semibold text-slate-900">Projects</h2>
-            <Link href="/admin/projects" className="flex items-center gap-1 text-xs text-[#A92E2E] font-medium hover:underline">
-              View all <ArrowRight size={12} />
-            </Link>
-          </div>
-          <div className="divide-y divide-slate-100">
-            {projects?.slice(0, 5).map(p => (
-              <Link key={p.id} href={`/admin/projects/${p.id}`} className="flex items-center justify-between px-5 py-3 hover:bg-slate-50 transition-colors">
-                <div>
-                  <p className="text-sm font-medium text-slate-900">{p.name}</p>
-                  <p className="text-xs text-slate-400 capitalize">{p.status.replace("_", " ")} · {p.completion_percentage}%</p>
-                </div>
-                <div className="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-[#A92E2E] rounded-full" style={{ width: `${p.completion_percentage}%` }} />
-                </div>
-              </Link>
-            ))}
-            {!projects?.length && <p className="px-5 py-6 text-sm text-slate-400 text-center">No projects yet</p>}
-          </div>
-          <div className="px-5 py-3 border-t border-slate-100">
-            <Link href="/admin/projects/new" className="flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-[#A92E2E] transition-colors">
-              <Plus size={13} /> New project
-            </Link>
-          </div>
-        </div>
+      <div className="border-t border-hairline px-5 py-3">
+        <Link
+          href={actionHref}
+          className="flex items-center gap-1.5 text-xs font-medium text-subtle transition-colors hover:text-brand-soft"
+        >
+          <Plus size={13} aria-hidden="true" />
+          {actionLabel}
+        </Link>
       </div>
-    </div>
+    </Card>
   );
 }

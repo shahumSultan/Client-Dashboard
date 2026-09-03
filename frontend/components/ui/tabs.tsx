@@ -7,7 +7,10 @@ interface TabsContextValue {
   onChange: (v: string) => void;
 }
 
-const TabsContext = React.createContext<TabsContextValue>({ value: "", onChange: () => {} });
+const TabsContext = React.createContext<TabsContextValue>({
+  value: "",
+  onChange: () => {},
+});
 
 interface TabsProps {
   defaultValue?: string;
@@ -17,10 +20,16 @@ interface TabsProps {
   className?: string;
 }
 
-export function Tabs({ defaultValue = "", value, onValueChange, children, className }: TabsProps) {
+export function Tabs({
+  defaultValue = "",
+  value,
+  onValueChange,
+  children,
+  className,
+}: TabsProps) {
   const [internal, setInternal] = React.useState(defaultValue);
   const controlled = value !== undefined;
-  const current = controlled ? value! : internal;
+  const current = controlled ? value : internal;
 
   const onChange = (v: string) => {
     if (!controlled) setInternal(v);
@@ -37,8 +46,10 @@ export function Tabs({ defaultValue = "", value, onValueChange, children, classN
 export function TabsList({ className, children }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
+      role="tablist"
       className={cn(
-        "flex items-center gap-1 border-b border-slate-200 mb-6",
+        // Segmented pill rather than an underline — reads as a control on glass
+        "glass mb-6 inline-flex items-center gap-1 rounded-full p-1",
         className
       )}
     >
@@ -57,12 +68,16 @@ export function TabsTrigger({ value, className, children, ...props }: TabsTrigge
 
   return (
     <button
+      type="button"
+      role="tab"
+      aria-selected={active}
       onClick={() => onChange(value)}
       className={cn(
-        "px-4 py-2.5 text-sm font-medium transition-colors duration-150 border-b-2 -mb-px",
+        "cursor-pointer rounded-full px-4 py-2 text-sm font-medium",
+        "transition-[background-color,color] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
         active
-          ? "border-indigo-600 text-indigo-700"
-          : "border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300",
+          ? "bg-brand text-white shadow-[0_6px_18px_-8px_var(--brand-glow)]"
+          : "text-subtle hover:bg-white/[0.06] hover:text-fg",
         className
       )}
       {...props}
@@ -80,7 +95,7 @@ export function TabsContent({ value, className, children, ...props }: TabsConten
   const { value: current } = React.useContext(TabsContext);
   if (current !== value) return null;
   return (
-    <div className={cn("animate-in fade-in-0 duration-200", className)} {...props}>
+    <div role="tabpanel" className={cn("animate-fade-up", className)} {...props}>
       {children}
     </div>
   );

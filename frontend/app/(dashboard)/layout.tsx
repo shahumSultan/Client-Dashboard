@@ -1,9 +1,10 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { Sidebar } from "@/components/shared/Sidebar";
 import { Topbar } from "@/components/shared/Topbar";
-import { usePathname } from "next/navigation";
-import { useAuthToken } from "@/hooks/useAuth";
+import { useCurrentUser } from "@/hooks/useAuth";
+import { PageLoader } from "@/components/shared/PageLoader";
 
 const PAGE_TITLES: Record<string, string> = {
   "/dashboard": "Dashboard",
@@ -22,23 +23,39 @@ function getTitle(pathname: string): string {
   return "Client Portal";
 }
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const { data: user, isLoading } = useCurrentUser();
 
-  useAuthToken(); // Sets auth token on every render
+  // Self-serve signup finishes at /welcome, where the client names their
+  // company and we provision the organization. Until that runs there is no
+  // tenant to scope anything to, so the portal has nothing to show.
+  useEffect(() => {
+    if (!isLoading && user && !user.organization_id) {
+      router.replace("/welcome");
+    }
+  }, [user, isLoading, router]);
+
+  if (isLoading || !user) return <PageLoader />;
+  if (!user.organization_id) return <PageLoader label="Setting up your workspace" />;
 
   return (
-    <div className="flex h-screen bg-slate-50">
+    <div className="flex h-dvh overflow-hidden">
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
+      <div className="flex min-w-0 flex-1 flex-col">
         <Topbar
           title={getTitle(pathname)}
           onMenuClick={() => setSidebarOpen(true)}
         />
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6">
-          {children}
+        <main className="flex-1 overflow-y-auto px-4 py-6 lg:px-8 lg:py-8">
+          <div className="mx-auto w-full max-w-6xl">{children}</div>
         </main>
       </div>
     </div>

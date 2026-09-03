@@ -1,82 +1,154 @@
-import { CheckCircle2, Clock, Circle, AlertCircle } from "lucide-react";
-import { cn, formatDate, STATUS_LABELS } from "@/lib/utils";
-import type { Milestone } from "@/lib/types";
+"use client";
+import { Milestone as MilestoneIcon } from "lucide-react";
+import { cn, formatDate } from "@/lib/utils";
+import { EmptyState } from "@/components/ui/empty-state";
+import { StatusPill, MILESTONE_STATUS } from "@/components/ui/status-pill";
+import { CommentsDisclosure } from "@/components/comments/CommentsDisclosure";
+import type { Milestone, MilestoneStatus } from "@/lib/types";
 
-const STATUS_ICON = {
-  completed: { icon: CheckCircle2, color: "text-emerald-500", bg: "bg-emerald-50", line: "bg-emerald-200" },
-  in_progress: { icon: Clock, color: "text-indigo-500", bg: "bg-indigo-50", line: "bg-indigo-200" },
-  upcoming: { icon: Circle, color: "text-slate-400", bg: "bg-slate-50", line: "bg-slate-200" },
-  delayed: { icon: AlertCircle, color: "text-red-500", bg: "bg-red-50", line: "bg-red-200" },
+/** Spine colour per state, so progress is legible at a glance down the rail. */
+const SPINE: Record<MilestoneStatus, string> = {
+  completed: "bg-success",
+  in_progress: "bg-brand",
+  upcoming: "bg-white/15",
+  delayed: "bg-danger",
+};
+
+const DOT: Record<MilestoneStatus, string> = {
+  completed: "bg-success-wash text-success ring-success/30",
+  in_progress: "bg-brand-wash text-brand-soft ring-brand/40",
+  upcoming: "bg-white/[0.06] text-faint ring-white/10",
+  delayed: "bg-danger-wash text-danger ring-danger/30",
 };
 
 interface MilestoneTimelineProps {
   milestones: Milestone[];
+  projectId: string;
+  /** Hide the per-milestone comment threads (e.g. in the admin editor). */
+  showComments?: boolean;
 }
 
-export function MilestoneTimeline({ milestones }: MilestoneTimelineProps) {
-  if (!milestones.length) {
+export function MilestoneTimeline({
+  milestones,
+  projectId,
+  showComments = true,
+}: MilestoneTimelineProps) {
+  if (milestones.length === 0) {
     return (
-      <div className="text-center py-12 text-slate-400">
-        <Circle size={32} className="mx-auto mb-2 text-slate-200" />
-        <p className="text-sm">No milestones added yet.</p>
-      </div>
+      <EmptyState
+        icon={MilestoneIcon}
+        title="No milestones yet"
+        description="Once the team maps out this project's phases, the full plan will appear here — finished, in progress, and still ahead."
+      />
     );
   }
 
+  const ordered = [...milestones].sort((a, b) => a.order_index - b.order_index);
+
+  const done = ordered.filter((m) => m.status === "completed").length;
+  const active = ordered.filter((m) => m.status === "in_progress").length;
+  const ahead = ordered.filter(
+    (m) => m.status === "upcoming" || m.status === "delayed"
+  ).length;
+
   return (
-    <div className="space-y-0">
-      {milestones.map((m, idx) => {
-        const config = STATUS_ICON[m.status];
-        const Icon = config.icon;
-        const isLast = idx === milestones.length - 1;
+    <div className="space-y-6">
+      {/* The headline answer: done / in flight / still to come */}
+      <div className="grid grid-cols-3 gap-3">
+        <Tally label="Completed" value={done} tone="text-success" />
+        <Tally label="In progress" value={active} tone="text-brand-soft" />
+        <Tally label="Still ahead" value={ahead} tone="text-muted" />
+      </div>
 
-        return (
-          <div key={m.id} className="flex gap-4">
-            {/* Timeline spine */}
-            <div className="flex flex-col items-center">
-              <div className={cn("w-8 h-8 rounded-full flex items-center justify-center shrink-0", config.bg)}>
-                <Icon size={16} className={config.color} />
+      <ol className="stagger">
+        {ordered.map((m, idx) => {
+          const isLast = idx === ordered.length - 1;
+          const descriptor = MILESTONE_STATUS[m.status];
+          const Icon = descriptor.icon;
+
+          return (
+            <li key={m.id} className="flex gap-4">
+              <div className="flex flex-col items-center">
+                <span
+                  className={cn(
+                    "grid h-8 w-8 shrink-0 place-items-center rounded-full ring-1",
+                    DOT[m.status]
+                  )}
+                >
+                  <Icon size={15} strokeWidth={2.25} aria-hidden="true" />
+                </span>
+                {!isLast && (
+                  <span
+                    className={cn("my-1 w-px flex-1 rounded-full", SPINE[m.status])}
+                    aria-hidden="true"
+                  />
+                )}
               </div>
-              {!isLast && (
-                <div className={cn("w-0.5 flex-1 mt-1 mb-1 min-h-4", config.line)} />
-              )}
-            </div>
 
-            {/* Content */}
-            <div className={cn("flex-1 pb-6", isLast && "pb-0")}>
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h4 className={cn(
-                    "text-sm font-semibold",
-                    m.status === "completed" ? "text-slate-500 line-through" : "text-slate-900"
-                  )}>
-                    {m.title}
-                  </h4>
-                  {m.description && (
-                    <p className="text-xs text-slate-400 mt-0.5">{m.description}</p>
+              <div className={cn("min-w-0 flex-1", isLast ? "pb-0" : "pb-6")}>
+                <div className="glass rounded-card p-4">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <h4
+                        className={cn(
+                          "text-sm font-semibold tracking-tight",
+                          m.status === "completed" ? "text-muted" : "text-fg"
+                        )}
+                      >
+                        {m.title}
+                      </h4>
+                      {m.description && (
+                        <p className="mt-1.5 text-sm leading-relaxed text-subtle">
+                          {m.description}
+                        </p>
+                      )}
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <StatusPill descriptor={descriptor} size="sm" />
+                      {(m.due_date || m.completed_date) && (
+                        <p className="mt-1.5 font-mono text-[10px] uppercase tracking-wider text-faint">
+                          {m.status === "completed"
+                            ? `Done ${formatDate(m.completed_date)}`
+                            : `Due ${formatDate(m.due_date)}`}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {showComments && (
+                    <CommentsDisclosure
+                      projectId={projectId}
+                      targetType="milestone"
+                      targetId={m.id}
+                      label="Comment on this milestone"
+                      emptyHint="Something look off, or want to suggest an addition to this phase? Leave a remark and the team will reply."
+                    />
                   )}
                 </div>
-                <div className="text-right shrink-0">
-                  <span className={cn(
-                    "text-[11px] font-semibold px-2 py-0.5 rounded-full",
-                    config.bg,
-                    config.color
-                  )}>
-                    {STATUS_LABELS[m.status]}
-                  </span>
-                  {(m.due_date || m.completed_date) && (
-                    <p className="text-[11px] text-slate-400 mt-1">
-                      {m.status === "completed"
-                        ? `Done ${formatDate(m.completed_date)}`
-                        : `Due ${formatDate(m.due_date)}`}
-                    </p>
-                  )}
-                </div>
               </div>
-            </div>
-          </div>
-        );
-      })}
+            </li>
+          );
+        })}
+      </ol>
+    </div>
+  );
+}
+
+function Tally({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: number;
+  tone: string;
+}) {
+  return (
+    <div className="glass rounded-card px-4 py-3">
+      <p className={cn("tabular text-2xl font-semibold tracking-tight", tone)}>
+        {value}
+      </p>
+      <p className="mt-0.5 text-xs text-subtle">{label}</p>
     </div>
   );
 }

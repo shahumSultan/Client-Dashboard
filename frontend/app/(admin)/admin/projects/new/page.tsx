@@ -1,23 +1,45 @@
 "use client";
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import api from "@/lib/api";
-import type { Organization } from "@/lib/types";
-import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
-import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
+import api from "@/lib/api";
+import { Card, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select } from "@/components/ui/select";
+import { Field } from "@/components/ui/field";
+import { Skeleton } from "@/components/ui/skeleton";
+import { STATUS_LABELS } from "@/lib/utils";
+import type { Organization, ProjectStatus } from "@/lib/types";
 
-const STATUSES = ["planning", "development", "testing", "review", "delivered", "on_hold"];
-const PROJECT_TYPES = ["AI Automation", "Lead Generation", "CRM Integration", "Document Processing", "Custom AI", "Other"];
+const STATUSES: ProjectStatus[] = [
+  "planning",
+  "development",
+  "testing",
+  "review",
+  "delivered",
+  "on_hold",
+];
 
-export default function NewProjectPage() {
+const PROJECT_TYPES = [
+  "AI Automation",
+  "Lead Generation",
+  "CRM Integration",
+  "Document Processing",
+  "Custom AI",
+  "Other",
+];
+
+function NewProjectForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const preselectedOrg = searchParams.get("org") ?? "";
 
   const [form, setForm] = useState({
-    organization_id: preselectedOrg,
+    organization_id: searchParams.get("org") ?? "",
     name: "",
     description: "",
     status: "planning",
@@ -25,136 +47,193 @@ export default function NewProjectPage() {
     start_date: "",
     target_date: "",
   });
+  const [errors, setErrors] = useState<{ organization_id?: string; name?: string }>({});
 
-  const { data: orgs } = useQuery<Organization[]>({
+  const { data: orgs = [] } = useQuery<Organization[]>({
     queryKey: ["admin-clients"],
-    queryFn: () => api.get("/organizations").then(r => r.data),
+    queryFn: () => api.get("/organizations").then((r) => r.data),
   });
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (data: typeof form) => api.post("/projects", {
-      ...data,
-      start_date: data.start_date || null,
-      target_date: data.target_date || null,
-      description: data.description || null,
-      project_type: data.project_type || null,
-    }).then(r => r.data),
+    mutationFn: (data: typeof form) =>
+      api
+        .post("/projects", {
+          ...data,
+          start_date: data.start_date || null,
+          target_date: data.target_date || null,
+          description: data.description || null,
+          project_type: data.project_type || null,
+        })
+        .then((r) => r.data),
     onSuccess: (project) => {
-      toast.success("Project created");
+      toast.success("Project created", {
+        description: "It's live in the client's portal now.",
+      });
       router.push(`/admin/projects/${project.id}`);
     },
-    onError: (e: any) => toast.error(e.response?.data?.detail ?? "Failed to create project"),
+    onError: (e: unknown) => {
+      const detail =
+        (e as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
+      toast.error(detail ?? "Couldn't create that project");
+    },
   });
 
-  const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
-  const canSubmit = form.organization_id && form.name;
+  const set = (k: keyof typeof form, v: string) => {
+    setForm((f) => ({ ...f, [k]: v }));
+    setErrors((p) => ({ ...p, [k]: undefined }));
+  };
+
+  function submit(e: React.FormEvent) {
+    e.preventDefault();
+    const found: typeof errors = {};
+    if (!form.organization_id) found.organization_id = "Pick the client this belongs to.";
+    if (!form.name.trim()) found.name = "Give the project a name.";
+    if (Object.keys(found).length > 0) {
+      setErrors(found);
+      document.getElementById(Object.keys(found)[0])?.focus();
+      return;
+    }
+    mutate(form);
+  }
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="flex items-center gap-3 mb-6">
-        <Link href="/admin/projects" className="text-slate-400 hover:text-slate-700 transition-colors">
-          <ArrowLeft size={18} />
-        </Link>
-        <div>
-          <h1 className="text-xl font-bold text-slate-900">New Project</h1>
-          <p className="text-sm text-slate-400">Create a project for a client</p>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        <div className="px-6 py-6 space-y-5">
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wide">Client *</label>
-            <select
+    <form onSubmit={submit} noValidate>
+      <Card className="overflow-hidden">
+        <div className="space-y-5 px-6 py-6">
+          <Field
+            label="Client"
+            htmlFor="organization_id"
+            required
+            error={errors.organization_id}
+          >
+            <Select
+              id="organization_id"
               value={form.organization_id}
-              onChange={e => set("organization_id", e.target.value)}
-              className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#A92E2E]/30 focus:border-[#A92E2E]"
+              onChange={(e) => set("organization_id", e.target.value)}
+              aria-invalid={!!errors.organization_id}
             >
               <option value="">Select a client…</option>
-              {orgs?.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
-            </select>
-          </div>
+              {orgs.map((o) => (
+                <option key={o.id} value={o.id}>
+                  {o.name}
+                </option>
+              ))}
+            </Select>
+          </Field>
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wide">Project Name *</label>
-            <input
+          <Field label="Project name" htmlFor="name" required error={errors.name}>
+            <Input
+              id="name"
               value={form.name}
-              onChange={e => set("name", e.target.value)}
+              onChange={(e) => set("name", e.target.value)}
+              aria-invalid={!!errors.name}
               placeholder="Sales Automation System"
-              className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#A92E2E]/30 focus:border-[#A92E2E]"
             />
-          </div>
+          </Field>
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wide">Description</label>
-            <textarea
+          <Field
+            label="Description"
+            htmlFor="description"
+            hint="Shown at the top of the client's project page."
+          >
+            <Textarea
+              id="description"
               rows={3}
               value={form.description}
-              onChange={e => set("description", e.target.value)}
-              placeholder="Brief overview of what this project involves…"
-              className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#A92E2E]/30 focus:border-[#A92E2E]"
+              onChange={(e) => set("description", e.target.value)}
+              placeholder="What this project involves, in a sentence or two."
             />
-          </div>
+          </Field>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wide">Status</label>
-              <select
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Field label="Status" htmlFor="status">
+              <Select
+                id="status"
                 value={form.status}
-                onChange={e => set("status", e.target.value)}
-                className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm capitalize focus:outline-none focus:ring-2 focus:ring-[#A92E2E]/30 focus:border-[#A92E2E]"
+                onChange={(e) => set("status", e.target.value)}
               >
-                {STATUSES.map(s => <option key={s} value={s}>{s.replace("_", " ")}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wide">Project Type</label>
-              <select
+                {STATUSES.map((s) => (
+                  <option key={s} value={s}>
+                    {STATUS_LABELS[s]}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+
+            <Field label="Project type" htmlFor="project_type">
+              <Select
+                id="project_type"
                 value={form.project_type}
-                onChange={e => set("project_type", e.target.value)}
-                className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#A92E2E]/30 focus:border-[#A92E2E]"
+                onChange={(e) => set("project_type", e.target.value)}
               >
                 <option value="">Select type…</option>
-                {PROJECT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
-            </div>
+                {PROJECT_TYPES.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </Select>
+            </Field>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wide">Start Date</label>
-              <input
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Field label="Start date" htmlFor="start_date">
+              <Input
+                id="start_date"
                 type="date"
                 value={form.start_date}
-                onChange={e => set("start_date", e.target.value)}
-                className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#A92E2E]/30 focus:border-[#A92E2E]"
+                onChange={(e) => set("start_date", e.target.value)}
               />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wide">Target Date</label>
-              <input
+            </Field>
+            <Field label="Target date" htmlFor="target_date">
+              <Input
+                id="target_date"
                 type="date"
                 value={form.target_date}
-                onChange={e => set("target_date", e.target.value)}
-                className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#A92E2E]/30 focus:border-[#A92E2E]"
+                onChange={(e) => set("target_date", e.target.value)}
               />
-            </div>
+            </Field>
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50">
-          <Link href="/admin/projects" className="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 transition-colors">
-            Cancel
+        <CardFooter className="justify-end">
+          <Link href="/admin/projects">
+            <Button variant="ghost" type="button">
+              Cancel
+            </Button>
           </Link>
-          <button
-            onClick={() => mutate(form)}
-            disabled={isPending || !canSubmit}
-            className="px-5 py-2 text-sm font-semibold bg-[#A92E2E] hover:bg-[#8B2424] text-white rounded-lg transition-colors disabled:opacity-50"
-          >
-            {isPending ? "Creating…" : "Create Project"}
-          </button>
+          <Button type="submit" loading={isPending}>
+            Create project
+          </Button>
+        </CardFooter>
+      </Card>
+    </form>
+  );
+}
+
+export default function NewProjectPage() {
+  return (
+    <div className="mx-auto max-w-2xl">
+      <div className="mb-7 flex items-center gap-3">
+        <Link
+          href="/admin/projects"
+          aria-label="Back to projects"
+          className="grid h-10 w-10 place-items-center rounded-[10px] text-subtle transition-colors hover:bg-white/[0.08] hover:text-fg"
+        >
+          <ArrowLeft size={18} aria-hidden="true" />
+        </Link>
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight text-fg">New project</h1>
+          <p className="mt-0.5 text-sm text-subtle">
+            It appears in the client&apos;s portal as soon as you create it.
+          </p>
         </div>
       </div>
+
+      {/* useSearchParams needs a Suspense boundary in the App Router */}
+      <Suspense fallback={<Skeleton className="h-[36rem] w-full rounded-card" />}>
+        <NewProjectForm />
+      </Suspense>
     </div>
   );
 }

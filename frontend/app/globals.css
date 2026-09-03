@@ -1,62 +1,346 @@
 @import "tailwindcss";
 
+/* ==========================================================================
+   Enigma-Cube design system
+   Dark, glassmorphic, brand-locked. Palette sampled from enigma-cube.com:
+   base #0D0D0D, elevated #222, primary #A92E2E, accent #FFB3B3, and
+   rgba(255,255,255,0.05 / 0.12) for glass fills and hairlines.
+
+   This product is deliberately dark-only — it mirrors the marketing site, so
+   there is no light theme to fall back to.
+   ========================================================================== */
+
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 0.5rem;
+    /* Surfaces — never pure black; #000 smears on OLED and kills depth */
+    --bg-deep: #080808;
+    --bg-base: #0d0d0d;
+    --bg-raised: #141414;
+    --bg-elevated: #1c1c1c;
+
+    /* Glass: translucent white fills + hairline borders */
+    --glass: rgba(255, 255, 255, 0.05);
+    --glass-strong: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-border-strong: rgba(255, 255, 255, 0.18);
+
+    /* Foreground ramp. muted/subtle clear 4.5:1 on --bg-base; faint is
+       decorative only (dividers, inert icons) — never body text. */
+    --fg: #ffffff;
+    --fg-muted: rgba(255, 255, 255, 0.72);
+    --fg-subtle: rgba(255, 255, 255, 0.48);
+    --fg-faint: rgba(255, 255, 255, 0.3);
+
+    /* Brand. --brand is a fill colour (white on it = 5.9:1); --brand-soft is
+       the accent for text on dark, where --brand alone would only reach 3:1. */
+    --brand: #a92e2e;
+    --brand-hover: #c13838;
+    --brand-press: #8b2424;
+    --brand-soft: #ffb3b3;
+    --brand-glow: rgba(169, 46, 46, 0.3);
+    --brand-wash: rgba(169, 46, 46, 0.12);
+
+    /* Status — paired soft/base so colour is never the only signal */
+    --success: #34d399;
+    --success-wash: rgba(52, 211, 153, 0.12);
+    --warning: #fbbf24;
+    --warning-wash: rgba(251, 191, 36, 0.12);
+    --danger: #f87171;
+    --danger-wash: rgba(248, 113, 113, 0.12);
+    --info: #7dd3fc;
+    --info-wash: rgba(125, 211, 252, 0.12);
+
+    /* Shape & motion */
+    --radius-sm: 10px;
+    --radius: 14px;
+    --radius-lg: 20px;
+    --blur: 16px;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --dur-fast: 150ms;
+    --dur: 220ms;
+    --dur-slow: 320ms;
   }
 }
 
 @theme inline {
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-card: hsl(var(--card));
-  --color-card-foreground: hsl(var(--card-foreground));
-  --color-popover: hsl(var(--popover));
-  --color-popover-foreground: hsl(var(--popover-foreground));
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
-  --color-secondary: hsl(var(--secondary));
-  --color-secondary-foreground: hsl(var(--secondary-foreground));
-  --color-muted: hsl(var(--muted));
-  --color-muted-foreground: hsl(var(--muted-foreground));
-  --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
-  --color-destructive: hsl(var(--destructive));
-  --color-destructive-foreground: hsl(var(--destructive-foreground));
-  --color-border: hsl(var(--border));
-  --color-input: hsl(var(--input));
-  --color-ring: hsl(var(--ring));
-  --radius: var(--radius);
+  --color-deep: var(--bg-deep);
+  --color-base: var(--bg-base);
+  --color-raised: var(--bg-raised);
+  --color-elevated: var(--bg-elevated);
+
+  --color-glass: var(--glass);
+  --color-glass-strong: var(--glass-strong);
+  --color-hairline: var(--glass-border);
+  --color-hairline-strong: var(--glass-border-strong);
+
+  --color-fg: var(--fg);
+  --color-muted: var(--fg-muted);
+  --color-subtle: var(--fg-subtle);
+  --color-faint: var(--fg-faint);
+
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-press: var(--brand-press);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-wash: var(--brand-wash);
+
+  --color-success: var(--success);
+  --color-success-wash: var(--success-wash);
+  --color-warning: var(--warning);
+  --color-warning-wash: var(--warning-wash);
+  --color-danger: var(--danger);
+  --color-danger-wash: var(--danger-wash);
+  --color-info: var(--info);
+  --color-info-wash: var(--info-wash);
+
+  --radius-card: var(--radius);
+  --radius-card-lg: var(--radius-lg);
+
+  --font-sans: var(--font-figtree), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+  --font-mono: var(--font-fragment-mono), ui-monospace, "SF Mono", Menlo, monospace;
 }
 
+/* ---------------------------------------------------------------- base --- */
+
 * {
-  border-color: hsl(var(--border));
+  border-color: var(--glass-border);
+}
+
+html {
+  color-scheme: dark;
 }
 
 body {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
+  background-color: var(--bg-base);
+  color: var(--fg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: var(--brand);
+  color: #fff;
+}
+
+/* Keyboard focus stays visible everywhere; pointer focus does not ring. */
+:focus-visible {
+  outline: 2px solid var(--brand-soft);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Scrollbars, themed to match the surface rather than the OS default */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.24);
+  background-clip: content-box;
+}
+
+/* Numeric columns line up and stop jittering as values change. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* ------------------------------------------------------------- ambient --- */
+/* Glass only reads as glass when there is colour behind it to refract. This
+   fixed layer supplies that: two slow brand-tinted pools plus a fine grain. */
+
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.ambient::before,
+.ambient::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.5;
+}
+
+.ambient::before {
+  width: 46rem;
+  height: 46rem;
+  top: -16rem;
+  left: -12rem;
+  background: radial-gradient(circle, rgba(169, 46, 46, 0.4), transparent 70%);
+  animation: drift-a 26s var(--ease) infinite alternate;
+}
+
+.ambient::after {
+  width: 38rem;
+  height: 38rem;
+  bottom: -14rem;
+  right: -10rem;
+  background: radial-gradient(circle, rgba(255, 179, 179, 0.16), transparent 70%);
+  animation: drift-b 32s var(--ease) infinite alternate;
+}
+
+/* Grain keeps large flat areas from banding on wide gradients. */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.14;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@keyframes drift-a {
+  to {
+    transform: translate3d(7rem, 5rem, 0) scale(1.12);
+  }
+}
+@keyframes drift-b {
+  to {
+    transform: translate3d(-6rem, -4rem, 0) scale(1.08);
+  }
+}
+
+/* --------------------------------------------------------------- glass --- */
+
+.glass {
+  background: var(--glass);
+  backdrop-filter: blur(var(--blur)) saturate(140%);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(140%);
+  border: 1px solid var(--glass-border);
+}
+
+.glass-strong {
+  background: var(--glass-strong);
+  backdrop-filter: blur(calc(var(--blur) * 1.5)) saturate(160%);
+  -webkit-backdrop-filter: blur(calc(var(--blur) * 1.5)) saturate(160%);
+  border: 1px solid var(--glass-border-strong);
+}
+
+/* A one-pixel top highlight reads as a light source catching the edge — this
+   is what separates convincing glass from a flat translucent panel. */
+.glass-sheen {
+  position: relative;
+}
+.glass-sheen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding-top: 1px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.14),
+    transparent 40%
+  );
+  -webkit-mask: linear-gradient(#000, transparent 60%);
+  mask: linear-gradient(#000, transparent 60%);
+  pointer-events: none;
+}
+
+.glass-hover {
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease),
+    transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.glass-hover:hover {
+  background: var(--glass-strong);
+  border-color: var(--glass-border-strong);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.7);
+}
+
+/* Brand glow for the single primary action on a screen */
+.glow-brand {
+  box-shadow: 0 8px 28px -10px var(--brand-glow), 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+}
+
+/* ---------------------------------------------------------- animations --- */
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up var(--dur-slow) var(--ease) both;
+}
+
+/* Staggered list entrances — 40ms apart, per Material's motion guidance. */
+.stagger > * {
+  animation: fade-up var(--dur-slow) var(--ease) both;
+}
+.stagger > *:nth-child(1) { animation-delay: 0ms; }
+.stagger > *:nth-child(2) { animation-delay: 40ms; }
+.stagger > *:nth-child(3) { animation-delay: 80ms; }
+.stagger > *:nth-child(4) { animation-delay: 120ms; }
+.stagger > *:nth-child(5) { animation-delay: 160ms; }
+.stagger > *:nth-child(6) { animation-delay: 200ms; }
+.stagger > *:nth-child(7) { animation-delay: 240ms; }
+.stagger > *:nth-child(8) { animation-delay: 280ms; }
+
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.06),
+    transparent
+  );
+  animation: shimmer 1.6s infinite;
+}
+
+/* Honour the OS setting: kill ambient drift, shimmer and entrances outright. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .ambient::before,
+  .ambient::after {
+    animation: none;
+  }
 }
