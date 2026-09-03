@@ -80,6 +80,13 @@ services:
       STORAGE_ACCESS_KEY: minioadmin
       STORAGE_SECRET_KEY: minioadmin123
       STORAGE_PUBLIC_URL: http://localhost:9000/client-portal
+    volumes:
+      # Local dev: run against the working tree so edits and generated
+      # migrations land on the host without an image rebuild.
+      - ./backend:/app
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
     ports:
       - "8000:8000"
 
@@ -88,6 +95,9 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      # `deps` stage only installs node_modules — dev mode compiles from the
+      # bind-mounted source instead of a baked production build.
+      target: deps
       args:
         # Only bake truly-static public values (API URL, Clerk redirect URLs)
         NEXT_PUBLIC_API_URL: http://localhost:8000
@@ -95,15 +105,30 @@ services:
         NEXT_PUBLIC_CLERK_SIGN_UP_URL: /sign-up
         NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: /dashboard
         NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: /dashboard
+        # Required at build time: Clerk's proxy/middleware reads this name only
+        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
     container_name: ec_frontend
     restart: unless-stopped
     depends_on:
       - backend
     environment:
-      # Clerk keys injected at runtime — no rebuild needed when key changes
-      CLERK_PUBLISHABLE_KEY: ${CLERK_PUBLISHABLE_KEY}
+      # Clerk secret is runtime-only. The publishable key is also set here so
+      # server components can read it; it is baked in at build time as well
+      # because Next inlines NEXT_PUBLIC_* variables.
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
       CLERK_SECRET_KEY: ${CLERK_SECRET_KEY}
-      NODE_ENV: production
+      NEXT_PUBLIC_CLERK_SIGN_IN_URL: /sign-in
+      NEXT_PUBLIC_CLERK_SIGN_UP_URL: /sign-up
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+      NODE_ENV: development
+      WATCHPACK_POLLING: "true"
+    volumes:
+      - ./frontend:/app
+      # Anonymous volume keeps the image's node_modules (built for alpine/musl)
+      # from being shadowed by the host's.
+      - /app/node_modules
+      - /app/.next
+    command: sh -c "npm run dev -- --hostname 0.0.0.0 --port 3000"
     ports:
       - "3000:3000"
 
