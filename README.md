@@ -172,49 +172,127 @@ npm run dev
 
 ## Deployment
 
-### Backend → Railway
+Two hosts, two subdomains of `enigma-cube.com`:
 
-1. Create a Railway project and add a **PostgreSQL** plugin
-2. Add the `backend/` folder as the service root (Railway auto-detects `railway.toml`)
-3. Set all environment variables from `.env.example` in the Railway dashboard
-4. Set `DATABASE_URL` to the Railway PostgreSQL connection string
-5. Deploy — Alembic runs on startup via `CMD` in `railway.toml`
+| | Host | Domain |
+|---|---|---|
+| Frontend | Vercel | `portal.enigma-cube.com` |
+| Backend | Railway | `api.enigma-cube.com` |
+| Database | Railway Postgres | internal |
 
-### Frontend → Vercel
+### 1. Cloudflare DNS
 
-1. Import the repo into Vercel, set **Root Directory** to `frontend/`
-2. Add these environment variables in the Vercel dashboard:
+| Type | Name | Value | Proxy |
+|---|---|---|---|
+| CNAME | `portal` | `cname.vercel-dns.com` | **DNS only** |
+| CNAME | `api` | your Railway-provided domain | **DNS only** |
+
+Leave the orange cloud **off**. Proxying breaks certificate issuance on both
+platforms; you can turn it on afterwards with SSL/TLS set to Full (strict).
+
+### 2. Clerk production instance
+
+Development keys (`pk_test_`) only work on localhost. In the Clerk dashboard,
+switch to the **Production** environment and set its domain to
+`portal.enigma-cube.com`. Clerk then gives you five CNAMEs to add in
+Cloudflare, all **DNS only**:
+
+```
+clerk, accounts, clkmail, clk._domainkey, clk2._domainkey
+```
+
+Copy the production keys once those verify. The issuer becomes
+`https://clerk.enigma-cube.com` — that is the value for `CLERK_JWT_ISSUER`.
+
+### 3. Backend → Railway
+
+Add a **PostgreSQL** plugin, then point the service at `backend/`. Railway
+reads `railway.toml`, which runs `alembic upgrade head` before starting
+uvicorn, so the schema is applied on every deploy.
+
+```env
+DATABASE_URL=<Railway Postgres connection string>
+CLERK_SECRET_KEY=sk_live_...
+CLERK_JWT_ISSUER=https://clerk.enigma-cube.com
+FRONTEND_URL=https://portal.enigma-cube.com
+DEBUG=false
+```
+
+`FRONTEND_URL` is load-bearing twice over: it is the CORS allow-list, and it is
+checked against Clerk's `azp` claim. Get it wrong and every request 401s.
+
+Set `EXTRA_ALLOWED_ORIGINS` (comma-separated) if you want Vercel preview
+deployments to reach the API.
+
+Add storage and email only when you need them: `STORAGE_*` for R2/S3 file
+uploads, `RESEND_API_KEY` and `FROM_EMAIL` for outbound mail.
+
+### 4. Frontend → Vercel
+
+Import the repo with **Root Directory** set to `frontend/`, then add:
 
 | Variable | Value |
 |---|---|
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Your Clerk publishable key |
-| `CLERK_SECRET_KEY` | Your Clerk secret key |
-| `NEXT_PUBLIC_API_URL` | Your Railway backend URL (e.g. `https://your-app.up.railway.app`) |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | `pk_live_...` |
+| `CLERK_SECRET_KEY` | `sk_live_...` |
+| `NEXT_PUBLIC_API_URL` | `https://api.enigma-cube.com` |
 
-3. Deploy
+`NEXT_PUBLIC_*` values are inlined at build time, so changing one needs a
+redeploy, not just a restart.
+
+Set these in the Vercel dashboard. `vercel.json` deliberately does not declare
+them: the legacy `"env": { "KEY": "@secret" }` syntax fails the build unless a
+matching Vercel secret already exists.
+
+Add `portal.enigma-cube.com` under the project's **Domains**.
+
+### 5. First admin
+
+The `users` table starts empty and rows are created lazily on first
+authenticated request, so sign in once at `portal.enigma-cube.com`, then
+promote yourself against the production database:
+
+```sql
+UPDATE users SET role = 'admin' WHERE email = 'you@enigma-cube.com';
+```
+
+From then on it is invite-only: create a client, invite their email, done.
 
 ---
 
 ## Environment Variables Reference
 
+**Backend** (Railway)
+
 | Variable | Required | Description |
 |---|---|---|
 | `DATABASE_URL` | Yes | PostgreSQL connection string |
-| `CLERK_SECRET_KEY` | Yes | Clerk backend secret |
-| `CLERK_PUBLISHABLE_KEY` | Yes | Clerk publishable key |
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Yes | Same key, exposed to browser |
-| `CLERK_JWT_ISSUER` | Yes | Your Clerk JWT issuer URL |
+| `CLERK_SECRET_KEY` | Yes | Clerk backend secret. Also used to read a user's profile, since the session token carries no email |
+| `CLERK_JWT_ISSUER` | Yes | Clerk Frontend API URL — tokens are verified against its JWKS |
+| `FRONTEND_URL` | Yes in prod | CORS allow-list **and** the expected Clerk `azp`. Wrong value = every request 401s |
+| `DEBUG` | No | `true` exposes `/docs`. Leave `false` in production |
+| `EXTRA_ALLOWED_ORIGINS` | No | Extra CORS origins, comma-separated (e.g. Vercel previews) |
 | `GROQ_API_KEY` | No | Enables AI assistant + summaries |
 | `GROQ_MODEL` | No | Chat model (default `llama-3.3-70b-versatile`) |
 | `GROQ_FAST_MODEL` | No | Summary model (default `llama-3.1-8b-instant`) |
-| `EXTRA_ALLOWED_ORIGINS` | No | Extra CORS origins, comma-separated (e.g. Vercel previews) |
 | `STORAGE_BUCKET` | No | R2/S3 bucket for file uploads |
 | `STORAGE_ENDPOINT` | No | R2/S3 endpoint URL |
 | `STORAGE_ACCESS_KEY` | No | R2/S3 access key |
 | `STORAGE_SECRET_KEY` | No | R2/S3 secret key |
 | `STORAGE_PUBLIC_URL` | No | Public CDN URL for uploaded files |
-| `RESEND_API_KEY` | No | Email notifications via Resend |
+| `RESEND_API_KEY` | No | Configured but not yet sent from — invitations are shared by copying the link |
 | `FROM_EMAIL` | No | Sender address for emails |
+
+**Frontend** (Vercel)
+
+| Variable | Required | Description |
+|---|---|---|
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Yes | The name Clerk's dashboard gives you. Inlined at build time, so changing it needs a redeploy |
+| `CLERK_SECRET_KEY` | Yes | Read server-side by Clerk's Next.js SDK |
+| `NEXT_PUBLIC_API_URL` | Yes | Backend origin, e.g. `https://api.enigma-cube.com` |
+
+`CLERK_PUBLISHABLE_KEY` (without the `NEXT_PUBLIC_` prefix) is not used by
+either service — Clerk's server code reads only the prefixed name.
 
 ---
 
