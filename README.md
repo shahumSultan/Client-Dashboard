@@ -30,7 +30,7 @@ A premium, multi-tenant client portal for the Enigma-Cube AI agency. Clients log
 - **Onboarding flow** — step-by-step client setup
 - **Comments & remarks** — clients comment on any milestone, update, file, or the project itself; admins reply in-thread and mark threads resolved
 - **Admin comment inbox** — every client remark across all projects in one reply queue (`/admin/comments`)
-- **Self-serve signup** — name + company creates the client's organization and workspace automatically
+- **Invite-only access** — you create the client, then invite an email; they join that workspace automatically on sign-up
 - **Notifications** — in-app bell with unread count, mark-all-read
 - **AI Assistant** — Groq-powered project Q&A inside the portal
 
@@ -293,6 +293,40 @@ adjacent CVD ΔE 19.2, normal-vision ΔE 29.0, both ≥3:1 against the card.
 
 ---
 
+## Access model
+
+Access is **invite-only**. There is no self-serve signup — a client cannot
+create a workspace, only join one you made for them.
+
+1. **Create the client** — `/admin/clients` → New client. The slug is derived
+   from the name.
+2. **Invite an email** — on the client's page, enter the address they will sign
+   up with and pick Owner or Member.
+3. **They sign up** at `/sign-up` with that address. The invitation is redeemed
+   on their first authenticated request, so they land straight in the right
+   workspace — no link to click.
+
+The invite link (`/join/<token>`) is a convenience for anyone who wants one; it
+is idempotent, so opening it after already being placed still works.
+
+Invitations are **bound to the email address**, so a forwarded or leaked link
+cannot admit a stranger — the recipient must be signed in as the invitee. They
+are single-use, expire after 14 days, can be revoked, and can never grant
+`admin`.
+
+A signed-in user with no workspace lands on `/welcome`, which explains that
+they need an invitation rather than asking them to create anything.
+
+| Endpoint | |
+|---|---|
+| `POST /invitations` | admin — create (re-inviting returns the live one) |
+| `GET /invitations` | admin — pending by default, `?include_spent=true` for all |
+| `DELETE /invitations/{id}` | admin — revoke |
+| `GET /invitations/preview?token=` | what the join page shows |
+| `POST /invitations/accept` | redeem a token |
+
+---
+
 ## Roles
 
 | Role | Who | Permissions |
@@ -300,6 +334,9 @@ adjacent CVD ΔE 19.2, normal-vision ΔE 29.0, both ≥3:1 against the card.
 | `admin` | Enigma-Cube team | Full access — create/edit all orgs, projects, milestones, analytics |
 | `client_owner` | Primary client contact | View own org, edit org profile, submit requests, comment |
 | `client_member` | Additional client users | View own org, submit requests, comment |
+
+Admins have **no organization** — that is correct, and an admin without one is
+sent to `/admin` rather than the client portal.
 
 Clients are **read-and-comment only** on the work itself — creating or editing
 projects, milestones, analytics and file uploads are all admin-only.
@@ -331,7 +368,11 @@ POST       /notifications/read-all
 GET/PUT    /onboarding/{org_id}
 POST       /ai/ask
 
-POST       /users/me/register              self-serve org creation
+POST       /invitations                    (admin) invite an email to a client
+GET        /invitations                    (admin) pending invitations
+DELETE     /invitations/{id}               (admin) revoke
+GET        /invitations/preview?token=
+POST       /invitations/accept
 GET        /comments/inbox                 (admin) every thread, newest first
 GET/POST   /comments/project/{id}
 POST       /comments/{id}/replies

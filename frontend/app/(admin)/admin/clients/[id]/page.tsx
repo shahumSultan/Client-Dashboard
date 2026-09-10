@@ -14,6 +14,7 @@ import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
 import { StatusPill, PROJECT_STATUS } from "@/components/ui/status-pill";
+import { InvitePanel } from "@/components/admin/InvitePanel";
 import type { Organization, Project, User } from "@/lib/types";
 
 const ROLE_LABEL: Record<string, string> = {
@@ -151,6 +152,8 @@ export default function ClientDetailPage() {
           </ul>
         )}
       </Card>
+
+      <InvitePanel organizationId={org.id} organizationName={org.name} />
 
       <Card className="overflow-hidden">
         <div className="flex items-center gap-2 border-b border-hairline px-5 py-4">

@@ -1,16 +1,18 @@
 """Test harness for the API.
 
-Auth is stubbed rather than mocked at the HTTP layer: `get_current_user` is
-overridden to return a chosen User, so every route still runs its real
-`require_admin` / `assert_project_access` logic against that identity. That is
-the behaviour worth testing — Clerk's token verification is Clerk's problem.
+Only Clerk's token *verification* is stubbed — the real `get_current_user`
+then runs in full, so provisioning, the inactive-account check and invitation
+auto-accept are all exercised rather than bypassed. Routes likewise run their
+real `require_admin` and `assert_project_access` logic. Verifying an RS256
+signature is Clerk's problem, not this app's.
 """
 import os
 import uuid
 
 import pytest
 import pytest_asyncio
-from fastapi import Depends, Request
+from fastapi import Request
+from fastapi.security import HTTPAuthorizationCredentials
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy import create_engine, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -22,7 +24,7 @@ os.environ.setdefault("CLERK_JWT_ISSUER", "https://stub.clerk.accounts.dev")
 
 from app.database import Base, get_db  # noqa: E402
 from app.main import app  # noqa: E402
-from app.core.auth import get_current_user  # noqa: E402
+from app.core import auth as auth_module  # noqa: E402
 from app.models.user import User, UserRole  # noqa: E402
 from app.models.organization import Organization  # noqa: E402
 from app.models.project import Project, ProjectUpdate  # noqa: E402
@@ -113,8 +115,8 @@ async def world(session):
 
 
 @pytest_asyncio.fixture
-async def api(engine, session):
-    """Returns a factory: `await api(user)` -> AsyncClient acting as that user."""
+async def api(engine, session, monkeypatch):
+    """Returns a factory: `api(user)` -> AsyncClient acting as that user."""
     maker = async_sessionmaker(engine, expire_on_commit=False)
 
     async def _get_db():
@@ -123,23 +125,27 @@ async def api(engine, session):
 
     clients: list[AsyncClient] = []
 
-    async def _current(request: Request, db: AsyncSession = Depends(get_db)) -> User:
-        # Identity comes off the request, so two clients in one test stay
-        # distinct. Re-read inside the request's own session: handing routes an
-        # instance owned by the test session breaks the moment a route mutates
-        # and commits it, and is not how production behaves.
-        uid = request.headers["x-test-user"]
-        result = await db.execute(select(User).where(User.id == uid))
-        return result.scalar_one()
+    # Stand in for RS256 verification: the bearer token is the caller's
+    # clerk_id, and everything downstream of it is the real implementation.
+    async def _verify(token: str) -> dict:
+        return {"sub": token}
+
+    monkeypatch.setattr(auth_module, "verify_clerk_token", _verify)
+
+    async def _credentials(request: Request) -> HTTPAuthorizationCredentials:
+        # Identity travels per-request, so two clients in one test stay distinct.
+        return HTTPAuthorizationCredentials(
+            scheme="Bearer", credentials=request.headers["x-test-user"]
+        )
 
     app.dependency_overrides[get_db] = _get_db
-    app.dependency_overrides[get_current_user] = _current
+    app.dependency_overrides[auth_module.security] = _credentials
 
     def _as(user: User) -> AsyncClient:
         c = AsyncClient(
             transport=ASGITransport(app=app),
             base_url="http://test/api/v1",
-            headers={"X-Test-User": user.id},
+            headers={"X-Test-User": user.clerk_id},
         )
         clients.append(c)
         return c

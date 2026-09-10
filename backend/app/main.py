@@ -4,7 +4,7 @@ from app.config import settings
 from app.api.v1 import (
     projects, milestones, requests, files,
     notifications, analytics, onboarding, organizations, users, ai, admin,
-    comments,
+    comments, invitations,
 )
 
 app = FastAPI(
@@ -26,6 +26,7 @@ app.add_middleware(
 for router in [
     organizations.router,
     users.router,
+    invitations.router,
     projects.router,
     milestones.router,
     requests.router,
