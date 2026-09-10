@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from datetime import datetime
 from typing import Optional, List
 from app.models.comment import CommentTargetType
@@ -16,19 +16,32 @@ class CommentAuthor(BaseModel):
     model_config = {"from_attributes": True}
 
 
-class CommentCreate(BaseModel):
+class _Body(BaseModel):
+    """Shared body rule: min_length runs before stripping, so "   " would
+    otherwise be stored as an empty comment."""
+    body: str = Field(min_length=1, max_length=5000)
+
+    @field_validator("body")
+    @classmethod
+    def _not_blank(cls, v: str) -> str:
+        stripped = v.strip()
+        if not stripped:
+            raise ValueError("Comment cannot be empty")
+        return stripped
+
+
+class CommentCreate(_Body):
     target_type: CommentTargetType
     # Omitted for a project-level comment — it defaults to the project itself.
     target_id: Optional[str] = None
-    body: str = Field(min_length=1, max_length=5000)
 
 
-class ReplyCreate(BaseModel):
-    body: str = Field(min_length=1, max_length=5000)
+class ReplyCreate(_Body):
+    pass
 
 
-class CommentEdit(BaseModel):
-    body: str = Field(min_length=1, max_length=5000)
+class CommentEdit(_Body):
+    pass
 
 
 class CommentResolve(BaseModel):

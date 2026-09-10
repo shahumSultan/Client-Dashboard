@@ -70,8 +70,19 @@ async def _notify_admins(db: AsyncSession, actor: User, comment: Comment, projec
 
 
 async def _load_comment(db: AsyncSession, comment_id: str) -> Comment:
+    """Re-read a comment with everything the response models serialise.
+
+    `replies` must be eager-loaded even when the caller only needs a CommentOut:
+    CommentThread declares the field, and a lazy load during serialisation
+    raises MissingGreenlet on the async session.
+    """
     result = await db.execute(
-        select(Comment).options(selectinload(Comment.author)).where(Comment.id == comment_id)
+        select(Comment)
+        .options(
+            selectinload(Comment.author),
+            selectinload(Comment.replies).selectinload(Comment.author),
+        )
+        .where(Comment.id == comment_id)
     )
     comment = result.scalar_one_or_none()
     if not comment:
