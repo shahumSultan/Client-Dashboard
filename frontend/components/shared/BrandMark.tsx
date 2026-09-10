@@ -1,28 +1,35 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 /**
- * Isometric cube drawn from three rhombus faces — a literal Enigma-Cube rather
- * than a borrowed lightning-bolt icon. Faces are shaded light/mid/dark so the
- * form reads at 16px without any stroke detail.
+ * The Enigma-Cube mark.
+ *
+ * The white asset is used rather than the red one: every surface it sits on in
+ * this product is dark, and the red version (#d44954) is a lighter, pinker red
+ * than the brand primary (#a92e2e) — two reds next to each other read as a
+ * mistake. The red asset is kept for the favicon, where the tab background may
+ * be light.
  */
-export function CubeLogo({ size = 32, className }: { size?: number; className?: string }) {
+export function CubeLogo({
+  size = 32,
+  className,
+}: {
+  size?: number;
+  className?: string;
+}) {
   return (
-    <svg
+    <Image
+      src="/enigma-cube-white.png"
+      alt=""
+      aria-hidden="true"
       width={size}
       height={size}
-      viewBox="0 0 32 32"
-      fill="none"
-      aria-hidden="true"
-      className={className}
-    >
-      <rect width="32" height="32" rx="9" fill="var(--brand)" />
-      {/* top face */}
-      <path d="M16 7.5 L23 11.5 L16 15.5 L9 11.5 Z" fill="#fff" fillOpacity="0.95" />
-      {/* left face */}
-      <path d="M9 12.6 L16 16.6 L16 24.5 L9 20.5 Z" fill="#fff" fillOpacity="0.55" />
-      {/* right face */}
-      <path d="M23 12.6 L23 20.5 L16 24.5 L16 16.6 Z" fill="#fff" fillOpacity="0.3" />
-    </svg>
+      priority
+      // The source is 389x416, so constrain height and let width follow rather
+      // than squashing it into a square.
+      style={{ width: "auto", height: size }}
+      className={cn("select-none", className)}
+    />
   );
 }
 
@@ -35,7 +42,7 @@ export function BrandMark({
 }) {
   return (
     <div className={cn("flex items-center gap-2.5", className)}>
-      <CubeLogo size={32} className="shrink-0 drop-shadow-[0_4px_14px_var(--brand-glow)]" />
+      <CubeLogo size={28} className="shrink-0" />
       <div className="leading-none">
         <span className="block text-sm font-semibold tracking-tight text-fg">
           Enigma-Cube
