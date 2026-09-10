@@ -160,3 +160,32 @@ async def test_empty_comment_is_rejected(api, world):
     assert r.status_code in (201, 422)
     if r.status_code == 201:
         pytest.fail("whitespace-only comment was accepted")
+
+
+async def test_deleted_project_disappears_for_the_client(api, world):
+    """Deletion is a soft delete. The list already filtered on is_active, but
+    the detail route did not — a client with the URL kept full access."""
+    admin = api(world["admin"])
+    client = api(world["client_a"])
+    await _post(client, world["proj_a"].id, target_type="project", body="Leave this behind")
+
+    assert (await admin.delete(f"/projects/{world['proj_a'].id}")).status_code == 204
+
+    assert (await client.get(f"/projects/{world['proj_a'].id}")).status_code == 404
+    assert (await client.get(f"/comments/project/{world['proj_a'].id}")).status_code == 404
+    assert (await client.get(f"/milestones/project/{world['proj_a'].id}")).status_code == 404
+    assert world["proj_a"].id not in {p["id"] for p in (await client.get("/projects")).json()}
+
+
+async def test_deleting_a_milestone_takes_its_comments(api, world):
+    """Comments reference their target by id with no FK, so a deleted
+    milestone would otherwise strand its thread in the admin inbox."""
+    admin = api(world["admin"])
+    await _post(api(world["client_a"]), world["proj_a"].id,
+                target_type="milestone", target_id=world["ms_a"].id, body="On this phase")
+
+    assert (await admin.delete(f"/milestones/{world['ms_a'].id}")).status_code == 204
+
+    stranded = [t for t in (await admin.get("/comments/inbox?only_open=false")).json()
+                if t["target_id"] == world["ms_a"].id]
+    assert stranded == [], f"{len(stranded)} comment(s) left pointing at a deleted milestone"

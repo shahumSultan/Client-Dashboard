@@ -10,7 +10,7 @@ import uuid
 
 import pytest
 import pytest_asyncio
-from fastapi import Depends
+from fastapi import Depends, Request
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy import create_engine, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -123,19 +123,24 @@ async def api(engine, session):
 
     clients: list[AsyncClient] = []
 
+    async def _current(request: Request, db: AsyncSession = Depends(get_db)) -> User:
+        # Identity comes off the request, so two clients in one test stay
+        # distinct. Re-read inside the request's own session: handing routes an
+        # instance owned by the test session breaks the moment a route mutates
+        # and commits it, and is not how production behaves.
+        uid = request.headers["x-test-user"]
+        result = await db.execute(select(User).where(User.id == uid))
+        return result.scalar_one()
+
+    app.dependency_overrides[get_db] = _get_db
+    app.dependency_overrides[get_current_user] = _current
+
     def _as(user: User) -> AsyncClient:
-        user_id = user.id
-
-        async def _current(db: AsyncSession = Depends(get_db)) -> User:
-            # Re-read inside the request's own session. Handing routes an
-            # instance owned by the test session breaks the moment a route
-            # mutates and commits it, and is not how production behaves.
-            result = await db.execute(select(User).where(User.id == user_id))
-            return result.scalar_one()
-
-        app.dependency_overrides[get_db] = _get_db
-        app.dependency_overrides[get_current_user] = _current
-        c = AsyncClient(transport=ASGITransport(app=app), base_url="http://test/api/v1")
+        c = AsyncClient(
+            transport=ASGITransport(app=app),
+            base_url="http://test/api/v1",
+            headers={"X-Test-User": user.id},
+        )
         clients.append(c)
         return c
 
