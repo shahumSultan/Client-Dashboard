@@ -168,6 +168,8 @@ export interface Invitation {
   revoked_at: string | null;
   created_at: string;
   is_pending: boolean;
+  /** Only meaningful on the response that created the invitation. */
+  email_sent: boolean;
 }
 
 export interface InvitationPreview {

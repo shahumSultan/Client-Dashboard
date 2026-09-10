@@ -29,6 +29,9 @@ class InvitationOut(BaseModel):
     revoked_at: Optional[datetime]
     created_at: datetime
     is_pending: bool
+    # Set only on creation. False means email is unconfigured or the send
+    # failed, and the admin should copy the link instead.
+    email_sent: bool = False
 
     model_config = {"from_attributes": True}
 

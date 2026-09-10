@@ -1,3 +1,4 @@
+import logging
 import secrets
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -5,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
+from app.config import settings
 from app.core.time import utcnow
 from app.database import get_db
 from app.core.auth import get_current_user, require_admin
@@ -15,6 +17,9 @@ from app.schemas.invitation import (
     InvitationCreate, InvitationOut, InvitationPreview, InvitationAccept,
 )
 from app.services.invitations import accept_invitation
+from app.services.email import send_invitation_email
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/invitations", tags=["Invitations"])
 
@@ -70,6 +75,22 @@ async def create_invitation(
     db.add(invite)
     await db.commit()
     await db.refresh(invite)
+
+    # Best-effort: the invitation exists either way, and the admin can always
+    # copy the link. A mail outage must not block onboarding a client.
+    try:
+        invite.email_sent = await send_invitation_email(
+            to=invite.email,
+            organization_name=org.name,
+            join_url=f"{settings.FRONTEND_URL.rstrip('/')}/join/{invite.token}",
+            inviter_name=admin.full_name,
+        )
+    except Exception:
+        # The row is already committed. Reporting a failure here would tell the
+        # admin the invite did not happen when it did; they can copy the link.
+        logger.exception("Invitation %s created but the email failed", invite.id)
+        invite.email_sent = False
+
     return invite
 
 

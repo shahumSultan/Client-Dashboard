@@ -64,7 +64,9 @@ export function InvitePanel({
       setEmail("");
       setError(null);
       toast.success(`${value} invited`, {
-        description: "They join automatically when they sign up with that address.",
+        description: invite.email_sent
+          ? "We emailed them the invitation. They join automatically when they sign up with that address."
+          : "Email isn't configured, so send them the link yourself.",
         action: { label: "Copy link", onClick: () => copy(invite.token) },
       });
     } catch {
@@ -84,7 +86,8 @@ export function InvitePanel({
         <p className="text-sm leading-relaxed text-subtle">
           Access is invite-only. Whoever you invite joins{" "}
           <span className="text-fg">{organizationName}</span> the moment they sign
-          up with that address — no link required.
+          up with that address — the emailed link is a convenience, not a
+          requirement.
         </p>
 
         <div className="grid gap-4 sm:grid-cols-[1fr_auto_auto] sm:items-end">

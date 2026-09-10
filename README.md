@@ -292,7 +292,7 @@ From then on it is invite-only: create a client, invite their email, done.
 | `STORAGE_ACCESS_KEY` | No | R2/S3 access key |
 | `STORAGE_SECRET_KEY` | No | R2/S3 secret key |
 | `STORAGE_PUBLIC_URL` | No | Public CDN URL for uploaded files |
-| `RESEND_API_KEY` | No | Configured but not yet sent from — invitations are shared by copying the link |
+| `RESEND_API_KEY` | No | Sends invitation emails. Unset means invitations still work — copy the link instead |
 | `FROM_EMAIL` | No | Sender address for emails |
 
 **Frontend** (Vercel)
@@ -396,8 +396,12 @@ create a workspace, only join one you made for them.
    on their first authenticated request, so they land straight in the right
    workspace — no link to click.
 
-The invite link (`/join/<token>`) is a convenience for anyone who wants one; it
-is idempotent, so opening it after already being placed still works.
+When `RESEND_API_KEY` is set the invitation is emailed automatically; the
+response's `email_sent` says whether it went out. Sending is best-effort — a
+mail outage never blocks onboarding, and the admin can copy the link instead.
+
+The invite link (`/join/<token>`) is a convenience either way; it is
+idempotent, so opening it after already being placed still works.
 
 Invitations are **bound to the email address**, so a forwarded or leaked link
 cannot admit a stranger — the recipient must be signed in as the invitee. They

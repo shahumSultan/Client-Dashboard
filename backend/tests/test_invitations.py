@@ -195,3 +195,31 @@ async def test_client_creation_derives_a_slug_when_omitted(api, world):
     r = await api(world["admin"]).post("/organizations", json={"name": "Northwind Trading"})
     assert r.status_code == 200, r.text
     assert r.json()["slug"].startswith("northwind-trading")
+
+
+async def test_inviting_works_when_email_is_not_configured(api, world):
+    """Mail is best-effort. With RESEND_API_KEY unset the invitation must still
+    be created — the admin copies the link instead."""
+    r = await api(world["admin"]).post("/invitations", json={
+        "organization_id": world["org_a"].id, "email": f"nomail-{uuid.uuid4().hex[:6]}@acme.com",
+    })
+    assert r.status_code == 201, r.text
+    assert r.json()["email_sent"] is False
+    assert r.json()["token"]
+
+
+async def test_invite_still_created_when_sending_raises(api, world, monkeypatch):
+    """A Resend outage must not stop you onboarding a client."""
+    import app.services.email as email_svc
+
+    async def boom(**kwargs):
+        raise RuntimeError("resend is down")
+
+    monkeypatch.setattr(email_svc, "send_invitation_email", boom)
+    import app.api.v1.invitations as inv_router
+    monkeypatch.setattr(inv_router, "send_invitation_email", boom)
+
+    r = await api(world["admin"]).post("/invitations", json={
+        "organization_id": world["org_a"].id, "email": f"boom-{uuid.uuid4().hex[:6]}@acme.com",
+    })
+    assert r.status_code == 201, r.text
