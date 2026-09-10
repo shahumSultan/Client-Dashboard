@@ -84,3 +84,11 @@ async def test_upload_without_storage_configured_says_so(api, world):
     )
     assert r.status_code == 503, r.text
     assert "not configured" in r.json()["detail"].lower()
+
+
+async def test_health_reports_database_connectivity(api, world):
+    """Railway healthchecks this path — it must fail when the database is
+    unreachable, or a dead deployment stays in rotation."""
+    r = await api(world["admin"]).get("/../../health")
+    assert r.status_code == 200, r.text
+    assert r.json()["database"] == "ok"

@@ -1,6 +1,10 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI, Response, status
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.config import settings
+from app.database import get_db
 from app.api.v1 import (
     projects, milestones, requests, files,
     notifications, analytics, onboarding, organizations, users, ai, admin,
@@ -42,5 +46,17 @@ for router in [
 
 
 @app.get("/health")
-async def health():
-    return {"status": "ok", "app": settings.APP_NAME}
+async def health(response: Response, db: AsyncSession = Depends(get_db)):
+    """Railway's healthcheck target.
+
+    Checks the database too: the API can serve nothing without it, so a green
+    healthcheck while Postgres is unreachable would keep a dead deployment in
+    rotation instead of rolling it back.
+    """
+    try:
+        await db.execute(text("SELECT 1"))
+    except Exception:
+        response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+        return {"status": "degraded", "app": settings.APP_NAME, "database": "unreachable"}
+
+    return {"status": "ok", "app": settings.APP_NAME, "database": "ok"}
