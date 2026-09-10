@@ -8,9 +8,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Install Python dependencies. Dev extras (pytest) are opt-in so a production
+# image stays lean; docker-compose turns them on.
+ARG INSTALL_DEV=false
+COPY requirements.txt requirements-dev.txt ./
+RUN pip install --no-cache-dir -r requirements.txt \
+    && if [ "$INSTALL_DEV" = "true" ]; then \
+         pip install --no-cache-dir -r requirements-dev.txt; \
+       fi
 
 # Copy app source
 COPY . .

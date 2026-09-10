@@ -100,7 +100,6 @@ docker compose up --build
 
 This starts:
 - PostgreSQL on `localhost:5432`
-- MinIO (S3-compatible storage) on `localhost:9000`, console on `:9001`
 - FastAPI backend on `localhost:8000`
 - Next.js frontend on `localhost:3000`
 
@@ -275,8 +274,9 @@ From then on it is invite-only: create a client, invite their email, done.
 | `GROQ_API_KEY` | No | Enables AI assistant + summaries |
 | `GROQ_MODEL` | No | Chat model (default `llama-3.3-70b-versatile`) |
 | `GROQ_FAST_MODEL` | No | Summary model (default `llama-3.1-8b-instant`) |
-| `STORAGE_BUCKET` | No | R2/S3 bucket for file uploads |
+| `STORAGE_BUCKET` | No | R2/S3 bucket. Unset means no object storage — uploads return 503 |
 | `STORAGE_ENDPOINT` | No | R2/S3 endpoint URL |
+| `STORAGE_REGION` | No | Signing region (default `auto`, which suits R2) |
 | `STORAGE_ACCESS_KEY` | No | R2/S3 access key |
 | `STORAGE_SECRET_KEY` | No | R2/S3 secret key |
 | `STORAGE_PUBLIC_URL` | No | Public CDN URL for uploaded files |

@@ -73,3 +73,14 @@ async def test_client_cannot_submit_request_on_foreign_project(api, world):
         "project_id": world["proj_b"].id, "title": "Sneaky", "description": "x",
     })
     assert r.status_code == 403
+
+
+async def test_upload_without_storage_configured_says_so(api, world):
+    """The local stack has no object storage. An unconfigured upload used to
+    hand back an empty URL and fail silently in the browser."""
+    r = await api(world["admin"]).post(
+        f"/files/project/{world['proj_a'].id}/presign",
+        data={"original_name": "brief.pdf", "file_type": "application/pdf"},
+    )
+    assert r.status_code == 503, r.text
+    assert "not configured" in r.json()["detail"].lower()

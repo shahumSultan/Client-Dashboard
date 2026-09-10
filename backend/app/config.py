@@ -19,12 +19,16 @@ class Settings(BaseSettings):
     CLERK_JWT_ISSUER: str  # e.g. https://your-clerk-domain.clerk.accounts.dev
 
     # Storage (MinIO locally, or Cloudflare R2 / S3 in prod)
-    STORAGE_BUCKET: str = "client-portal"
+    # No default: a placeholder name made the app sign uploads against an
+    # unrelated bucket on AWS instead of reporting storage as unconfigured.
+    STORAGE_BUCKET: str = ""
     STORAGE_ENDPOINT: str = ""          # internal endpoint (backend → storage)
     STORAGE_EXTERNAL_ENDPOINT: str = "" # browser-accessible endpoint for presigned URLs
     STORAGE_ACCESS_KEY: str = ""
     STORAGE_SECRET_KEY: str = ""
     STORAGE_PUBLIC_URL: str = ""
+    # R2 ignores it; S3 needs the real region. Any value satisfies signing.
+    STORAGE_REGION: str = "auto"
 
     # Email (Resend)
     RESEND_API_KEY: str = ""
