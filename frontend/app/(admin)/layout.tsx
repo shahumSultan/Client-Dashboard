@@ -5,21 +5,17 @@ import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { Topbar } from "@/components/shared/Topbar";
 import { useCurrentUser } from "@/hooks/useAuth";
 import { PageLoader } from "@/components/shared/PageLoader";
+import { titleFor } from "@/lib/page-title";
 
 const PAGE_TITLES: Record<string, string> = {
   "/admin": "Overview",
   "/admin/clients": "Clients",
   "/admin/projects": "Projects",
   "/admin/requests": "Requests",
+  "/admin/comments": "Comments",
   "/admin/users": "Users",
 };
 
-function getTitle(pathname: string): string {
-  for (const [path, title] of Object.entries(PAGE_TITLES)) {
-    if (pathname === path || pathname.startsWith(path + "/")) return title;
-  }
-  return "Admin";
-}
 
 export default function AdminLayout({
   children,
@@ -47,7 +43,7 @@ export default function AdminLayout({
       <AdminSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <Topbar title={getTitle(pathname)} onMenuClick={() => setSidebarOpen(true)} />
+        <Topbar title={titleFor(pathname, PAGE_TITLES, "Admin")} onMenuClick={() => setSidebarOpen(true)} />
         <main className="flex-1 overflow-y-auto px-4 py-6 lg:px-8 lg:py-8">
           <div className="mx-auto w-full max-w-6xl">{children}</div>
         </main>

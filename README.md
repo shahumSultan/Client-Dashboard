@@ -351,6 +351,26 @@ the comment permission rules, and self-serve signup.
 Auth is stubbed at `get_current_user`, so routes still execute their real
 `require_admin` and `assert_project_access` logic against the chosen identity.
 
+### Looking at the UI
+
+A Playwright pass walks the portal as an admin and as a client, capturing every
+screen plus console errors. It is a look-at-it pass, not an assertion suite —
+it exists to catch layout, contrast and empty-state problems that status codes
+cannot show.
+
+```bash
+cd frontend
+npx playwright install chromium chromium-headless-shell   # once
+E2E_PASSWORD=... CLERK_SECRET_KEY=... CLERK_PUBLISHABLE_KEY=... npx playwright test
+```
+
+Images land in `frontend/e2e/shots/` (gitignored) alongside `problems.json`.
+
+It runs against the **local** stack: Clerk testing tokens, which bypass bot
+protection, are a development-instance feature. Sign-in uses a `+clerk_test`
+address, where the emailed code is always `424242` — otherwise Clerk challenges
+each new device.
+
 ---
 
 ## Starting fresh

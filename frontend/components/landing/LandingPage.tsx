@@ -1,7 +1,6 @@
 "use client";
-import { useRef } from "react";
 import Link from "next/link";
-import { motion, useInView } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
   CheckCircle2,
@@ -27,14 +26,17 @@ function Reveal({
   delay?: number;
   className?: string;
 }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-60px" });
+  // `initial` was an inline opacity:0 cleared only when an observer fired. With
+  // reduced motion — or any time the observer did not run — the section simply
+  // never appeared. whileInView drives the observer itself, and reduced motion
+  // skips the hidden state entirely rather than relying on it being undone.
+  const reduce = useReducedMotion();
   return (
     <motion.div
-      ref={ref}
       className={className}
-      initial={{ opacity: 0, y: 16 }}
-      animate={inView ? { opacity: 1, y: 0 } : undefined}
+      initial={reduce ? false : { opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.5, delay, ease: EASE }}
     >
       {children}
@@ -53,9 +55,9 @@ function PortalPreview() {
   ] as const;
 
   return (
-    <div className="relative">
+    <div className="relative pb-28">
       <div
-        className="absolute -inset-6 rounded-[32px] bg-brand/20 blur-[70px]"
+        className="absolute -inset-6 bottom-28 rounded-[32px] bg-brand/20 blur-[70px]"
         aria-hidden="true"
       />
       <div className="glass-strong glass-sheen relative rounded-card-lg p-5 shadow-[0_40px_90px_-40px_rgba(0,0,0,0.95)]">
@@ -121,7 +123,7 @@ function PortalPreview() {
 
       {/* Floating comment card — the feature that defines the product */}
       <motion.div
-        className="glass-strong absolute -bottom-6 -left-4 hidden w-56 rounded-card p-3.5 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.9)] sm:block"
+        className="glass-strong absolute bottom-0 left-0 w-60 rounded-card p-3.5 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.9)]"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.9, ease: EASE }}

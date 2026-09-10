@@ -22,6 +22,7 @@ os.environ.setdefault("DATABASE_URL", "postgresql://enigma:enigma_secret@postgre
 os.environ.setdefault("CLERK_SECRET_KEY", "sk_test_stub")
 os.environ.setdefault("CLERK_JWT_ISSUER", "https://stub.clerk.accounts.dev")
 
+from app.config import settings  # noqa: E402
 from app.database import Base, get_db  # noqa: E402
 from app.main import app  # noqa: E402
 from app.core import auth as auth_module  # noqa: E402
@@ -35,6 +36,18 @@ _BASE = os.environ["DATABASE_URL"]
 SYNC_ADMIN_URL = _BASE.replace("postgresql://", "postgresql+psycopg2://")
 SYNC_TEST_URL = SYNC_ADMIN_URL.rsplit("/", 1)[0] + f"/{TEST_DB}"
 ASYNC_TEST_URL = _BASE.replace("postgresql://", "postgresql+asyncpg://").rsplit("/", 1)[0] + f"/{TEST_DB}"
+
+
+@pytest.fixture(autouse=True)
+def no_outbound_email(monkeypatch):
+    """Never send real mail from the suite.
+
+    Tests invite fabricated addresses; with a live RESEND_API_KEY in the
+    environment those became genuine sends, and the bounces would count
+    against the sending domain's reputation. Opt in explicitly where a test
+    needs the configured path.
+    """
+    monkeypatch.setattr(settings, "RESEND_API_KEY", "", raising=False)
 
 
 @pytest.fixture(scope="session")

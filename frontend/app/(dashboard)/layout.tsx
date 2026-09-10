@@ -5,6 +5,7 @@ import { Sidebar } from "@/components/shared/Sidebar";
 import { Topbar } from "@/components/shared/Topbar";
 import { useCurrentUser } from "@/hooks/useAuth";
 import { PageLoader } from "@/components/shared/PageLoader";
+import { titleFor } from "@/lib/page-title";
 
 const PAGE_TITLES: Record<string, string> = {
   "/dashboard": "Dashboard",
@@ -16,12 +17,6 @@ const PAGE_TITLES: Record<string, string> = {
   "/settings": "Settings",
 };
 
-function getTitle(pathname: string): string {
-  for (const [path, title] of Object.entries(PAGE_TITLES)) {
-    if (pathname === path || pathname.startsWith(path + "/")) return title;
-  }
-  return "Client Portal";
-}
 
 export default function DashboardLayout({
   children,
@@ -67,7 +62,7 @@ export default function DashboardLayout({
 
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar
-          title={getTitle(pathname)}
+          title={titleFor(pathname, PAGE_TITLES, "Client Portal")}
           onMenuClick={() => setSidebarOpen(true)}
         />
         <main className="flex-1 overflow-y-auto px-4 py-6 lg:px-8 lg:py-8">
