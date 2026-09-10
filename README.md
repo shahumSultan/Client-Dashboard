@@ -271,6 +271,35 @@ From then on it is invite-only: create a client, invite their email, done.
 
 ---
 
+## Where each secret lives
+
+Values are never written here or in `.env.example` — both are tracked in git.
+Real values live in `.env` (gitignored) for local work, and in the Railway and
+Vercel dashboards for production.
+
+| Variable | Local `.env` | Railway | Vercel | Source |
+|---|---|---|---|---|
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | dev `pk_test_` | — | prod `pk_live_` | Clerk → API Keys |
+| `CLERK_SECRET_KEY` | dev `sk_test_` | prod `sk_live_` | prod `sk_live_` | Clerk → API Keys |
+| `CLERK_JWT_ISSUER` | dev instance | `https://clerk.enigma-cube.com` | — | Clerk → Frontend API URL |
+| `NEXT_PUBLIC_API_URL` | — | — | Railway backend URL | Railway → Networking |
+| `FRONTEND_URL` | — | `https://portal.enigma-cube.com` | — | your portal domain |
+| `RESEND_API_KEY` | send-only `re_` | send-only `re_` | — | Resend → API Keys |
+| `FROM_EMAIL` | `noreply@enigma-cube.com` | same | — | your verified Resend domain |
+| `DATABASE_URL` | compose Postgres | Postgres service reference | — | Railway |
+
+**Local uses the Clerk *development* instance deliberately.** `pk_live_`/`sk_live_`
+are pinned to `portal.enigma-cube.com` and are rejected on `localhost`.
+
+To read what production currently has:
+
+```bash
+railway variable list --service backend    # Railway
+vercel env ls production                   # Vercel
+```
+
+---
+
 ## Environment Variables Reference
 
 **Backend** (Railway)
