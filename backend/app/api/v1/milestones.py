@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from app.database import get_db
 from app.core.auth import get_current_user, require_admin
 from app.core.permissions import assert_project_access
 from app.models.user import User
 from app.models.milestone import Milestone
+from app.models.comment import Comment, CommentTargetType
 from app.schemas.milestone import MilestoneCreate, MilestoneUpdate, MilestoneOut
 
 router = APIRouter(prefix="/milestones", tags=["Milestones"])
@@ -71,5 +72,13 @@ async def delete_milestone(
     if not milestone:
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Milestone not found")
+    # target_id is polymorphic, so there is no FK to cascade from — clear the
+    # milestone's comments explicitly rather than stranding them.
+    await db.execute(
+        delete(Comment).where(
+            Comment.target_type == CommentTargetType.MILESTONE,
+            Comment.target_id == milestone.id,
+        )
+    )
     await db.delete(milestone)
     await db.commit()

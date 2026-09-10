@@ -8,3 +8,4 @@ from app.models.notification import Notification
 from app.models.onboarding import OnboardingData
 from app.models.analytics import AnalyticsEntry
 from app.models.comment import Comment
+from app.models.invitation import Invitation

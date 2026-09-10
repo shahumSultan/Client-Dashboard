@@ -26,7 +26,9 @@ class Comment(Base):
 
     # Denormalised from the target so access control and per-project listing are
     # a single indexed lookup instead of a polymorphic join.
-    project_id: Mapped[str] = mapped_column(String, ForeignKey("projects.id"), nullable=False)
+    project_id: Mapped[str] = mapped_column(
+        String, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False
+    )
 
     target_type: Mapped[CommentTargetType] = mapped_column(
         Enum(CommentTargetType, values_callable=lambda x: [e.value for e in x]),
@@ -45,7 +47,7 @@ class Comment(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, onupdate=utcnow)
 
-    project: Mapped["Project"] = relationship("Project")
+    project: Mapped["Project"] = relationship("Project", back_populates="comments")
     author: Mapped["User"] = relationship("User")
     replies: Mapped[list["Comment"]] = relationship(
         "Comment",

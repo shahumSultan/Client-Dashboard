@@ -9,6 +9,7 @@ from app.config import settings
 from app.database import get_db
 from app.models.user import User, UserRole
 from app.services.clerk import fetch_clerk_user, primary_email, full_name
+from app.services.invitations import auto_accept_matching_invitation
 
 security = HTTPBearer()
 
@@ -111,6 +112,12 @@ async def get_current_user(
 
     if not user.is_active:
         raise HTTPException(status_code=403, detail="Account is inactive")
+
+    # Access is invite-only, so a user with no workspace may have one waiting
+    # for their address. Only runs while they are unattached, which is at most
+    # the handful of requests between signing up and being placed.
+    if not user.organization_id:
+        user = await auto_accept_matching_invitation(db, user)
 
     return user
 

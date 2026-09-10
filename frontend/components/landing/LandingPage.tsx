@@ -174,8 +174,8 @@ const FEATURES = [
 ];
 
 const STEPS = [
-  { n: "01", title: "Create your account", body: "Name, email, company. Takes under a minute." },
-  { n: "02", title: "We set up your project", body: "Your timeline, milestones and deliverables appear in your portal." },
+  { n: "01", title: "We invite you", body: "You get an invitation at your work email — no sign-up form to fill in." },
+  { n: "02", title: "Your project is waiting", body: "Timeline, milestones and deliverables, set up before you arrive." },
   { n: "03", title: "Follow along and weigh in", body: "Watch progress, leave remarks, and get replies from the team." },
 ];
 
@@ -195,21 +195,15 @@ export function LandingPage({ isSignedIn }: { isSignedIn: boolean }) {
                 <ArrowRight size={15} aria-hidden="true" />
               </Link>
             ) : (
-              <>
-                <Link
-                  href="/sign-in"
-                  className="inline-flex h-10 items-center rounded-[10px] px-4 text-sm font-medium text-muted transition-colors hover:bg-white/[0.06] hover:text-fg"
-                >
-                  Sign in
-                </Link>
-                <Link
-                  href="/sign-up"
-                  className="glow-brand inline-flex h-10 items-center gap-2 rounded-[10px] bg-brand px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
-                >
-                  Get access
-                  <ArrowRight size={15} aria-hidden="true" />
-                </Link>
-              </>
+              // One CTA: access is invite-only, so there is no separate
+              // "get started" path to offer alongside signing in.
+              <Link
+                href="/sign-in"
+                className="glow-brand inline-flex h-10 items-center gap-2 rounded-[10px] bg-brand px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
+              >
+                Sign in
+                <ArrowRight size={15} aria-hidden="true" />
+              </Link>
             )}
           </nav>
         </div>
@@ -258,20 +252,13 @@ export function LandingPage({ isSignedIn }: { isSignedIn: boolean }) {
                 transition={{ duration: 0.6, delay: 0.18, ease: EASE }}
               >
                 <Link
-                  href={isSignedIn ? "/dashboard" : "/sign-up"}
+                  href={isSignedIn ? "/dashboard" : "/sign-in"}
                   className="glow-brand inline-flex h-11 items-center gap-2 rounded-[10px] bg-brand px-6 text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
                 >
-                  {isSignedIn ? "Open your portal" : "Create your account"}
+                  {isSignedIn ? "Open your portal" : "Sign in"}
                   <ArrowRight size={15} aria-hidden="true" />
                 </Link>
-                {!isSignedIn && (
-                  <Link
-                    href="/sign-in"
-                    className="glass inline-flex h-11 items-center rounded-[10px] px-6 text-sm font-medium text-fg transition-colors hover:bg-glass-strong"
-                  >
-                    I already have an account
-                  </Link>
-                )}
+
               </motion.div>
             </div>
 
@@ -353,14 +340,14 @@ export function LandingPage({ isSignedIn }: { isSignedIn: boolean }) {
                     Ready when you are
                   </h2>
                   <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-subtle">
-                    Create your account and your workspace is ready in under a
-                    minute.
+                    Enigma-Cube invites clients directly. Sign in with the
+                    address your invitation was sent to.
                   </p>
                   <Link
-                    href={isSignedIn ? "/dashboard" : "/sign-up"}
+                    href={isSignedIn ? "/dashboard" : "/sign-in"}
                     className="glow-brand mt-8 inline-flex h-11 items-center gap-2 rounded-[10px] bg-brand px-6 text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
                   >
-                    {isSignedIn ? "Open your portal" : "Create your account"}
+                    {isSignedIn ? "Open your portal" : "Sign in"}
                     <ArrowRight size={15} aria-hidden="true" />
                   </Link>
                 </div>

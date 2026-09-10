@@ -5,7 +5,8 @@ from typing import Optional
 
 class OrganizationCreate(BaseModel):
     name: str
-    slug: str
+    # Derived from the name when omitted, with collisions suffixed.
+    slug: Optional[str] = None
     logo_url: Optional[str] = None
     website: Optional[str] = None
     industry: Optional[str] = None

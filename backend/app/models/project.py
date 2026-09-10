@@ -39,6 +39,9 @@ class Project(Base):
     files: Mapped[list["File"]] = relationship("File", back_populates="project", cascade="all, delete-orphan")
     analytics: Mapped[list["AnalyticsEntry"]] = relationship("AnalyticsEntry", back_populates="project", cascade="all, delete-orphan")
     updates: Mapped[list["ProjectUpdate"]] = relationship("ProjectUpdate", back_populates="project", cascade="all, delete-orphan")
+    comments: Mapped[list["Comment"]] = relationship(
+        "Comment", back_populates="project", cascade="all, delete-orphan", passive_deletes=True
+    )
 
 
 class ProjectUpdate(Base):

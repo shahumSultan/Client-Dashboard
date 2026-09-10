@@ -19,6 +19,13 @@ async def assert_project_access(user: User, project_id: str, db: AsyncSession) -
     if user.organization_id != project.organization_id:
         raise HTTPException(status_code=403, detail="Access denied")
 
+    # Deleting a project is a soft delete, and the list endpoint filters on it.
+    # Without this a client who kept the URL would still reach the project and
+    # every collection hanging off it. Admins keep access so it stays
+    # recoverable.
+    if not project.is_active:
+        raise HTTPException(status_code=404, detail="Project not found")
+
     return project
 
 

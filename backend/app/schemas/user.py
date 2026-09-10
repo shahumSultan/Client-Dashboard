@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 from datetime import datetime
 from typing import Optional
 from app.models.user import UserRole
@@ -27,10 +27,3 @@ class UserRoleUpdate(BaseModel):
     role: UserRole
     organization_id: Optional[str] = None
 
-
-class ClientRegistration(BaseModel):
-    """Self-serve signup payload — collected once, right after the Clerk sign-up."""
-    full_name: str = Field(min_length=1, max_length=255)
-    company_name: str = Field(min_length=1, max_length=255)
-    industry: Optional[str] = Field(default=None, max_length=100)
-    website: Optional[str] = Field(default=None, max_length=255)

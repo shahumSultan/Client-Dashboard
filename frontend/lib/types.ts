@@ -156,3 +156,23 @@ export interface CommentThread extends Comment {
 export interface InboxThread extends CommentThread {
   project: { id: string; name: string };
 }
+
+export interface Invitation {
+  id: string;
+  organization_id: string;
+  email: string;
+  role: UserRole;
+  token: string;
+  expires_at: string;
+  accepted_at: string | null;
+  revoked_at: string | null;
+  created_at: string;
+  is_pending: boolean;
+}
+
+export interface InvitationPreview {
+  organization_name: string;
+  email: string;
+  role: UserRole;
+  expires_at: string;
+}

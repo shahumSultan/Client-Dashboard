@@ -8,6 +8,7 @@ from app.models.user import User, UserRole
 from app.models.organization import Organization
 from app.models.onboarding import OnboardingData
 from app.schemas.organization import OrganizationCreate, OrganizationUpdate, OrganizationOut
+from app.core.slug import unique_org_slug
 
 router = APIRouter(prefix="/organizations", tags=["Organizations"])
 
@@ -27,11 +28,16 @@ async def create_organization(
     user: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
-    existing = await db.execute(select(Organization).where(Organization.slug == data.slug))
-    if existing.scalar_one_or_none():
-        raise HTTPException(status_code=409, detail="Slug already in use")
+    fields = data.model_dump()
+    slug = (fields.pop("slug") or "").strip()
+    if slug:
+        existing = await db.execute(select(Organization).where(Organization.slug == slug))
+        if existing.scalar_one_or_none():
+            raise HTTPException(status_code=409, detail="Slug already in use")
+    else:
+        slug = await unique_org_slug(db, data.name)
 
-    org = Organization(**data.model_dump())
+    org = Organization(**fields, slug=slug)
     db.add(org)
     await db.flush()
 
