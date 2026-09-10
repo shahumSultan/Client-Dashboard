@@ -218,6 +218,36 @@ npm run dev
 
 ---
 
+## Tests
+
+```bash
+docker compose exec backend python -m pytest tests -q
+```
+
+48 tests, run against a throwaway `client_portal_test` database built from the
+models. They cover the things that matter with real clients: tenant isolation
+across every project-scoped collection, clients being read-and-comment only,
+the comment permission rules, and self-serve signup.
+
+Auth is stubbed at `get_current_user`, so routes still execute their real
+`require_admin` and `assert_project_access` logic against the chosen identity.
+
+---
+
+## Demo data
+
+Seeds a realistic client — a project mid-flight with milestones, updates, a
+request, four weeks of analytics, and a comment thread with a reply:
+
+```bash
+docker compose exec backend python scripts/seed_demo.py
+docker compose exec backend python scripts/seed_demo.py --remove
+```
+
+Idempotent, and scoped to its own organization — it never touches your data.
+
+---
+
 ## Design system
 
 Dark-only, glassmorphic, locked to the enigma-cube.com palette. Tokens live in
