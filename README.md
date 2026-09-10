@@ -205,9 +205,21 @@ Copy the production keys once those verify. The issuer becomes
 
 ### 3. Backend → Railway
 
-Add a **PostgreSQL** plugin, then point the service at `backend/`. Railway
-reads `railway.toml`, which runs `alembic upgrade head` before starting
+**Already provisioned.** Project `Client-Dashboard`
+(`874c1bf0-35cf-4e5a-8a31-ffc6056fedc0`) has a Postgres service and a `backend`
+service connected to this repo on `main`:
+
+- `rootDirectory` is `/backend`, so Railway builds the API and not the
+  monorepo root.
+- `watchPatterns` is `/backend/**`, so a frontend-only push does not trigger a
+  pointless API rebuild.
+- **Pushing to `main` deploys automatically.**
+
+Railway reads `railway.toml`, which runs `alembic upgrade head` before starting
 uvicorn, so the schema is applied on every deploy.
+
+To rebuild this from scratch: add a PostgreSQL service, then connect a service
+to the repo with root directory `backend`.
 
 ```env
 DATABASE_URL=<Railway Postgres connection string>
