@@ -53,6 +53,9 @@ export default function RootLayout({
           signUpUrl="/sign-up"
           signInFallbackRedirectUrl="/dashboard"
           signUpFallbackRedirectUrl="/welcome"
+          // Signing out lands on our own marketing/landing page rather than
+          // Clerk's hosted Account Portal.
+          afterSignOutUrl="/"
         >
           <QueryProvider>
             <div className="relative z-10">{children}</div>
