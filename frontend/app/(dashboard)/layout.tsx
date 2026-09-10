@@ -33,17 +33,33 @@ export default function DashboardLayout({
   const router = useRouter();
   const { data: user, isLoading } = useCurrentUser();
 
-  // Self-serve signup finishes at /welcome, where the client names their
-  // company and we provision the organization. Until that runs there is no
-  // tenant to scope anything to, so the portal has nothing to show.
   useEffect(() => {
-    if (!isLoading && user && !user.organization_id) {
+    if (isLoading || !user) return;
+
+    // The client portal is scoped to one organization. An admin has none, and
+    // for them `list_projects` returns every client's work, which reads as
+    // "why can I see all these projects?" — send them to the admin panel.
+    if (user.role === "admin" && !user.organization_id) {
+      router.replace("/admin");
+      return;
+    }
+
+    // Self-serve signup finishes at /welcome, where the client names their
+    // company and we provision the organization. Until that runs there is no
+    // tenant to scope anything to, so the portal has nothing to show.
+    if (!user.organization_id) {
       router.replace("/welcome");
     }
   }, [user, isLoading, router]);
 
   if (isLoading || !user) return <PageLoader />;
-  if (!user.organization_id) return <PageLoader label="Setting up your workspace" />;
+  if (!user.organization_id) {
+    return (
+      <PageLoader
+        label={user.role === "admin" ? "Opening admin" : "Setting up your workspace"}
+      />
+    );
+  }
 
   return (
     <div className="flex h-dvh overflow-hidden">

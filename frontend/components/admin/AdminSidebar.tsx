@@ -10,6 +10,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { SidebarShell, type NavItem } from "@/components/shared/SidebarShell";
+import { useCurrentUser } from "@/hooks/useAuth";
 
 const NAV: NavItem[] = [
   { label: "Overview", href: "/admin", icon: LayoutDashboard, exact: true },
@@ -21,6 +22,11 @@ const NAV: NavItem[] = [
 ];
 
 export function AdminSidebar({ open, onClose }: { open?: boolean; onClose?: () => void }) {
+  const { data: user } = useCurrentUser();
+  // An admin without an organization has no client portal to go back to —
+  // the link would just bounce them here again.
+  const hasPortal = !!user?.organization_id;
+
   return (
     <SidebarShell
       items={NAV}
@@ -28,6 +34,7 @@ export function AdminSidebar({ open, onClose }: { open?: boolean; onClose?: () =
       open={open}
       onClose={onClose}
       footerSlot={
+        !hasPortal ? null : (
         <Link
           href="/dashboard"
           onClick={onClose}
@@ -36,6 +43,7 @@ export function AdminSidebar({ open, onClose }: { open?: boolean; onClose?: () =
           <ArrowLeft size={17} strokeWidth={2} aria-hidden="true" />
           Back to portal
         </Link>
+        )
       }
     />
   );

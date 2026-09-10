@@ -37,9 +37,13 @@ export default function WelcomePage() {
   const [errors, setErrors] = useState<Errors>({});
   const [submitting, setSubmitting] = useState(false);
 
-  // Already set up — nothing to do here.
   useEffect(() => {
-    if (!isLoading && user?.organization_id) router.replace("/dashboard");
+    if (isLoading || !user) return;
+    // Already set up — nothing to do here.
+    if (user.organization_id) router.replace("/dashboard");
+    // Onboarding provisions a client organization. Admins never need one, and
+    // sending them through it is what creates stray workspaces.
+    else if (user.role === "admin") router.replace("/admin");
   }, [user, isLoading, router]);
 
   if (isLoading || !user) return <PageLoader />;

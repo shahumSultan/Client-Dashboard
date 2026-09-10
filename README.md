@@ -234,6 +234,25 @@ Auth is stubbed at `get_current_user`, so routes still execute their real
 
 ---
 
+## Starting fresh
+
+Wipes every row and keeps only the admin accounts:
+
+```bash
+./scripts/reset-db.sh
+```
+
+Admins are preserved by `clerk_id`, so you stay admin on the next request.
+Without that, the lazy provisioning in `get_current_user` would recreate you as
+a `client_member` with no organization and push you through the client signup
+flow, creating a stray workspace.
+
+A timestamped `pg_dump` is written before anything is deleted. Admins are left
+with no organization — that is correct: only clients get one, and an admin
+without one is sent to `/admin` rather than the client portal.
+
+---
+
 ## Demo data
 
 Seeds a realistic client — a project mid-flight with milestones, updates, a
