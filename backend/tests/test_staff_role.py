@@ -138,3 +138,36 @@ async def test_invitations_cannot_grant_staff(api, world):
         "organization_id": world["org_a"].id, "email": "x@acme.com", "role": "staff",
     })
     assert r.status_code == 422
+
+
+# ── Team accounts and client invitations ─────────────────────────────────────
+
+@pytest.mark.parametrize("role", [UserRole.ADMIN, UserRole.STAFF])
+async def test_team_accounts_cannot_be_invited_as_clients(api, world, session, role):
+    member = User(clerk_id=f"c_{uuid.uuid4().hex}", email=f"t-{uuid.uuid4().hex[:6]}@ec.com", role=role)
+    session.add(member)
+    await session.commit()
+    r = await api(world["admin"]).post("/invitations", json={
+        "organization_id": world["org_a"].id, "email": member.email.upper(),
+    })
+    assert r.status_code == 409
+
+
+@pytest.mark.parametrize("role", [UserRole.ADMIN, UserRole.STAFF])
+async def test_a_stray_invitation_never_converts_a_team_account(api, world, session, role):
+    """Even if one exists — e.g. sent before the address joined the team."""
+    from app.models.invitation import Invitation
+    member = User(clerk_id=f"c_{uuid.uuid4().hex}", email=f"t-{uuid.uuid4().hex[:6]}@ec.com", role=role)
+    invite = Invitation(organization_id=world["org_a"].id, email=member.email,
+                        role=UserRole.CLIENT_OWNER, token=uuid.uuid4().hex)
+    session.add_all([member, invite])
+    await session.commit()
+
+    me = (await api(member).get("/users/me")).json()
+    assert me["role"] == role.value
+    assert me["organization_id"] is None
+
+    r = await api(member).post("/invitations/accept", json={"token": invite.token})
+    assert r.status_code in (403, 409)  # staff are refused writes before it matters
+    await session.refresh(member)
+    assert member.role == role and member.organization_id is None

@@ -3,14 +3,14 @@ import secrets
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.orm import selectinload
 
 from app.config import settings
 from app.core.time import utcnow
 from app.database import get_db
 from app.core.auth import get_current_user, require_admin
-from app.models.user import User, UserRole
+from app.models.user import User, UserRole, is_team
 from app.models.organization import Organization
 from app.models.invitation import Invitation
 from app.schemas.invitation import (
@@ -53,6 +53,15 @@ async def create_invitation(
         raise HTTPException(status_code=404, detail="Client not found")
 
     email = data.email.lower()
+
+    member = (
+        await db.execute(select(User).where(func.lower(User.email) == email))
+    ).scalar_one_or_none()
+    if member and is_team(member):
+        raise HTTPException(
+            status_code=409,
+            detail=f"{email} is an Enigma-Cube team account and can't be invited into a client workspace.",
+        )
 
     existing = await db.execute(
         select(Invitation).where(
