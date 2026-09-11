@@ -1,21 +1,26 @@
+import logging
 import time
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, func
+from sqlalchemy.exc import IntegrityError
 import httpx
 from jose import jwt, JWTError
 from app.config import settings
 from app.database import get_db
 from app.models.user import User, UserRole
-from app.services.clerk import fetch_clerk_user, primary_email, full_name
+from app.services.clerk import fetch_clerk_user, primary_email, full_name, verified_emails
 from app.services.invitations import auto_accept_matching_invitation
+
+logger = logging.getLogger(__name__)
 
 security = HTTPBearer()
 
 # Clerk rotates signing keys, so the JWKS is cached with a TTL rather than
 # forever — otherwise a rotation breaks every request until the app restarts.
 JWKS_TTL_SECONDS = 3600
+CLOCK_SKEW_SECONDS = 5
 
 _clerk_jwks: dict | None = None
 _clerk_jwks_fetched_at: float = 0.0
@@ -75,7 +80,11 @@ async def verify_clerk_token(token: str) -> dict:
             key,
             algorithms=["RS256"],
             issuer=settings.CLERK_JWT_ISSUER,
-            options={"verify_aud": False, "verify_iss": True},
+            # Clerk stamps `nbf`/`iat` at mint time, and a container clock a
+            # second behind Clerk's rejects a brand-new token as not yet
+            # valid — a sporadic 401 on the first request after sign-in.
+            # Clerk's own SDKs allow the same 5s.
+            options={"verify_aud": False, "verify_iss": True, "leeway": CLOCK_SKEW_SECONDS},
         )
     except JWTError as e:
         raise HTTPException(status_code=401, detail=f"Token invalid: {e}")
@@ -157,6 +166,12 @@ async def _provision_user(db: AsyncSession, clerk_id: str, payload: dict) -> Use
             detail="Could not read an email address for this account from Clerk.",
         )
 
+    existing = (
+        await db.execute(select(User).where(func.lower(User.email) == email.lower()))
+    ).scalar_one_or_none()
+    if existing:
+        return await _relink(db, existing, clerk_id)
+
     user = User(
         clerk_id=clerk_id,
         email=email,
@@ -165,9 +180,49 @@ async def _provision_user(db: AsyncSession, clerk_id: str, payload: dict) -> Use
         role=UserRole.CLIENT_MEMBER,
     )
     db.add(user)
-    await db.commit()
+    try:
+        await db.commit()
+    except IntegrityError:
+        # A fresh sign-in fires several requests at once, and each finds no row
+        # and tries to create one. Whichever loses the race reads the winner's.
+        await db.rollback()
+        user = (
+            await db.execute(select(User).where(User.clerk_id == clerk_id))
+        ).scalar_one_or_none()
+        if not user:
+            raise
+        return user
     await db.refresh(user)
     return user
+
+
+async def _relink(db: AsyncSession, existing: User, clerk_id: str) -> User:
+    """Attach a new Clerk identity to the account that already owns its email.
+
+    Happens when a Clerk user is deleted and recreated, or when switching Clerk
+    instances: same person, new id. Without this the insert collides on the
+    unique email and every request 500s.
+
+    Only on a *verified* address. Otherwise anyone could register someone
+    else's email, unverified, and inherit their account — admin included.
+    """
+    profile = await fetch_clerk_user(clerk_id)
+    if not profile or existing.email.lower() not in verified_emails(profile):
+        logger.warning(
+            "Refused to relink user %s to Clerk %s: email not verified on that identity",
+            existing.id, clerk_id,
+        )
+        raise HTTPException(
+            status_code=409,
+            detail="An account with this email already exists. Verify your email address to continue.",
+        )
+
+    logger.warning("Relinking user %s from Clerk %s to %s", existing.id, existing.clerk_id, clerk_id)
+    existing.clerk_id = clerk_id
+    existing.avatar_url = profile.get("image_url") or existing.avatar_url
+    await db.commit()
+    await db.refresh(existing)
+    return existing
 
 
 async def _backfill_email(db: AsyncSession, user: User) -> None:
