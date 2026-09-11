@@ -54,7 +54,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      # `deps` stage only installs node_modules — dev mode compiles from the
+      # `deps` stage only installs node_modules - dev mode compiles from the
       # bind-mounted source instead of a baked production build.
       target: deps
       args:

@@ -229,7 +229,7 @@ export default function ProjectDetailPage({
                 projectId={id}
                 targetType="project"
                 title="Project discussion"
-                emptyHint="Anything that doesn't belong to a specific milestone or file — questions, ideas, or things you'd like added."
+                emptyHint="Anything that doesn't belong to a specific milestone or file - questions, ideas, or things you'd like added."
               />
             </CardContent>
           </Card>
@@ -254,7 +254,7 @@ export default function ProjectDetailPage({
                 <EmptyState
                   icon={MessageSquare}
                   title="No requests yet"
-                  description="Raise a feature request, report a bug, or ask for a change — the team will respond here."
+                  description="Raise a feature request, report a bug, or ask for a change - the team will respond here."
                   action={
                     <Button size="sm" onClick={() => setRequestOpen(true)}>
                       <Plus size={14} aria-hidden="true" />

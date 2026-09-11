@@ -172,7 +172,7 @@ async def test_sent_agreement_is_frozen_but_recallable(api, world):
     r = await admin.patch(f"/engagements/{e['id']}", json={"scope": "Changed"})
     assert r.status_code == 409
 
-    # Resaving the same text is not an edit — the admin form saves everything.
+    # Resaving the same text is not an edit - the admin form saves everything.
     r = await admin.patch(f"/engagements/{e['id']}", json={
         "scope": READY["scope"], "welcome_message": "Hello!",
     })

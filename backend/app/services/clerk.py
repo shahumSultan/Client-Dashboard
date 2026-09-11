@@ -8,7 +8,7 @@ async def fetch_clerk_user(clerk_id: str) -> dict | None:
     """Fetch a user's profile from Clerk's Backend API.
 
     Clerk's default session token carries only identity claims (sub, sid, azp…)
-    — no email or name unless a custom JWT template adds them. Rather than
+    - no email or name unless a custom JWT template adds them. Rather than
     depend on the dashboard being configured a particular way, read the profile
     from the API with the secret key.
 
@@ -35,7 +35,7 @@ def primary_email(profile: dict) -> str:
     for entry in addresses:
         if entry.get("id") == primary_id:
             return entry.get("email_address", "")
-    # No primary flagged — fall back to the first verified address, then any.
+    # No primary flagged - fall back to the first verified address, then any.
     for entry in addresses:
         if (entry.get("verification") or {}).get("status") == "verified":
             return entry.get("email_address", "")

@@ -9,8 +9,8 @@ import type { Engagement } from "@/lib/types";
 /**
  * The admin's uploaded agreement, shown in the portal.
  *
- * Rendered by the browser's own PDF viewer — the exact file, not a
- * re-typeset copy — so what the client reads is byte-for-byte what they sign.
+ * Rendered by the browser's own PDF viewer - the exact file, not a
+ * re-typeset copy - so what the client reads is byte-for-byte what they sign.
  */
 export function PdfDocument({ engagement: e }: { engagement: Engagement }) {
   const doc = e.document;

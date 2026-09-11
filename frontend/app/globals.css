@@ -6,13 +6,13 @@
    base #0D0D0D, elevated #222, primary #A92E2E, accent #FFB3B3, and
    rgba(255,255,255,0.05 / 0.12) for glass fills and hairlines.
 
-   This product is deliberately dark-only — it mirrors the marketing site, so
+   This product is deliberately dark-only - it mirrors the marketing site, so
    there is no light theme to fall back to.
    ========================================================================== */
 
 @layer base {
   :root {
-    /* Surfaces — never pure black; #000 smears on OLED and kills depth */
+    /* Surfaces - never pure black; #000 smears on OLED and kills depth */
     --bg-deep: #080808;
     --bg-base: #0d0d0d;
     --bg-raised: #141414;
@@ -25,7 +25,7 @@
     --glass-border-strong: rgba(255, 255, 255, 0.18);
 
     /* Foreground ramp. muted/subtle clear 4.5:1 on --bg-base; faint is
-       decorative only (dividers, inert icons) — never body text. */
+       decorative only (dividers, inert icons) - never body text. */
     --fg: #ffffff;
     --fg-muted: rgba(255, 255, 255, 0.72);
     --fg-subtle: rgba(255, 255, 255, 0.48);
@@ -40,7 +40,7 @@
     --brand-glow: rgba(169, 46, 46, 0.3);
     --brand-wash: rgba(169, 46, 46, 0.12);
 
-    /* Status — paired soft/base so colour is never the only signal */
+    /* Status - paired soft/base so colour is never the only signal */
     --success: #34d399;
     --success-wash: rgba(52, 211, 153, 0.12);
     --warning: #fbbf24;
@@ -238,7 +238,7 @@ body {
   border: 1px solid var(--glass-border-strong);
 }
 
-/* A one-pixel top highlight reads as a light source catching the edge — this
+/* A one-pixel top highlight reads as a light source catching the edge - this
    is what separates convincing glass from a flat translucent panel. */
 .glass-sheen {
   position: relative;
@@ -298,7 +298,7 @@ body {
   animation: fade-up var(--dur-slow) var(--ease) both;
 }
 
-/* Staggered list entrances — 40ms apart, per Material's motion guidance. */
+/* Staggered list entrances - 40ms apart, per Material's motion guidance. */
 .stagger > * {
   animation: fade-up var(--dur-slow) var(--ease) both;
 }
@@ -346,7 +346,7 @@ body {
 }
 
 /* --------------------------------------------------------------------------
-   Paper — printed documents only.
+   Paper - printed documents only.
    The app is dark-only, but an agreement or invoice that leaves the portal
    as a PDF goes into someone's files and printer. Rescoping the tokens lets
    the same components render on white without a second set of markup.

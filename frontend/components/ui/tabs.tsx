@@ -48,7 +48,7 @@ export function TabsList({ className, children }: React.HTMLAttributes<HTMLDivEl
     <div
       role="tablist"
       className={cn(
-        // Segmented pill rather than an underline — reads as a control on glass
+        // Segmented pill rather than an underline - reads as a control on glass
         "glass mb-6 inline-flex items-center gap-1 rounded-full p-1",
         className
       )}

@@ -5,7 +5,7 @@ import type { Engagement } from "@/lib/types";
 
 export function invoiceStatus(e: Engagement): { label: string; tone: "success" | "warning" | "muted" } {
   if (e.paid_at) return { label: "Paid", tone: "success" };
-  if (e.payment_reported_at) return { label: "Payment sent — confirming", tone: "warning" };
+  if (e.payment_reported_at) return { label: "Payment sent - confirming", tone: "warning" };
   return { label: "Due", tone: "muted" };
 }
 
@@ -30,7 +30,7 @@ export function InvoiceDocument({
             Invoice
           </p>
           <h1 className="tabular mt-3 text-2xl font-semibold tracking-tight text-fg">
-            {e.invoice_number ?? "—"}
+            {e.invoice_number ?? "-"}
           </h1>
           <p className="mt-1.5 text-subtle">{e.project_name}</p>
         </div>
@@ -47,7 +47,7 @@ export function InvoiceDocument({
       </header>
 
       <dl className="grid gap-5 sm:grid-cols-3">
-        <Meta label="Billed to" value={e.organization_name ?? "—"} />
+        <Meta label="Billed to" value={e.organization_name ?? "-"} />
         <Meta label="Issued" value={formatDate(e.sent_at ?? e.created_at)} />
         <Meta label="Due" value={e.invoice_due_date ? formatDate(e.invoice_due_date) : "On receipt"} />
       </dl>

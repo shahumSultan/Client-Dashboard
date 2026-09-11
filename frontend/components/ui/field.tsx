@@ -7,7 +7,7 @@ interface FieldProps {
   label: string;
   htmlFor: string;
   required?: boolean;
-  /** Persistent guidance — placeholders disappear the moment typing starts. */
+  /** Persistent guidance - placeholders disappear the moment typing starts. */
   hint?: string;
   error?: string | null;
   children: React.ReactNode;

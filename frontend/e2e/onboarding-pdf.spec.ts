@@ -42,7 +42,7 @@ test("admin uploads their own agreement and sends", async ({ page }) => {
 
   await page.getByRole("tab", { name: "Invoice" }).click();
   await page.getByRole("button", { name: "Add line item" }).click();
-  await page.getByLabel("Description 1").fill("50% deposit — Lead Qualification Engine");
+  await page.getByLabel("Description 1").fill("50% deposit - Lead Qualification Engine");
   await page.getByLabel(/Price \(USD\) 1/).fill("3750");
   await page.getByLabel("Bank transfer details").fill("Account name: Enigma-Cube\nIBAN: GB00 TEST 0000 0000");
 

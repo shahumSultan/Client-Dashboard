@@ -56,7 +56,7 @@ async def test_staff_can_read_the_admin_panel(api, world, staff):
     assert (await client.get("/admin/stats")).status_code == 200
     assert (await client.get("/admin/users")).status_code == 200
     assert (await client.get("/admin/requests")).status_code == 200
-    # Every client's projects, like an admin — not scoped to one workspace.
+    # Every client's projects, like an admin - not scoped to one workspace.
     names = {p["name"] for p in (await client.get("/projects")).json()}
     assert {"Acme Automation", "Globex Pipeline"} <= names
     assert (await client.get(f"/projects/{world['proj_b'].id}")).status_code == 200
@@ -155,7 +155,7 @@ async def test_team_accounts_cannot_be_invited_as_clients(api, world, session, r
 
 @pytest.mark.parametrize("role", [UserRole.ADMIN, UserRole.STAFF])
 async def test_a_stray_invitation_never_converts_a_team_account(api, world, session, role):
-    """Even if one exists — e.g. sent before the address joined the team."""
+    """Even if one exists - e.g. sent before the address joined the team."""
     from app.models.invitation import Invitation
     member = User(clerk_id=f"c_{uuid.uuid4().hex}", email=f"t-{uuid.uuid4().hex[:6]}@ec.com", role=role)
     invite = Invitation(organization_id=world["org_a"].id, email=member.email,

@@ -93,7 +93,7 @@ async def _tell_admins(
         await create_notification(
             db, admin.id, NotificationType.ONBOARDING_STEP, title, body, link
         )
-    # Activity by a test account is not client activity — keep it out of the inbox.
+    # Activity by a test account is not client activity - keep it out of the inbox.
     if is_test_address(actor.email) or not settings.ADMIN_NOTIFICATION_EMAIL:
         return
     try:
@@ -131,7 +131,7 @@ async def get_defaults(
     admin: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
-    """Starting values for a new engagement — the terms you used last time."""
+    """Starting values for a new engagement - the terms you used last time."""
     return await rules.defaults_from(db)
 
 
@@ -265,7 +265,7 @@ async def send_engagement(
             title="Let's make it official",
             paragraphs=[
                 f"Thank you for choosing Enigma&#8209;Cube. Your agreement for "
-                f'<strong style="color:#0d0d0d;">{project}</strong> is ready — it sets '
+                f'<strong style="color:#0d0d0d;">{project}</strong> is ready - it sets '
                 f"out the scope, deliverables, timeline and revision policy in one place.",
                 "It takes about two minutes: review, sign, and the invoice and "
                 "your welcome pack open straight after.",
@@ -313,7 +313,7 @@ async def confirm_payment(
     await db.commit()
     await _tell_client(
         db, e, "Payment received",
-        f"Thank you — payment for {e.project.name} is confirmed.",
+        f"Thank you - payment for {e.project.name} is confirmed.",
     )
     return _out(await _get(db, e.id, admin))
 
@@ -390,7 +390,7 @@ def _pdf_response(data: bytes, filename: str) -> Response:
         media_type="application/pdf",
         headers={
             "Content-Disposition": f'inline; filename="{safe}"',
-            # Contracts — keep them out of shared and browser caches.
+            # Contracts - keep them out of shared and browser caches.
             "Cache-Control": "private, no-store",
             "X-Content-Type-Options": "nosniff",
         },

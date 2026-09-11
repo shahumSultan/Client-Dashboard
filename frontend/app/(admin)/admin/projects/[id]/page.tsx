@@ -215,7 +215,7 @@ export default function AdminProjectDetailPage() {
             </Field>
 
             <Field
-              label={`Completion — ${project.completion_percentage}%`}
+              label={`Completion - ${project.completion_percentage}%`}
               htmlFor="proj-completion"
             >
               <div className="flex h-11 items-center gap-3 sm:h-10">
@@ -246,7 +246,7 @@ export default function AdminProjectDetailPage() {
                 type="date"
                 defaultValue={project.start_date ?? ""}
                 onBlur={(e) => {
-                  // Only a real edit saves — clicking in and out is not one.
+                  // Only a real edit saves - clicking in and out is not one.
                   if (e.target.value !== (project.start_date ?? ""))
                     patchProject.mutate({ start_date: e.target.value || null });
                 }}
@@ -508,7 +508,7 @@ export default function AdminProjectDetailPage() {
                 Delete this project
               </h2>
               <p className="mt-2 max-w-lg text-sm leading-relaxed text-subtle">
-                Removes the project and everything attached to it — milestones,
+                Removes the project and everything attached to it - milestones,
                 updates, files, requests and comments. This cannot be undone.
               </p>
 

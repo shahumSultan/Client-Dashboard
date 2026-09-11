@@ -49,7 +49,7 @@ export function InvitePanel({
       setTimeout(() => setCopied(null), 2000);
       toast.success("Invite link copied");
     } catch {
-      // Clipboard is blocked outside a secure context — show it instead.
+      // Clipboard is blocked outside a secure context - show it instead.
       toast.info("Copy this link", { description: url, duration: 12000 });
     }
   }
@@ -88,7 +88,7 @@ export function InvitePanel({
         <p className="text-sm leading-relaxed text-subtle">
           Access is invite-only. Whoever you invite joins{" "}
           <span className="text-fg">{organizationName}</span> the moment they sign
-          up with that address — the emailed link is a convenience, not a
+          up with that address - the emailed link is a convenience, not a
           requirement.
         </p>
 

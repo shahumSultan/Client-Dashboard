@@ -19,7 +19,7 @@ export default function MilestonesPage() {
     <div>
       <PageHeading
         title="Milestones"
-        description="Every phase across your projects — what's finished, what's underway, and what's still ahead."
+        description="Every phase across your projects - what's finished, what's underway, and what's still ahead."
       />
       <ProjectSections
         emptyIcon={CheckSquare}

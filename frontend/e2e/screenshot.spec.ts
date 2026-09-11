@@ -36,7 +36,7 @@ test("admin", async ({ page }) => {
   await shoot(page, "/admin/users", "15-admin-users");
   await shoot(page, "/admin/projects/new", "16-admin-project-new");
 
-  // Client detail carries the invite panel — the piece never seen rendered.
+  // Client detail carries the invite panel - the piece never seen rendered.
   await page.goto(`${BASE}/admin/clients`, { waitUntil: "domcontentloaded" });
   await page.waitForTimeout(1500);
   const card = page.locator('a[href^="/admin/clients/"]').first();
@@ -73,7 +73,7 @@ test("client portal", async ({ page }) => {
     await page.waitForTimeout(2200);
     await shoot(page, "", "26-project-timeline");
 
-    // Expand a milestone's comment thread — the core feature.
+    // Expand a milestone's comment thread - the core feature.
     const disclosure = page.getByRole("button", { name: /comment on this milestone/i }).first();
     if (await disclosure.count()) {
       await disclosure.click();

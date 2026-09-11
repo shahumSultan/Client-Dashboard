@@ -33,7 +33,7 @@ async def test_client_cannot_post_project_update(api, world):
 
 
 async def test_client_cannot_request_an_upload_url(api, world):
-    """Uploads are admin-only — otherwise clients can write to our bucket."""
+    """Uploads are admin-only - otherwise clients can write to our bucket."""
     r = await api(world["client_a"]).post(
         f"/files/project/{world['proj_a'].id}/presign",
         data={"original_name": "x.pdf", "file_type": "application/pdf"},
@@ -87,7 +87,7 @@ async def test_upload_without_storage_configured_says_so(api, world):
 
 
 async def test_health_reports_database_connectivity(api, world):
-    """Railway healthchecks this path — it must fail when the database is
+    """Railway healthchecks this path - it must fail when the database is
     unreachable, or a dead deployment stays in rotation."""
     r = await api(world["admin"]).get("/../../health")
     assert r.status_code == 200, r.text

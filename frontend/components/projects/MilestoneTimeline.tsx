@@ -38,7 +38,7 @@ export function MilestoneTimeline({
       <EmptyState
         icon={MilestoneIcon}
         title="No milestones yet"
-        description="Once the team maps out this project's phases, the full plan will appear here — finished, in progress, and still ahead."
+        description="Once the team maps out this project's phases, the full plan will appear here - finished, in progress, and still ahead."
       />
     );
   }

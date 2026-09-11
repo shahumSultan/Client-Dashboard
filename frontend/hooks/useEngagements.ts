@@ -26,7 +26,7 @@ export function useEngagement(id: string, enabled = true) {
 
 /**
  * Every write returns the updated engagement; seed the cache with it so the
- * next step renders at once instead of after a refetch — that immediacy is
+ * next step renders at once instead of after a refetch - that immediacy is
  * the point of the flow.
  */
 function useEngagementMutation<T = void>(fn: (vars: T) => Promise<Engagement>) {

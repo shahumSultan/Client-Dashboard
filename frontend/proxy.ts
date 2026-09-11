@@ -13,7 +13,7 @@ export default clerkMiddleware(async (auth, req) => {
 
   // The redirect target is passed explicitly. Left to Clerk's default it comes
   // from NEXT_PUBLIC_CLERK_SIGN_IN_URL, which is inlined at build time and is
-  // absent on any host that does not define it — and with no URL to redirect
+  // absent on any host that does not define it - and with no URL to redirect
   // to, protect() answers a signed-out request with 404 rather than a
   // redirect, making every protected route look like it does not exist.
   await auth.protect({

@@ -1,6 +1,6 @@
 # Enigma-Cube Client Portal
 
-A premium, multi-tenant client portal for the Enigma-Cube AI agency. Clients log in to track project progress, view milestones, submit requests, download deliverables, and see real-time analytics — all in one place.
+A premium, multi-tenant client portal for the Enigma-Cube AI agency. Clients log in to track project progress, view milestones, submit requests, download deliverables, and see real-time analytics - all in one place.
 
 ---
 
@@ -20,19 +20,19 @@ A premium, multi-tenant client portal for the Enigma-Cube AI agency. Clients log
 
 ## Features
 
-- **Project Dashboard** — status, progress bar, timeline, live update feed
-- **Milestone Tracking** — vertical timeline with status indicators
-- **Request System** — ticketing for feature requests, bugs, change requests
-- **File Hub** — deliverables with versioning and download links
-- **Analytics** — leads, conversions, revenue, AI-generated summaries, trend charts
-- **Multi-tenant** — each organization sees only their own data
-- **RBAC** — admin, view-only staff (Enigma-Cube team), client owner, client member roles
-- **Client onboarding** — agreement to e-sign, invoice (Stripe link or bank transfer), welcome pack and kickoff-call booking, in order; the project stays locked until the agreement is signed
-- **Comments & remarks** — clients comment on any milestone, update, file, or the project itself; admins reply in-thread and mark threads resolved
-- **Admin comment inbox** — every client remark across all projects in one reply queue (`/admin/comments`)
-- **Invite-only access** — you create the client, then invite an email; they join that workspace automatically on sign-up
-- **Notifications** — in-app bell with unread count, mark-all-read
-- **AI Assistant** — Groq-powered project Q&A inside the portal
+- **Project Dashboard** - status, progress bar, timeline, live update feed
+- **Milestone Tracking** - vertical timeline with status indicators
+- **Request System** - ticketing for feature requests, bugs, change requests
+- **File Hub** - deliverables with versioning and download links
+- **Analytics** - leads, conversions, revenue, AI-generated summaries, trend charts
+- **Multi-tenant** - each organization sees only their own data
+- **RBAC** - admin, view-only staff (Enigma-Cube team), client owner, client member roles
+- **Client onboarding** - agreement to e-sign, invoice (Stripe link or bank transfer), welcome pack and kickoff-call booking, in order; the project stays locked until the agreement is signed
+- **Comments & remarks** - clients comment on any milestone, update, file, or the project itself; admins reply in-thread and mark threads resolved
+- **Admin comment inbox** - every client remark across all projects in one reply queue (`/admin/comments`)
+- **Invite-only access** - you create the client, then invite an email; they join that workspace automatically on sign-up
+- **Notifications** - in-app bell with unread count, mark-all-read
+- **AI Assistant** - Groq-powered project Q&A inside the portal
 
 ---
 
@@ -105,7 +105,7 @@ This starts:
 
 Alembic migrations run automatically on backend startup.
 
-Both app services run in **dev mode against your working tree** — the source is
+Both app services run in **dev mode against your working tree** - the source is
 bind-mounted, so backend edits hot-reload via uvicorn and frontend edits via
 Next. No rebuild needed while developing. Generated migrations land on the host:
 
@@ -123,12 +123,12 @@ Sign up with any email. Your first user will be `client_member` role.
 
 ### 4. Become an admin
 
-There is no seeded admin account, and the `users` table starts empty — a row is
+There is no seeded admin account, and the `users` table starts empty - a row is
 created lazily on a user's first authenticated API call, not at Clerk sign-up.
 So the order matters:
 
 1. Sign up at `/sign-up`.
-2. **Complete the `/welcome` form** — this is what creates your organization and
+2. **Complete the `/welcome` form** - this is what creates your organization and
    your `users` row.
 3. Promote yourself:
 
@@ -201,7 +201,7 @@ clerk, accounts, clkmail, clk._domainkey, clk2._domainkey
 ```
 
 Copy the production keys once those verify. The issuer becomes
-`https://clerk.enigma-cube.com` — that is the value for `CLERK_JWT_ISSUER`.
+`https://clerk.enigma-cube.com` - that is the value for `CLERK_JWT_ISSUER`.
 
 ### 3. Backend → Railway
 
@@ -273,21 +273,21 @@ From then on it is invite-only: create a client, invite their email, done.
 
 ## Where each secret lives
 
-Values are never written here or in `.env.example` — both are tracked in git.
+Values are never written here or in `.env.example` - both are tracked in git.
 Real values live in `.env` (gitignored) for local work, and in the Railway and
 Vercel dashboards for production.
 
 | Variable | Local `.env` | Railway | Vercel | Source |
 |---|---|---|---|---|
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | dev `pk_test_` | — | prod `pk_live_` | Clerk → API Keys |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | dev `pk_test_` | - | prod `pk_live_` | Clerk → API Keys |
 | `CLERK_SECRET_KEY` | dev `sk_test_` | prod `sk_live_` | prod `sk_live_` | Clerk → API Keys |
-| `CLERK_JWT_ISSUER` | dev instance | `https://clerk.enigma-cube.com` | — | Clerk → Frontend API URL |
-| `NEXT_PUBLIC_API_URL` | — | — | Railway backend URL | Railway → Networking |
-| `FRONTEND_URL` | — | `https://portal.enigma-cube.com` | — | your portal domain |
-| `RESEND_API_KEY` | send-only `re_` | send-only `re_` | — | Resend → API Keys |
-| `FROM_EMAIL` | `noreply@enigma-cube.com` | same | — | your verified Resend domain |
-| `ADMIN_NOTIFICATION_EMAIL` | `info@enigma-cube.com` | same | — | defaults to this; set only to change it |
-| `DATABASE_URL` | compose Postgres | Postgres service reference | — | Railway |
+| `CLERK_JWT_ISSUER` | dev instance | `https://clerk.enigma-cube.com` | - | Clerk → Frontend API URL |
+| `NEXT_PUBLIC_API_URL` | - | - | Railway backend URL | Railway → Networking |
+| `FRONTEND_URL` | - | `https://portal.enigma-cube.com` | - | your portal domain |
+| `RESEND_API_KEY` | send-only `re_` | send-only `re_` | - | Resend → API Keys |
+| `FROM_EMAIL` | `noreply@enigma-cube.com` | same | - | your verified Resend domain |
+| `ADMIN_NOTIFICATION_EMAIL` | `info@enigma-cube.com` | same | - | defaults to this; set only to change it |
+| `DATABASE_URL` | compose Postgres | Postgres service reference | - | Railway |
 
 **Local uses the Clerk *development* instance deliberately.** `pk_live_`/`sk_live_`
 are pinned to `portal.enigma-cube.com` and are rejected on `localhost`.
@@ -309,20 +309,20 @@ vercel env ls production                   # Vercel
 |---|---|---|
 | `DATABASE_URL` | Yes | PostgreSQL connection string |
 | `CLERK_SECRET_KEY` | Yes | Clerk backend secret. Also used to read a user's profile, since the session token carries no email |
-| `CLERK_JWT_ISSUER` | Yes | Clerk Frontend API URL — tokens are verified against its JWKS |
+| `CLERK_JWT_ISSUER` | Yes | Clerk Frontend API URL - tokens are verified against its JWKS |
 | `FRONTEND_URL` | Yes in prod | CORS allow-list **and** the expected Clerk `azp`. Wrong value = every request 401s |
 | `DEBUG` | No | `true` exposes `/docs`. Leave `false` in production |
 | `EXTRA_ALLOWED_ORIGINS` | No | Extra CORS origins, comma-separated (e.g. Vercel previews) |
 | `GROQ_API_KEY` | No | Enables AI assistant + summaries |
 | `GROQ_MODEL` | No | Chat model (default `llama-3.3-70b-versatile`) |
 | `GROQ_FAST_MODEL` | No | Summary model (default `llama-3.1-8b-instant`) |
-| `STORAGE_BUCKET` | No | R2/S3 bucket. Unset means no object storage — uploads return 503 |
+| `STORAGE_BUCKET` | No | R2/S3 bucket. Unset means no object storage - uploads return 503 |
 | `STORAGE_ENDPOINT` | No | R2/S3 endpoint URL |
 | `STORAGE_REGION` | No | Signing region (default `auto`, which suits R2) |
 | `STORAGE_ACCESS_KEY` | No | R2/S3 access key |
 | `STORAGE_SECRET_KEY` | No | R2/S3 secret key |
 | `STORAGE_PUBLIC_URL` | No | Public CDN URL for uploaded files |
-| `RESEND_API_KEY` | No | Sends invitation emails. Unset means invitations still work — copy the link instead |
+| `RESEND_API_KEY` | No | Sends invitation emails. Unset means invitations still work - copy the link instead |
 | `FROM_EMAIL` | No | Sender address for emails |
 | `ADMIN_NOTIFICATION_EMAIL` | No | Where client-activity alerts go (default `info@enigma-cube.com`). Mail is never sent to, or triggered by, `+clerk_test` accounts |
 
@@ -335,7 +335,7 @@ vercel env ls production                   # Vercel
 | `NEXT_PUBLIC_API_URL` | Yes | Backend origin, e.g. `https://api.enigma-cube.com` |
 
 `CLERK_PUBLISHABLE_KEY` (without the `NEXT_PUBLIC_` prefix) is not used by
-either service — Clerk's server code reads only the prefixed name.
+either service - Clerk's server code reads only the prefixed name.
 
 ---
 
@@ -356,7 +356,7 @@ Auth is stubbed at `get_current_user`, so routes still execute their real
 ### Looking at the UI
 
 A Playwright pass walks the portal as an admin and as a client, capturing every
-screen plus console errors. It is a look-at-it pass, not an assertion suite —
+screen plus console errors. It is a look-at-it pass, not an assertion suite -
 it exists to catch layout, contrast and empty-state problems that status codes
 cannot show.
 
@@ -368,7 +368,7 @@ E2E_PASSWORD=... CLERK_SECRET_KEY=... CLERK_PUBLISHABLE_KEY=... npx playwright t
 
 Images land in `frontend/e2e/shots/` (gitignored) alongside `problems.json`.
 
-`e2e/onboarding.spec.ts` drives the whole client onboarding through the UI —
+`e2e/onboarding.spec.ts` drives the whole client onboarding through the UI -
 admin prepares and sends, client signs, pays and books, admin confirms. It
 needs `E2E_PROJECT_ID`: a project of the e2e client with no onboarding yet
 (delete its `engagements` row to run it again). `e2e/onboarding-pdf.spec.ts`
@@ -378,7 +378,7 @@ PDF viewer.
 
 It runs against the **local** stack: Clerk testing tokens, which bypass bot
 protection, are a development-instance feature. Sign-in uses a `+clerk_test`
-address, where the emailed code is always `424242` — otherwise Clerk challenges
+address, where the emailed code is always `424242` - otherwise Clerk challenges
 each new device.
 
 ---
@@ -397,14 +397,14 @@ a `client_member` with no organization and push you through the client signup
 flow, creating a stray workspace.
 
 A timestamped `pg_dump` is written before anything is deleted. Admins are left
-with no organization — that is correct: only clients get one, and an admin
+with no organization - that is correct: only clients get one, and an admin
 without one is sent to `/admin` rather than the client portal.
 
 ---
 
 ## Demo data
 
-Seeds a realistic client — a project mid-flight with milestones, updates, a
+Seeds a realistic client - a project mid-flight with milestones, updates, a
 request, four weeks of analytics, and a comment thread with a reply:
 
 ```bash
@@ -412,7 +412,7 @@ docker compose exec backend python scripts/seed_demo.py
 docker compose exec backend python scripts/seed_demo.py --remove
 ```
 
-Idempotent, and scoped to its own organization — it never touches your data.
+Idempotent, and scoped to its own organization - it never touches your data.
 
 ---
 
@@ -444,26 +444,26 @@ adjacent CVD ΔE 19.2, normal-vision ΔE 29.0, both ≥3:1 against the card.
 
 ## Access model
 
-Access is **invite-only**. There is no self-serve signup — a client cannot
+Access is **invite-only**. There is no self-serve signup - a client cannot
 create a workspace, only join one you made for them.
 
-1. **Create the client** — `/admin/clients` → New client. The slug is derived
+1. **Create the client** - `/admin/clients` → New client. The slug is derived
    from the name.
-2. **Invite an email** — on the client's page, enter the address they will sign
+2. **Invite an email** - on the client's page, enter the address they will sign
    up with and pick Owner or Member.
 3. **They sign up** at `/sign-up` with that address. The invitation is redeemed
    on their first authenticated request, so they land straight in the right
-   workspace — no link to click.
+   workspace - no link to click.
 
 When `RESEND_API_KEY` is set the invitation is emailed automatically; the
-response's `email_sent` says whether it went out. Sending is best-effort — a
+response's `email_sent` says whether it went out. Sending is best-effort - a
 mail outage never blocks onboarding, and the admin can copy the link instead.
 
 The invite link (`/join/<token>`) is a convenience either way; it is
 idempotent, so opening it after already being placed still works.
 
 Invitations are **bound to the email address**, so a forwarded or leaked link
-cannot admit a stranger — the recipient must be signed in as the invitee. They
+cannot admit a stranger - the recipient must be signed in as the invitee. They
 are single-use, expire after 14 days, can be revoked, and can never grant
 `admin`.
 
@@ -472,9 +472,9 @@ they need an invitation rather than asking them to create anything.
 
 | Endpoint | |
 |---|---|
-| `POST /invitations` | admin — create (re-inviting returns the live one) |
-| `GET /invitations` | admin — pending by default, `?include_spent=true` for all |
-| `DELETE /invitations/{id}` | admin — revoke |
+| `POST /invitations` | admin - create (re-inviting returns the live one) |
+| `GET /invitations` | admin - pending by default, `?include_spent=true` for all |
+| `DELETE /invitations/{id}` | admin - revoke |
 | `GET /invitations/preview?token=` | what the join page shows |
 | `POST /invitations/accept` | redeem a token |
 
@@ -487,18 +487,18 @@ at `/admin/projects/<id>/onboarding`:
 
 | Step | Client does | Unlocks |
 |---|---|---|
-| 1. Agreement | Reviews scope, deliverables, timeline, revision policy; types their name to sign | the invoice — and the project itself |
+| 1. Agreement | Reviews scope, deliverables, timeline, revision policy; types their name to sign | the invoice - and the project itself |
 | 2. Invoice | Pays via the Stripe Payment Link or bank transfer, then says so | welcome pack, kickoff call, the "underway" screen |
-| 3. Welcome pack | Reads the overview, next steps and how to reach you | — |
-| 4. Client portal | Nothing — they're already in, so it starts ticked | — |
-| 5. Kickoff call | Books through your Calendly/Cal.com link and records the time, plus prep notes | — |
-| 6. Underway | Sees what's done, the live milestone timeline and what's next | — |
+| 3. Welcome pack | Reads the overview, next steps and how to reach you | - |
+| 4. Client portal | Nothing - they're already in, so it starts ticked | - |
+| 5. Kickoff call | Books through your Calendly/Cal.com link and records the time, plus prep notes | - |
+| 6. Underway | Sees what's done, the live milestone timeline and what's next | - |
 
 **Your own agreement.** On the Agreement tab, choose *Use my own document*
 and upload your contract as a PDF (export it from Word or Google Docs; up to
 10 MB, no password). The client reads that exact file in the portal and signs
 it the same way. The signed copy they and you download is your PDF with a
-**signature certificate** appended as the last page — signer, time, IP and the
+**signature certificate** appended as the last page - signer, time, IP and the
 file's SHA-256. The file is fingerprinted into the agreement hash, so it can't
 be swapped after sending without recalling it, and a replaced file voids any
 signature on the old one. *Build it here* is still there for quick jobs.
@@ -509,7 +509,7 @@ link and agenda), so they are written once. Scope, deliverables, timeline,
 revision policy, a priced line item and a way to pay are required to send.
 
 **Sending** emails everyone in the client's workspace *and* anyone invited but
-not yet signed up — for a new client it is often the first email they get.
+not yet signed up - for a new client it is often the first email they get.
 
 **The signature.** Sending freezes the agreement and records a SHA-256
 fingerprint of its text. To sign, the client must present that fingerprint, so
@@ -521,7 +521,7 @@ payment on a client's behalf.
 
 **Payment.** The client moves on as soon as they report paying; you *Confirm
 funds received* when it lands. The invoice freezes at the report. Stripe
-isn't called directly — create a Payment Link for the amount in Stripe and
+isn't called directly - create a Payment Link for the amount in Stripe and
 paste it in.
 
 **PDFs.** A form-built agreement and every invoice render on white at
@@ -535,15 +535,15 @@ paste it in.
 
 | Role | Who | Permissions |
 |---|---|---|
-| `admin` | Enigma-Cube team | Full access — create/edit all orgs, projects, milestones, onboarding, roles |
+| `admin` | Enigma-Cube team | Full access - create/edit all orgs, projects, milestones, onboarding, roles |
 | `staff` | Enigma-Cube team, view only | Sees everything an admin sees; **changes nothing** |
 | `client_owner` | Primary client contact | View own org, edit org profile, submit requests, comment |
 | `client_member` | Additional client users | View own org, submit requests, comment |
 
-Team roles (`admin`, `staff`) have **no organization** — that is correct, and a
+Team roles (`admin`, `staff`) have **no organization** - that is correct, and a
 team member without one is sent to `/admin` rather than the client portal.
 
-Clients are **read-and-comment only** on the work itself — creating or editing
+Clients are **read-and-comment only** on the work itself - creating or editing
 projects, milestones, analytics and file uploads are all admin-only.
 
 **Adding a team member.** They sign up at the portal; they appear on
@@ -563,14 +563,14 @@ a `Button` that changes nothing (Cancel, Copy link).
 Assign roles via `PATCH /api/v1/admin/users/{id}/role` (admin only).
 
 ---|---|---|
-| `admin` | Enigma-Cube team | Full access — create/edit all orgs, projects, milestones, analytics |
+| `admin` | Enigma-Cube team | Full access - create/edit all orgs, projects, milestones, analytics |
 | `client_owner` | Primary client contact | View own org, edit org profile, submit requests, comment |
 | `client_member` | Additional client users | View own org, submit requests, comment |
 
-Admins have **no organization** — that is correct, and an admin without one is
+Admins have **no organization** - that is correct, and an admin without one is
 sent to `/admin` rather than the client portal.
 
-Clients are **read-and-comment only** on the work itself — creating or editing
+Clients are **read-and-comment only** on the work itself - creating or editing
 projects, milestones, analytics and file uploads are all admin-only.
 
 Assign roles via the `PATCH /api/v1/users/{id}/role` endpoint (admin only).

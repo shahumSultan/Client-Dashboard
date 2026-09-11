@@ -56,7 +56,7 @@ export function CommentComposer({
         className={compact ? "min-h-[68px]" : undefined}
         onKeyDown={(e) => {
           // Enter inserts a newline; the shortcut sends. Never the other way
-          // round — losing a half-written remark to a stray Enter is worse.
+          // round - losing a half-written remark to a stray Enter is worse.
           if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
             e.preventDefault();
             void submit();

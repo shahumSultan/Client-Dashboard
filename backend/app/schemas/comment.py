@@ -32,7 +32,7 @@ class _Body(BaseModel):
 
 class CommentCreate(_Body):
     target_type: CommentTargetType
-    # Omitted for a project-level comment — it defaults to the project itself.
+    # Omitted for a project-level comment - it defaults to the project itself.
     target_id: Optional[str] = None
 
 

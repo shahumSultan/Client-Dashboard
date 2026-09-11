@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Promote a signed-up user to admin.
 #
-# The user must have signed in and completed /welcome at least once — their row
+# The user must have signed in and completed /welcome at least once - their row
 # is created lazily on the first authenticated API call, not at Clerk sign-up.
 set -euo pipefail
 

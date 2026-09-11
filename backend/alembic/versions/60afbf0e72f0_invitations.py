@@ -52,5 +52,5 @@ def downgrade() -> None:
     op.drop_index('ix_invitations_org', table_name='invitations')
     op.drop_index('ix_invitations_email', table_name='invitations')
     op.drop_table('invitations')
-    # userrole is still in use by users.role — leave the type in place.
+    # userrole is still in use by users.role - leave the type in place.
     # ### end Alembic commands ###

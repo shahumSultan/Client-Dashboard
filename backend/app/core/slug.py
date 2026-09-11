@@ -12,8 +12,8 @@ def slugify(value: str) -> str:
 async def unique_org_slug(db: AsyncSession, name: str) -> str:
     """Derive a URL-safe slug from a company name, suffixing on collision.
 
-    Two clients can legitimately share a company name, so the slug — not the
-    name — carries the uniqueness constraint.
+    Two clients can legitimately share a company name, so the slug - not the
+    name - carries the uniqueness constraint.
     """
     base = slugify(name)
     result = await db.execute(

@@ -7,7 +7,7 @@ import { BASE, OUT, problems, watch, signIn, shoot } from "./helpers";
  * prepares and sends, the client signs, pays, reads the welcome pack and books
  * the kickoff call, and the admin sees each step land.
  *
- * Needs E2E_PROJECT_ID — a project belonging to the e2e client, with no
+ * Needs E2E_PROJECT_ID - a project belonging to the e2e client, with no
  * onboarding yet. Tests run in order and share that state.
  */
 
@@ -51,7 +51,7 @@ test("admin prepares and sends", async ({ page }) => {
 
   await page.getByRole("tab", { name: "Invoice" }).click();
   await page.getByRole("button", { name: "Add line item" }).click();
-  await page.getByLabel("Description 1").fill("50% deposit — Lead Qualification Engine");
+  await page.getByLabel("Description 1").fill("50% deposit - Lead Qualification Engine");
   await page.getByLabel(/Price \(USD\) 1/).fill("3750");
   await page.getByLabel("Stripe payment link").fill("https://buy.stripe.com/test_example");
   await page.getByLabel("Bank transfer details").fill(
@@ -64,7 +64,7 @@ test("admin prepares and sends", async ({ page }) => {
     "We're thrilled to be building this with you. Over the next four weeks you'll see every step land in this portal."
   );
   await page.getByLabel("Contact email").fill("hello@enigma-cube.com");
-  await page.getByLabel("Day-to-day channel").fill("This portal — leave a remark on anything");
+  await page.getByLabel("Day-to-day channel").fill("This portal - leave a remark on anything");
 
   await page.getByRole("tab", { name: "Kickoff call" }).click();
   await page.getByLabel("Booking link").fill("https://cal.com/enigma-cube/kickoff");

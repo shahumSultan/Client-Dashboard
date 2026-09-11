@@ -161,7 +161,7 @@ async def seed(session) -> None:
 
     await session.flush()
 
-    # A client remark with an admin reply — the flow worth showing off.
+    # A client remark with an admin reply - the flow worth showing off.
     thread = Comment(
         project_id=project.id, target_type=CommentTargetType.MILESTONE,
         target_id=milestones[3].id, author_id=client.id,
@@ -173,7 +173,7 @@ async def seed(session) -> None:
     session.add(Comment(
         project_id=project.id, target_type=CommentTargetType.MILESTONE,
         target_id=milestones[3].id, author_id=author_id, parent_id=thread.id,
-        body="Yes — it ships with this milestone. Each contact gets the score plus the "
+        body="Yes - it ships with this milestone. Each contact gets the score plus the "
              "top three contributing factors in plain language.",
     ))
     session.add(Comment(
@@ -183,9 +183,9 @@ async def seed(session) -> None:
     ))
 
     await session.commit()
-    print(f"Seeded '{org.name}' — 1 project, {len(MILESTONES)} milestones, "
+    print(f"Seeded '{org.name}' - 1 project, {len(MILESTONES)} milestones, "
           f"{len(UPDATES)} updates, 1 request, 4 analytics periods, 3 comments.")
-    print("Client login shown in the portal as Dana Reed (no Clerk account — view it as admin).")
+    print("Client login shown in the portal as Dana Reed (no Clerk account - view it as admin).")
 
 
 async def main() -> None:

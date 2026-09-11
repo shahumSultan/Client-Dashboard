@@ -8,7 +8,7 @@ interface StatsCardProps {
   icon: LucideIcon;
   value: number | string;
   label: string;
-  /** Secondary line — e.g. "3 of 8 complete". */
+  /** Secondary line - e.g. "3 of 8 complete". */
   detail?: string;
   loading?: boolean;
   className?: string;

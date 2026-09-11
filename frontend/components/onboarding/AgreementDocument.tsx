@@ -7,7 +7,7 @@ import type { Engagement } from "@/lib/types";
  * The agreement as the client reads and signs it.
  *
  * Pure rendering, shared by the client's signing view, the admin preview and
- * the printable PDF — so what is signed, what the admin checked and what gets
+ * the printable PDF - so what is signed, what the admin checked and what gets
  * filed are the same markup.
  */
 export function AgreementDocument({
@@ -32,7 +32,7 @@ export function AgreementDocument({
 
         <dl className="mt-6 grid gap-4 sm:grid-cols-2">
           <Party label="Provider" name="Enigma-Cube" />
-          <Party label="Client" name={e.organization_name ?? "—"} />
+          <Party label="Client" name={e.organization_name ?? "-"} />
         </dl>
       </header>
 
@@ -68,7 +68,7 @@ export function AgreementDocument({
                 {e.timeline.map((t, i) => (
                   <tr key={i} className="border-b border-hairline last:border-0">
                     <td className="py-2.5 pr-4 font-medium text-fg">{t.phase}</td>
-                    <td className="py-2.5 text-right text-subtle">{t.duration ?? "—"}</td>
+                    <td className="py-2.5 text-right text-subtle">{t.duration ?? "-"}</td>
                   </tr>
                 ))}
               </tbody>
@@ -89,7 +89,7 @@ export function AgreementDocument({
           <span className="tabular font-semibold text-fg">
             {formatMoney(e.invoice_total, e.currency)}
           </span>
-          {e.invoice_number && <span className="text-subtle"> — invoice {e.invoice_number}</span>}
+          {e.invoice_number && <span className="text-subtle"> - invoice {e.invoice_number}</span>}
         </p>
         {e.payment_terms && <Prose text={e.payment_terms} className="mt-3" />}
       </Section>

@@ -26,7 +26,7 @@ export function OnboardingBanner() {
                   Next step
                 </p>
                 <p className="mt-0.5 text-sm font-semibold text-fg">
-                  {clientActionLabel(e)} — {e.project_name}
+                  {clientActionLabel(e)} - {e.project_name}
                 </p>
               </div>
               <span className="flex items-center gap-1.5 text-sm font-medium text-brand-soft">

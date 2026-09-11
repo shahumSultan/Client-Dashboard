@@ -11,7 +11,7 @@ export interface NavItem {
   label: string;
   href: string;
   icon: LucideIcon;
-  /** Match the href exactly — for index routes like /admin. */
+  /** Match the href exactly - for index routes like /admin. */
   exact?: boolean;
   /** Something here is waiting on the user. */
   attention?: boolean;
@@ -23,7 +23,7 @@ interface SidebarShellProps {
   kicker: string;
   open?: boolean;
   onClose?: () => void;
-  /** Rendered above the user footer — e.g. the admin/portal cross-link. */
+  /** Rendered above the user footer - e.g. the admin/portal cross-link. */
   footerSlot?: React.ReactNode;
 }
 

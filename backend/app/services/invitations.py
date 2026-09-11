@@ -1,7 +1,7 @@
 """Redeeming invitations.
 
 Kept out of the router because `core.auth` needs the auto-accept path and the
-router imports `core.auth` — putting them together would be circular.
+router imports `core.auth` - putting them together would be circular.
 """
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -25,7 +25,7 @@ async def accept_invitation(db: AsyncSession, user: User, invite: Invitation) ->
         )
     if user.organization_id and user.organization_id != invite.organization_id:
         raise HTTPException(status_code=409, detail="This account already belongs to a workspace")
-    # Accepting would rewrite the role to a client one — for an admin, a
+    # Accepting would rewrite the role to a client one - for an admin, a
     # self-demotion nobody might be left to undo.
     if is_team(user):
         raise HTTPException(
@@ -50,7 +50,7 @@ async def auto_accept_matching_invitation(db: AsyncSession, user: User) -> User:
     link. The token flow stays available for anything unusual.
     """
     # Team accounts never have a workspace, so without this check they would
-    # hit it on every request — and one client invitation to their address
+    # hit it on every request - and one client invitation to their address
     # would silently rewrite their role to a client one.
     if user.organization_id or not user.email or is_team(user):
         return user

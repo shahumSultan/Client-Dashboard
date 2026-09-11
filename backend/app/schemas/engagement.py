@@ -30,7 +30,7 @@ def _https_or_none(v: Optional[str]) -> Optional[str]:
     if not v:
         return None
     # These links are rendered as buttons in front of a client about to pay.
-    # Only https — no javascript:, no plain http a network could rewrite.
+    # Only https - no javascript:, no plain http a network could rewrite.
     if not v.startswith("https://"):
         raise ValueError("Must be an https:// link")
     return v
@@ -41,7 +41,7 @@ AGREEMENT_FIELDS = (
     "agreement_source", "agreement_title", "scope", "deliverables", "timeline",
     "revision_policy", "payment_terms", "additional_terms",
 )
-# Frozen once the client says they have paid — the amount they paid against.
+# Frozen once the client says they have paid - the amount they paid against.
 INVOICE_FIELDS = (
     "invoice_number", "currency", "line_items", "invoice_due_date",
     "invoice_notes", "stripe_payment_url", "bank_details",

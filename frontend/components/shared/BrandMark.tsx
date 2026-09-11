@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
  *
  * The white asset is used rather than the red one: every surface it sits on in
  * this product is dark, and the red version (#d44954) is a lighter, pinker red
- * than the brand primary (#a92e2e) — two reds next to each other read as a
+ * than the brand primary (#a92e2e) - two reds next to each other read as a
  * mistake. The red asset is kept for the favicon, where the tab background may
  * be light.
  */

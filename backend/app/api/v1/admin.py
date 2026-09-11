@@ -62,7 +62,7 @@ async def update_user_role(
     admin: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
-    """Set someone's role. Admins only — staff are read-only and cannot promote."""
+    """Set someone's role. Admins only - staff are read-only and cannot promote."""
     target = await db.get(User, user_id)
     if not target:
         raise HTTPException(status_code=404, detail="User not found")

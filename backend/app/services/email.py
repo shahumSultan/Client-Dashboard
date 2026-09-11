@@ -1,7 +1,7 @@
 """Outbound email via Resend.
 
 Every send is best-effort: a failure here must never break the action that
-triggered it. Inviting a client succeeds whether or not the mail goes out —
+triggered it. Inviting a client succeeds whether or not the mail goes out -
 the admin can always copy the link instead.
 """
 import asyncio
@@ -24,7 +24,7 @@ def _send(payload: dict) -> None:
 
 
 def is_test_address(address: str) -> bool:
-    """Clerk's test accounts (`+clerk_test`) — fabricated, never deliverable.
+    """Clerk's test accounts (`+clerk_test`) - fabricated, never deliverable.
 
     Mail sent to them bounces, and bounces count against the sending domain's
     reputation; an e2e run against a stack with a live key would send dozens.
@@ -63,7 +63,7 @@ PROJECT_FOOTER = (
 def _shell(
     title: str, body_html: str, cta_label: str, cta_url: str, footer: str = INVITE_FOOTER
 ) -> str:
-    """Minimal table-based layout — email clients are not browsers.
+    """Minimal table-based layout - email clients are not browsers.
 
     Deliberately light: a dark card renders unpredictably against the varied
     backgrounds email clients impose, and Gmail strips most of what would make
@@ -122,7 +122,7 @@ async def send_invitation_email(
         f"You will be able to follow your project timeline, see what has been "
         f"delivered, and leave remarks on the work as it progresses.</p>"
         f'<p style="margin:0 0 24px;font-size:13px;line-height:1.6;color:#78716c;">'
-        f"Sign up with <strong>{to}</strong> — the invitation is tied to that address.</p>"
+        f"Sign up with <strong>{to}</strong> - the invitation is tied to that address.</p>"
     )
     return await _send_async({
         "from": f"Enigma-Cube <{settings.FROM_EMAIL}>",

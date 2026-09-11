@@ -109,7 +109,7 @@ async def client_recipients(db: AsyncSession, organization_id: str) -> list[str]
 
 
 async def admin_users(db: AsyncSession) -> list[User]:
-    """The Enigma-Cube team — everyone who gets a bell for client activity."""
+    """The Enigma-Cube team - everyone who gets a bell for client activity."""
     result = await db.execute(
         select(User).where(User.role.in_((UserRole.ADMIN, UserRole.STAFF)), User.is_active.is_(True))
     )
@@ -147,9 +147,9 @@ BUILTIN_DEFAULTS: dict = {
     "response_time": "Within one business day",
     "working_hours": "Monday to Friday, 9:00–18:00",
     "next_steps": [
-        "Kickoff strategy call — align on goals, creative direction and logistics",
-        "Discovery — we gather materials and map the work in detail",
-        "First milestone — you see real progress in your portal timeline",
+        "Kickoff strategy call - align on goals, creative direction and logistics",
+        "Discovery - we gather materials and map the work in detail",
+        "First milestone - you see real progress in your portal timeline",
     ],
     "call_agenda": [
         "Goals and what success looks like",

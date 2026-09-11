@@ -72,18 +72,18 @@
   frontend/lib/utils.ts → frontend/package.json
 
 ## Hyperedges (group relationships)
-- **Clerk Authentication Flow** — concept_clerk_auth, frontend_proxy_clerkauthmiddleware, hooks_useauth_useauthtoken, hooks_useauth_usecurrentuser [EXTRACTED 0.95]
-- **Admin Portal Page Group** — admin_layout_adminlayout, admin_page_admindashboard, clients_page_adminclientspage, users_page_adminuserspage [INFERRED 0.95]
-- **Project as Central Data Hub** — lib_types_project, lib_types_milestone, lib_types_clientrequest, lib_types_analyticsentry [EXTRACTED 0.95]
-- **Dashboard Shell (Layout + Sidebar + Topbar)** — dashboard_layout_dashboardlayout, shared_sidebar_sidebar, shared_topbar_topbar [EXTRACTED 0.95]
-- **Placeholder Dashboard Pages (redirect to project)** — files_page_filespage, requests_page_clientrequestspage, milestones_page_milestonespage, analytics_page_analyticspage [INFERRED 0.95]
-- **shadcn/ui Component Library** — ui_button_button, ui_card_card, ui_dialog_dialog, ui_badge_badge, ui_progress_progress [INFERRED 0.95]
-- **FastAPI Bootstrap (App + Config + Database)** — app_main_fastapiapp, app_config_settings, app_database_asyncengine [EXTRACTED 0.95]
-- **Backend Project Data Model (ORM + Schema)** — models_project_project, models_milestone_milestone, models_request_request, models_file_file [INFERRED 0.95]
-- **Groq AI Service Layer** — services_ai_askprojectassistant, services_ai_generateanalyticssummary, concept_groq_ai [EXTRACTED 0.95]
-- **RBAC Auth Dependency Chain** — core_auth_verifyclerktoken, core_auth_getcurrentuser, core_auth_requireadmin, core_auth_requireclientowner [EXTRACTED 0.95]
-- **Admin-Only API Endpoints** — v1_admin_getstats, v1_admin_listallrequests, v1_admin_listallusers, v1_admin_updateuserrole [EXTRACTED 0.95]
-- **Next.js Default Public Static Icons** — public_window_icon, public_globe_icon, public_vercel_icon, public_file_icon [INFERRED 0.95]
+- **Clerk Authentication Flow** - concept_clerk_auth, frontend_proxy_clerkauthmiddleware, hooks_useauth_useauthtoken, hooks_useauth_usecurrentuser [EXTRACTED 0.95]
+- **Admin Portal Page Group** - admin_layout_adminlayout, admin_page_admindashboard, clients_page_adminclientspage, users_page_adminuserspage [INFERRED 0.95]
+- **Project as Central Data Hub** - lib_types_project, lib_types_milestone, lib_types_clientrequest, lib_types_analyticsentry [EXTRACTED 0.95]
+- **Dashboard Shell (Layout + Sidebar + Topbar)** - dashboard_layout_dashboardlayout, shared_sidebar_sidebar, shared_topbar_topbar [EXTRACTED 0.95]
+- **Placeholder Dashboard Pages (redirect to project)** - files_page_filespage, requests_page_clientrequestspage, milestones_page_milestonespage, analytics_page_analyticspage [INFERRED 0.95]
+- **shadcn/ui Component Library** - ui_button_button, ui_card_card, ui_dialog_dialog, ui_badge_badge, ui_progress_progress [INFERRED 0.95]
+- **FastAPI Bootstrap (App + Config + Database)** - app_main_fastapiapp, app_config_settings, app_database_asyncengine [EXTRACTED 0.95]
+- **Backend Project Data Model (ORM + Schema)** - models_project_project, models_milestone_milestone, models_request_request, models_file_file [INFERRED 0.95]
+- **Groq AI Service Layer** - services_ai_askprojectassistant, services_ai_generateanalyticssummary, concept_groq_ai [EXTRACTED 0.95]
+- **RBAC Auth Dependency Chain** - core_auth_verifyclerktoken, core_auth_getcurrentuser, core_auth_requireadmin, core_auth_requireclientowner [EXTRACTED 0.95]
+- **Admin-Only API Endpoints** - v1_admin_getstats, v1_admin_listallrequests, v1_admin_listallusers, v1_admin_updateuserrole [EXTRACTED 0.95]
+- **Next.js Default Public Static Icons** - public_window_icon, public_globe_icon, public_vercel_icon, public_file_icon [INFERRED 0.95]
 
 ## Communities (52 total, 19 thin omitted)
 
@@ -162,7 +162,7 @@ Nodes (4): File / Document Icon, Globe / Internet Icon, Vercel Logo Icon, Window
 ## Knowledge Gaps
 - **162 isolated node(s):** `$schema`, `style`, `rsc`, `tsx`, `config` (+157 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **19 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **19 thin communities (<3 nodes) omitted from report** - run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_

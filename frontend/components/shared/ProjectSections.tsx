@@ -10,7 +10,7 @@ import { useProjects } from "@/hooks/useProjects";
 import type { Project } from "@/lib/types";
 
 interface ProjectSectionsProps {
-  /** Rendered once per project — owns its own data fetching. */
+  /** Rendered once per project - owns its own data fetching. */
   children: (project: Project) => React.ReactNode;
   emptyIcon: LucideIcon;
   emptyTitle: string;

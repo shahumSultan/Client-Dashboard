@@ -10,7 +10,7 @@ export function cn(...inputs: ClassValue[]) {
  * Parse a date from the API.
  *
  * The backend stores UTC as naive timestamps, so they arrive without a zone
- * ("2026-09-11T01:14:15") and `new Date` would read them as local time —
+ * ("2026-09-11T01:14:15") and `new Date` would read them as local time -
  * hours off, and on the wrong day near midnight. Bare dates ("2026-09-16")
  * have the opposite problem: `new Date` reads those as UTC midnight, which is
  * the previous day anywhere west of Greenwich. Each is pinned down here.
@@ -25,7 +25,7 @@ export function parseApiDate(value: string): Date {
 }
 
 export function formatDate(date: string | null | undefined): string {
-  if (!date) return "—";
+  if (!date) return "-";
   return format(parseApiDate(date), "MMM d, yyyy");
 }
 
@@ -34,7 +34,7 @@ export function timeAgo(date: string): string {
 }
 
 export function formatBytes(bytes: number | null | undefined): string {
-  if (!bytes) return "—";
+  if (!bytes) return "-";
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;

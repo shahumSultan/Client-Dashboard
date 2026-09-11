@@ -8,8 +8,8 @@ from app.database import Base
 
 
 class UserRole(str, enum.Enum):
-    ADMIN = "admin"             # Enigma-Cube team — full control
-    STAFF = "staff"             # Enigma-Cube team — sees everything, changes nothing
+    ADMIN = "admin"             # Enigma-Cube team - full control
+    STAFF = "staff"             # Enigma-Cube team - sees everything, changes nothing
     CLIENT_OWNER = "client_owner"
     CLIENT_MEMBER = "client_member"
 

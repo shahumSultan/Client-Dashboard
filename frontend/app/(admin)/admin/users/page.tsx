@@ -56,7 +56,7 @@ export default function AdminUsersPage() {
           <p className="font-medium text-fg">Adding someone to your team</p>
           <p className="mt-1">
             Ask them to sign up at the portal with their work email. They&apos;ll appear below with
-            no workspace — then set their role. <span className="text-fg">Staff</span>{" "}can open and
+            no workspace - then set their role. <span className="text-fg">Staff</span>{" "}can open and
             read everything in the admin panel but can&apos;t change anything;{" "}
             <span className="text-fg">Admin</span> has full control.
           </p>
@@ -94,7 +94,7 @@ export default function AdminUsersPage() {
                   />
                   <div className="min-w-0">
                     <p className="flex items-center gap-2 truncate text-sm font-medium text-fg">
-                      {u.full_name ?? "—"}
+                      {u.full_name ?? "-"}
                       {u.id === me?.id && <Badge variant="brand">You</Badge>}
                     </p>
                     <p className="truncate text-xs text-faint">
@@ -122,8 +122,8 @@ export default function AdminUsersPage() {
                     className="h-9 w-auto min-w-[11rem] text-xs"
                   >
                     {/* Team roles are for Enigma-Cube people, not anyone in a client's workspace. */}
-                    <option value="admin" disabled={!!u.organization_id}>Admin — full control</option>
-                    <option value="staff" disabled={!!u.organization_id}>Staff — view only</option>
+                    <option value="admin" disabled={!!u.organization_id}>Admin - full control</option>
+                    <option value="staff" disabled={!!u.organization_id}>Staff - view only</option>
                     <option value="client_owner">Client owner</option>
                     <option value="client_member">Client member</option>
                   </Select>

@@ -24,7 +24,7 @@ export function Dialog({ open, onOpenChange, children, label }: DialogProps) {
         onOpenChange(false);
         return;
       }
-      // Keep Tab inside the dialog — an escape route that leaks focus back to
+      // Keep Tab inside the dialog - an escape route that leaks focus back to
       // the page behind the scrim is disorienting for keyboard users.
       if (e.key !== "Tab" || !panelRef.current) return;
       const focusable = panelRef.current.querySelectorAll<HTMLElement>(

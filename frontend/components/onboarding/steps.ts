@@ -25,7 +25,7 @@ export interface Step {
 /**
  * The six steps in the order the client meets them.
  *
- * The portal step is done from the start — they are standing in it. Showing
+ * The portal step is done from the start - they are standing in it. Showing
  * one step already complete is deliberate: the sequence opens with momentum
  * rather than a wall of unchecked boxes.
  */

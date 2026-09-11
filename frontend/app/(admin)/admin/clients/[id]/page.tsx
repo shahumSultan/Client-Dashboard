@@ -183,7 +183,7 @@ export default function ClientDetailPage() {
                     highlight={u.role === "admin"}
                   />
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-fg">{u.full_name ?? "—"}</p>
+                    <p className="truncate text-sm font-medium text-fg">{u.full_name ?? "-"}</p>
                     <p className="truncate text-xs text-faint">{u.email}</p>
                   </div>
                 </div>

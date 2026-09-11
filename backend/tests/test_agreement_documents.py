@@ -51,7 +51,7 @@ async def test_uploaded_pdf_becomes_the_agreement(api, world):
     assert body["document"]["filename"] == "MSA Acme.pdf"
     assert body["document"]["page_count"] == 2
 
-    # No scope/deliverables/timeline needed — the PDF carries them.
+    # No scope/deliverables/timeline needed - the PDF carries them.
     sent = await api(world["admin"]).post(f"/engagements/{e['id']}/send")
     assert sent.status_code == 200, sent.text
 

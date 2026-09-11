@@ -18,7 +18,7 @@ def inspect_pdf(data: bytes) -> int:
     """Return the page count, or raise InvalidPdf with a reason for the admin.
 
     The file is shown to a client and later merged with a certificate, so it
-    has to be a PDF that actually opens — not merely one named .pdf.
+    has to be a PDF that actually opens - not merely one named .pdf.
     """
     if len(data) > MAX_PDF_BYTES:
         raise InvalidPdf("The PDF is larger than 10 MB. Export it again at a smaller size.")
@@ -31,7 +31,7 @@ def inspect_pdf(data: bytes) -> int:
     except Exception:
         # pypdf raises a spread of types on malformed input, not only
         # PdfReadError; any of them means the same thing to the admin.
-        raise InvalidPdf("The PDF couldn't be read — it may be damaged. Export it again.")
+        raise InvalidPdf("The PDF couldn't be read - it may be damaged. Export it again.")
     if encrypted:
         raise InvalidPdf("The PDF is password-protected. Upload a copy without a password.")
     if pages < 1:

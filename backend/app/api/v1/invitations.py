@@ -35,7 +35,7 @@ async def _find_pending(db: AsyncSession, token: str) -> Invitation:
         .where(Invitation.token == token)
     )
     invite = result.scalar_one_or_none()
-    # Same response whether the token is wrong, spent, revoked or stale — a
+    # Same response whether the token is wrong, spent, revoked or stale - a
     # caller holding a bad token learns nothing about which.
     if not invite or not invite.is_pending:
         raise HTTPException(status_code=404, detail="This invitation is no longer valid")

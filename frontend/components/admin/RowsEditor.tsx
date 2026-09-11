@@ -16,7 +16,7 @@ export interface Column<T> {
 }
 
 /**
- * Edit a list of small records — deliverables, timeline phases, line items.
+ * Edit a list of small records - deliverables, timeline phases, line items.
  * Rows are plain objects of strings; callers convert on the way in and out.
  */
 export function RowsEditor<T extends Record<string, string>>({
@@ -104,7 +104,7 @@ export function RowsEditor<T extends Record<string, string>>({
   );
 }
 
-/** Same, for a flat list of strings — next steps, agenda items. */
+/** Same, for a flat list of strings - next steps, agenda items. */
 export function ListEditor({
   label,
   items,

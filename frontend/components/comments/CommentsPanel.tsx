@@ -183,7 +183,7 @@ function Thread({
             Reply
           </Button>
         )}
-        {/* Resolving is the admin's call — it is how you close a remark out. */}
+        {/* Resolving is the admin's call - it is how you close a remark out. */}
         {isAdmin && (
           <Button
             variant="ghost"

@@ -8,12 +8,12 @@ export function useAuthToken() {
   const { getToken, isLoaded, isSignedIn } = useClerkAuth();
 
   // Registered during render, not in an effect. Effects run after the first
-  // paint, and the /users/me query fires in that same commit — so on a cold
+  // paint, and the /users/me query fires in that same commit - so on a cold
   // load the first request went out with no Authorization header and 401'd,
   // relying on a retry to recover. The assignment is idempotent.
   if (isLoaded) {
     // Hand the getter itself to the axios interceptor rather than a single
-    // token value — tokens expire in ~60s and would otherwise go stale.
+    // token value - tokens expire in ~60s and would otherwise go stale.
     setTokenGetter(isSignedIn ? () => getToken() : null);
   }
 

@@ -1,4 +1,4 @@
-"""Real RS256 verification — the one thing conftest stubs everywhere else."""
+"""Real RS256 verification - the one thing conftest stubs everywhere else."""
 import time
 
 import pytest

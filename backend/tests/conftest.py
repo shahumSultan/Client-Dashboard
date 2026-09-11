@@ -1,6 +1,6 @@
 """Test harness for the API.
 
-Only Clerk's token *verification* is stubbed — the real `get_current_user`
+Only Clerk's token *verification* is stubbed - the real `get_current_user`
 then runs in full, so provisioning, the inactive-account check and invitation
 auto-accept are all exercised rather than bypassed. Routes likewise run their
 real `require_admin` and `assert_project_access` logic. Verifying an RS256
@@ -91,7 +91,7 @@ async def session(engine):
 
 @pytest_asyncio.fixture
 async def world(session):
-    """Two unrelated tenants plus an admin — the shape isolation bugs hide in."""
+    """Two unrelated tenants plus an admin - the shape isolation bugs hide in."""
     org_a = Organization(name="Acme Law", slug=f"acme-{uuid.uuid4().hex[:6]}")
     org_b = Organization(name="Globex", slug=f"globex-{uuid.uuid4().hex[:6]}")
     session.add_all([org_a, org_b])

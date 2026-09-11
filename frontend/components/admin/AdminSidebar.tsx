@@ -23,7 +23,7 @@ const NAV: NavItem[] = [
 
 export function AdminSidebar({ open, onClose }: { open?: boolean; onClose?: () => void }) {
   const { data: user } = useCurrentUser();
-  // An admin without an organization has no client portal to go back to —
+  // An admin without an organization has no client portal to go back to -
   // the link would just bounce them here again.
   const hasPortal = !!user?.organization_id;
 

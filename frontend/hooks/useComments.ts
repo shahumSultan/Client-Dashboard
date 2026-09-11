@@ -35,7 +35,7 @@ export function useComments(
   });
 }
 
-/** Invalidate every thread list for a project — cheap, and keeps counts honest. */
+/** Invalidate every thread list for a project - cheap, and keeps counts honest. */
 function useInvalidateProjectComments(projectId: string) {
   const qc = useQueryClient();
   return () => {

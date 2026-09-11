@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 security = HTTPBearer()
 
 # Clerk rotates signing keys, so the JWKS is cached with a TTL rather than
-# forever — otherwise a rotation breaks every request until the app restarts.
+# forever - otherwise a rotation breaks every request until the app restarts.
 JWKS_TTL_SECONDS = 3600
 CLOCK_SKEW_SECONDS = 5
 
@@ -55,7 +55,7 @@ async def _find_key(kid: str) -> dict | None:
     jwks = await _get_clerk_jwks()
     key = next((k for k in jwks["keys"] if k["kid"] == kid), None)
     if key is None:
-        # Unknown kid usually means a rotation happened — refetch once.
+        # Unknown kid usually means a rotation happened - refetch once.
         jwks = await _get_clerk_jwks(force_refresh=True)
         key = next((k for k in jwks["keys"] if k["kid"] == kid), None)
     return key
@@ -83,7 +83,7 @@ async def verify_clerk_token(token: str) -> dict:
             issuer=settings.CLERK_JWT_ISSUER,
             # Clerk stamps `nbf`/`iat` at mint time, and a container clock a
             # second behind Clerk's rejects a brand-new token as not yet
-            # valid — a sporadic 401 on the first request after sign-in.
+            # valid - a sporadic 401 on the first request after sign-in.
             # Clerk's own SDKs allow the same 5s.
             options={"verify_aud": False, "verify_iss": True, "leeway": CLOCK_SKEW_SECONDS},
         )
@@ -100,7 +100,7 @@ async def verify_clerk_token(token: str) -> dict:
     return payload
 
 
-# A read-only staff account may still do these — they change nothing but
+# A read-only staff account may still do these - they change nothing but
 # their own inbox and profile.
 _STAFF_WRITABLE = re.compile(r"^/api/v1/(notifications/[^/]+/read|notifications/read-all|users/me)$")
 SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
@@ -109,7 +109,7 @@ SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
 def _guard_read_only(user: User, request: Request) -> None:
     """Refuse every write from a staff account, at one choke point.
 
-    Enforced here — on the dependency every authenticated route shares —
+    Enforced here - on the dependency every authenticated route shares -
     rather than per endpoint, so a route added later is read-only for staff
     by default instead of by someone remembering to check.
     """
@@ -229,7 +229,7 @@ async def _relink(db: AsyncSession, existing: User, clerk_id: str) -> User:
     unique email and every request 500s.
 
     Only on a *verified* address. Otherwise anyone could register someone
-    else's email, unverified, and inherit their account — admin included.
+    else's email, unverified, and inherit their account - admin included.
     """
     profile = await fetch_clerk_user(clerk_id)
     if not profile or existing.email.lower() not in verified_emails(profile):

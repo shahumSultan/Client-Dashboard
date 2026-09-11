@@ -1,4 +1,4 @@
-"""The comment system — the feature clients touch most."""
+"""The comment system - the feature clients touch most."""
 import pytest
 
 pytestmark = pytest.mark.asyncio
@@ -164,7 +164,7 @@ async def test_empty_comment_is_rejected(api, world):
 
 async def test_deleted_project_disappears_for_the_client(api, world):
     """Deletion is a soft delete. The list already filtered on is_active, but
-    the detail route did not — a client with the URL kept full access."""
+    the detail route did not - a client with the URL kept full access."""
     admin = api(world["admin"])
     client = api(world["client_a"])
     await _post(client, world["proj_a"].id, target_type="project", body="Leave this behind")

@@ -37,7 +37,7 @@ async def _resolve_target(
     """Validate the comment target and return its id.
 
     A project-level comment targets the project itself. Every other target must
-    exist AND belong to this project — otherwise a client could anchor a comment
+    exist AND belong to this project - otherwise a client could anchor a comment
     to another tenant's milestone.
     """
     if target_type == CommentTargetType.PROJECT:
@@ -97,7 +97,7 @@ async def comment_inbox(
     user: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
-    """Every client comment thread, newest first — the admin's reply queue.
+    """Every client comment thread, newest first - the admin's reply queue.
 
     Declared before the /project/{project_id} route so "inbox" is never
     swallowed as a project id.
@@ -183,7 +183,7 @@ async def reply_to_comment(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Reply to a thread. Threading is one level deep — replies target the root."""
+    """Reply to a thread. Threading is one level deep - replies target the root."""
     parent = await _load_comment(db, comment_id)
     if parent.parent_id:
         raise HTTPException(status_code=422, detail="Replies cannot be nested")

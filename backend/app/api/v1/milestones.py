@@ -72,7 +72,7 @@ async def delete_milestone(
     if not milestone:
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Milestone not found")
-    # target_id is polymorphic, so there is no FK to cascade from — clear the
+    # target_id is polymorphic, so there is no FK to cascade from - clear the
     # milestone's comments explicitly rather than stranding them.
     await db.execute(
         delete(Comment).where(

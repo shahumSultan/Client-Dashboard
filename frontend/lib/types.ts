@@ -200,7 +200,7 @@ export interface TimelinePhase {
 export interface LineItem {
   description: string;
   quantity: number;
-  /** Minor units — cents. */
+  /** Minor units - cents. */
   unit_amount: number;
 }
 
@@ -274,7 +274,7 @@ export interface Engagement {
   emailed?: string[];
 }
 
-/** Everything an admin authors — the editable subset of an Engagement. */
+/** Everything an admin authors - the editable subset of an Engagement. */
 export type EngagementDraft = Partial<
   Pick<
     Engagement,

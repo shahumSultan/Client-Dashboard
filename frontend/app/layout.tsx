@@ -42,12 +42,12 @@ export default function RootLayout({
       className={`h-full antialiased ${figtree.variable} ${fragmentMono.variable}`}
     >
       <body className="min-h-full bg-base font-sans text-fg grain">
-        {/* Ambient colour behind every surface — this is what the glass blurs. */}
+        {/* Ambient colour behind every surface - this is what the glass blurs. */}
         <div className="ambient" aria-hidden="true" />
         <ClerkProvider
           appearance={clerkAppearance}
           // Keep auth on our own branded pages rather than Clerk's hosted
-          // Account Portal — set as props because the NEXT_PUBLIC_* equivalents
+          // Account Portal - set as props because the NEXT_PUBLIC_* equivalents
           // are inlined at build time and the dev image never bakes them.
           signInUrl="/sign-in"
           signUpUrl="/sign-up"

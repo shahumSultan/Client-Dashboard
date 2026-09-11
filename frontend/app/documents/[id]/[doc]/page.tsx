@@ -13,7 +13,7 @@ import { InvoiceDocument } from "@/components/onboarding/InvoiceDocument";
  * A document on white, for saving as PDF or printing.
  *
  * The browser's own "Save as PDF" produces a real, text-selectable PDF from
- * the same markup the client signed — no server-side renderer to keep in step
+ * the same markup the client signed - no server-side renderer to keep in step
  * with the on-screen version.
  */
 export default function DocumentPage({
@@ -63,7 +63,7 @@ export default function DocumentPage({
 
   return (
     <main className="min-h-dvh px-4 py-8 print:p-0">
-      <title>{`${title} — ${e.project_name}`}</title>
+      <title>{`${title} - ${e.project_name}`}</title>
       <div data-print-hide className="mx-auto mb-5 flex max-w-[820px] items-center justify-between gap-4">
         <p className="text-sm text-subtle">
           Choose <span className="text-fg">Save as PDF</span> as the destination to download.

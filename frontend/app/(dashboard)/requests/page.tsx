@@ -30,7 +30,7 @@ function ProjectRequests({ project }: { project: Project }) {
           <EmptyState
             icon={MessageSquare}
             title="No requests for this project"
-            description="Raise a feature request, report a bug, or ask for a change — the team replies here."
+            description="Raise a feature request, report a bug, or ask for a change - the team replies here."
             action={
               <Button size="sm" onClick={() => setOpen(true)}>
                 <Plus size={14} aria-hidden="true" />

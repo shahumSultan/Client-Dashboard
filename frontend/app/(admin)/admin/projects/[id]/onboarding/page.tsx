@@ -282,7 +282,7 @@ function Editor({ engagement: e }: { engagement: Engagement }) {
       toast.success("Sent to the client", {
         description: n
           ? `Emailed ${sent.emailed!.join(", ")}.`
-          : "Nobody was emailed — invite someone to this client, or share the portal link yourself.",
+          : "Nobody was emailed - invite someone to this client, or share the portal link yourself.",
       });
     } catch (err) {
       toast.error(errorDetail(err, "Couldn't send"));
@@ -366,8 +366,8 @@ function Editor({ engagement: e }: { engagement: Engagement }) {
                 {agreementLocked && (
                   <Locked>
                     {e.signed_at
-                      ? "Signed — the agreement can no longer change."
-                      : "Sent — recall it to draft to make changes. The client will need to re-open it."}
+                      ? "Signed - the agreement can no longer change."
+                      : "Sent - recall it to draft to make changes. The client will need to re-open it."}
                   </Locked>
                 )}
                 <fieldset disabled={agreementLocked} className="space-y-6">
@@ -382,7 +382,7 @@ function Editor({ engagement: e }: { engagement: Engagement }) {
                     />
                   ) : (
                   <>
-                  <Field label="Scope of work" htmlFor="ag-scope" required hint="What's in — and, where it matters, what's out.">
+                  <Field label="Scope of work" htmlFor="ag-scope" required hint="What's in - and, where it matters, what's out.">
                     <Textarea id="ag-scope" rows={5} className="resize-y" value={form.scope} onChange={(ev) => set("scope", ev.target.value)} />
                   </Field>
                   <RowsEditor
@@ -413,7 +413,7 @@ function Editor({ engagement: e }: { engagement: Engagement }) {
                   <Field label="Payment terms" htmlFor="ag-pay">
                     <Textarea id="ag-pay" rows={3} className="resize-y" value={form.payment_terms} onChange={(ev) => set("payment_terms", ev.target.value)} />
                   </Field>
-                  <Field label="Other terms" htmlFor="ag-terms" hint="Ownership, termination, confidentiality — whatever you normally include.">
+                  <Field label="Other terms" htmlFor="ag-terms" hint="Ownership, termination, confidentiality - whatever you normally include.">
                     <Textarea id="ag-terms" rows={4} className="resize-y" value={form.additional_terms} onChange={(ev) => set("additional_terms", ev.target.value)} />
                   </Field>
                   </>
@@ -426,7 +426,7 @@ function Editor({ engagement: e }: { engagement: Engagement }) {
           <TabsContent value="invoice">
             <Card>
               <CardContent className="space-y-6 pt-6">
-                {invoiceLocked && <Locked>The client has paid against this invoice — it can no longer change.</Locked>}
+                {invoiceLocked && <Locked>The client has paid against this invoice - it can no longer change.</Locked>}
                 <fieldset disabled={invoiceLocked} className="space-y-6">
                   <div className="grid gap-4 sm:grid-cols-3">
                     <Field label="Invoice number" htmlFor="inv-no">
@@ -445,7 +445,7 @@ function Editor({ engagement: e }: { engagement: Engagement }) {
                     label="Line items *"
                     rows={form.line_items}
                     columns={[
-                      { key: "description", label: "Description", placeholder: "50% deposit — website build" },
+                      { key: "description", label: "Description", placeholder: "50% deposit - website build" },
                       { key: "quantity", label: "Qty", width: "80px", type: "number", inputMode: "numeric" },
                       { key: "price", label: `Price (${form.currency})`, width: "140px", type: "number", inputMode: "decimal" },
                     ]}
@@ -497,7 +497,7 @@ function Editor({ engagement: e }: { engagement: Engagement }) {
                   <Field label="Phone / WhatsApp" htmlFor="wel-phone">
                     <Input id="wel-phone" type="tel" value={form.contact_phone} onChange={(ev) => set("contact_phone", ev.target.value)} />
                   </Field>
-                  <Field label="Day-to-day channel" htmlFor="wel-chan" hint="e.g. Slack — #acme-build, or this portal">
+                  <Field label="Day-to-day channel" htmlFor="wel-chan" hint="e.g. Slack - #acme-build, or this portal">
                     <Input id="wel-chan" value={form.contact_channel} onChange={(ev) => set("contact_channel", ev.target.value)} />
                   </Field>
                   <Field label="Response time" htmlFor="wel-resp">
@@ -511,7 +511,7 @@ function Editor({ engagement: e }: { engagement: Engagement }) {
                   label="What happens next"
                   items={form.next_steps}
                   onChange={(v) => set("next_steps", v)}
-                  placeholder="Kickoff call — align on goals"
+                  placeholder="Kickoff call - align on goals"
                   addLabel="Add step"
                 />
               </CardContent>

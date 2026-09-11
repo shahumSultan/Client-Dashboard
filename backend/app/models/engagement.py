@@ -27,7 +27,7 @@ class Engagement(Base):
 
     One per project: the agreement, the invoice, the welcome note and the
     kickoff call. Kept on a single row because they are always read together
-    and each depends on the one before — the invoice opens only once the
+    and each depends on the one before - the invoice opens only once the
     agreement is signed.
 
     The agreement fields are frozen from the moment it is sent: `agreement_hash`
@@ -44,7 +44,7 @@ class Engagement(Base):
 
     # ── 1. Agreement ─────────────────────────────────────────────────────────
     # "form": assembled from the fields below. "pdf": the admin's own document,
-    # uploaded as-is — the fields are then unused and `document` is what is signed.
+    # uploaded as-is - the fields are then unused and `document` is what is signed.
     agreement_source: Mapped[str] = mapped_column(String(10), default="form", server_default="form")
     agreement_title: Mapped[str] = mapped_column(String(255), default="Project Agreement")
     scope: Mapped[str | None] = mapped_column(Text)
@@ -58,7 +58,7 @@ class Engagement(Base):
     sent_by: Mapped[str | None] = mapped_column(String, ForeignKey("users.id"))
     agreement_hash: Mapped[str | None] = mapped_column(String(64))
 
-    # The signature and the evidence around it — what makes a click-to-sign
+    # The signature and the evidence around it - what makes a click-to-sign
     # attributable: who, when, from where, and exactly what they saw.
     signed_at: Mapped[datetime | None] = mapped_column(DateTime)
     signed_by: Mapped[str | None] = mapped_column(String, ForeignKey("users.id"))
@@ -71,7 +71,7 @@ class Engagement(Base):
     # ── 2. Invoice ───────────────────────────────────────────────────────────
     invoice_number: Mapped[str | None] = mapped_column(String(50))
     currency: Mapped[str] = mapped_column(String(3), default="USD")
-    line_items: Mapped[list | None] = mapped_column(JSON)      # [{description, quantity, unit_amount}] — minor units
+    line_items: Mapped[list | None] = mapped_column(JSON)      # [{description, quantity, unit_amount}] - minor units
     invoice_due_date: Mapped[date | None] = mapped_column(Date)
     invoice_notes: Mapped[str | None] = mapped_column(Text)
     stripe_payment_url: Mapped[str | None] = mapped_column(String(500))
@@ -89,7 +89,7 @@ class Engagement(Base):
     welcome_message: Mapped[str | None] = mapped_column(Text)
     contact_email: Mapped[str | None] = mapped_column(String(255))
     contact_phone: Mapped[str | None] = mapped_column(String(50))
-    contact_channel: Mapped[str | None] = mapped_column(String(255))   # e.g. "Slack — #acme-build"
+    contact_channel: Mapped[str | None] = mapped_column(String(255))   # e.g. "Slack - #acme-build"
     response_time: Mapped[str | None] = mapped_column(String(255))
     working_hours: Mapped[str | None] = mapped_column(String(255))
     next_steps: Mapped[list | None] = mapped_column(JSON)              # [str]
@@ -114,7 +114,7 @@ class Engagement(Base):
 
     @property
     def is_paid(self) -> bool:
-        """Paid for the purpose of moving forward — reported counts."""
+        """Paid for the purpose of moving forward - reported counts."""
         return self.paid_at is not None or self.payment_reported_at is not None
 
     @property

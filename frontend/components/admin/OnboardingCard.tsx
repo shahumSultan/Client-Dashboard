@@ -8,8 +8,8 @@ import { useEngagements } from "@/hooks/useEngagements";
 const NEXT: Record<string, string> = {
   draft: "Finish and send the agreement",
   awaiting_signature: "Waiting for the client to sign",
-  awaiting_payment: "Signed — waiting for payment",
-  kickoff: "Paid — welcome pack and kickoff call next",
+  awaiting_payment: "Signed - waiting for payment",
+  kickoff: "Paid - welcome pack and kickoff call next",
   complete: "Onboarding complete",
 };
 
@@ -32,7 +32,7 @@ export function OnboardingCard({ projectId }: { projectId: string }) {
               {e && <StageBadge stage={e.stage} />}
             </div>
             <p className="mt-0.5 text-xs text-subtle">
-              {e ? NEXT[e.stage] : "Agreement, invoice, welcome pack and kickoff call — not started"}
+              {e ? NEXT[e.stage] : "Agreement, invoice, welcome pack and kickoff call - not started"}
             </p>
           </div>
           <span className="flex items-center gap-1.5 text-sm font-medium text-brand-soft">

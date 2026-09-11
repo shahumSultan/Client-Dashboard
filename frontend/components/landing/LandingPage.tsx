@@ -27,7 +27,7 @@ function Reveal({
   className?: string;
 }) {
   // `initial` was an inline opacity:0 cleared only when an observer fired. With
-  // reduced motion — or any time the observer did not run — the section simply
+  // reduced motion - or any time the observer did not run - the section simply
   // never appeared. whileInView drives the observer itself, and reduced motion
   // skips the hidden state entirely rather than relying on it being undone.
   const reduce = useReducedMotion();
@@ -121,7 +121,7 @@ function PortalPreview() {
         </ul>
       </div>
 
-      {/* Floating comment card — the feature that defines the product */}
+      {/* Floating comment card - the feature that defines the product */}
       <motion.div
         className="glass-strong absolute bottom-0 left-0 w-60 rounded-card p-3.5 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.9)]"
         initial={{ opacity: 0, y: 12 }}
@@ -146,7 +146,7 @@ const FEATURES = [
   {
     icon: GitBranch,
     title: "A live project timeline",
-    body: "Every phase, in order — finished, in progress, and still ahead. No more asking for a status update.",
+    body: "Every phase, in order - finished, in progress, and still ahead. No more asking for a status update.",
   },
   {
     icon: MessageSquare,
@@ -161,7 +161,7 @@ const FEATURES = [
   {
     icon: BarChart3,
     title: "Results you can measure",
-    body: "Leads, conversions and revenue attributed to the work — reported against the periods that matter.",
+    body: "Leads, conversions and revenue attributed to the work - reported against the periods that matter.",
   },
   {
     icon: BellRing,
@@ -176,7 +176,7 @@ const FEATURES = [
 ];
 
 const STEPS = [
-  { n: "01", title: "We invite you", body: "You get an invitation at your work email — no sign-up form to fill in." },
+  { n: "01", title: "We invite you", body: "You get an invitation at your work email - no sign-up form to fill in." },
   { n: "02", title: "Your project is waiting", body: "Timeline, milestones and deliverables, set up before you arrive." },
   { n: "03", title: "Follow along and weigh in", body: "Watch progress, leave remarks, and get replies from the team." },
 ];
@@ -243,7 +243,7 @@ export function LandingPage({ isSignedIn }: { isSignedIn: boolean }) {
                 transition={{ duration: 0.6, delay: 0.12, ease: EASE }}
               >
                 One place to see what we&apos;ve shipped, what we&apos;re building
-                now, and what&apos;s still to come — and to tell us what you think
+                now, and what&apos;s still to come - and to tell us what you think
                 as we go.
               </motion.p>
 

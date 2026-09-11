@@ -11,7 +11,7 @@ let tokenGetter: TokenGetter | null = null;
 /**
  * Register Clerk's `getToken` so every request fetches a fresh JWT.
  * Clerk session tokens expire after ~60s, so the token cannot be pinned
- * onto the axios instance once at mount — it has to be read per request.
+ * onto the axios instance once at mount - it has to be read per request.
  * Clerk caches internally and only hits the network when the token is stale.
  */
 export function setTokenGetter(getter: TokenGetter | null) {

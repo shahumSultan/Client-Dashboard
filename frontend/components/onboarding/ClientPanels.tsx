@@ -37,8 +37,8 @@ export function DocumentLink({ engagement: e, doc }: { engagement: Engagement; d
   const cls =
     "inline-flex cursor-pointer items-center gap-1.5 text-xs font-medium text-subtle transition-colors hover:text-brand-soft";
 
-  // An uploaded agreement is its own PDF: hand over the file itself — with
-  // the signature certificate once signed — rather than re-rendering it.
+  // An uploaded agreement is its own PDF: hand over the file itself - with
+  // the signature certificate once signed - rather than re-rendering it.
   if (doc === "agreement" && e.agreement_source === "pdf") {
     const path = `/engagements/${e.id}/document${e.signed_at ? "/signed" : ""}`;
     const stem = (e.document?.filename ?? "agreement.pdf").replace(/\.pdf$/i, "");
@@ -157,7 +157,7 @@ function SignPanel({ engagement: e, go }: { engagement: Engagement; go: Go }) {
               aria-invalid={!!error}
             />
           </Field>
-          <Field label="Title" htmlFor="sign-title" hint="Optional — e.g. Founder, Director">
+          <Field label="Title" htmlFor="sign-title" hint="Optional - e.g. Founder, Director">
             <Input
               id="sign-title"
               autoComplete="organization-title"
@@ -218,7 +218,7 @@ export function InvoicePanel({ engagement: e, go }: { engagement: Engagement; go
 
   // Sized by the panel, not the viewport: beside the sidebar and step list the
   // column is far narrower than the window, and a table squeezed next to the
-  // pay card clips its amounts. Stacked, paying comes first — it's the action.
+  // pay card clips its amounts. Stacked, paying comes first - it's the action.
   return (
     <div className="@container">
       <div className="grid gap-5 @4xl:grid-cols-[1fr_340px] @4xl:items-start">
@@ -246,7 +246,7 @@ function PaidCard({ engagement: e, go }: { engagement: Engagement; go: Go }) {
         <CircleCheck size={20} aria-hidden="true" />
       </span>
       <h2 className="mt-4 text-base font-semibold tracking-tight text-fg">
-        {e.paid_at ? "Payment received" : "Thank you — payment sent"}
+        {e.paid_at ? "Payment received" : "Thank you - payment sent"}
       </h2>
       <p className="mt-1.5 text-sm leading-relaxed text-subtle">
         {e.paid_at
@@ -351,7 +351,7 @@ function PayCard({ engagement: e, go }: { engagement: Engagement; go: Go }) {
                 {copied ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}
               </button>
             </div>
-            <Field label="Transfer reference" htmlFor="pay-ref" hint="Optional — helps us match it faster">
+            <Field label="Transfer reference" htmlFor="pay-ref" hint="Optional - helps us match it faster">
               <Input id="pay-ref" value={reference} onChange={(ev) => setReference(ev.target.value)} />
             </Field>
           </>
@@ -450,7 +450,7 @@ export function WelcomePanel({ engagement: e, go }: { engagement: Engagement; go
             </dl>
           ) : (
             <p className="mt-3 text-sm text-subtle">
-              Leave a remark on anything in your portal — it comes straight to us.
+              Leave a remark on anything in your portal - it comes straight to us.
             </p>
           )}
         </Card>
@@ -507,7 +507,7 @@ function NextStepsCard({ engagement: e }: { engagement: Engagement }) {
 
 export function PortalPanel({ engagement: e }: { engagement: Engagement }) {
   const features = [
-    { icon: MilestoneIcon, title: "Live timeline", body: "Every milestone — done, in progress and still ahead." },
+    { icon: MilestoneIcon, title: "Live timeline", body: "Every milestone - done, in progress and still ahead." },
     { icon: MessageSquareText, title: "Remarks anywhere", body: "Comment on the project, a milestone, an update or a file." },
     { icon: FolderOpen, title: "Requests", body: "Ask for a change or report an issue, and follow it to done." },
   ];
@@ -518,7 +518,7 @@ export function PortalPanel({ engagement: e }: { engagement: Engagement }) {
       </span>
       <h2 className="mt-4 text-xl font-semibold tracking-tight text-fg">You&apos;re already in</h2>
       <p className="mt-2 max-w-xl text-sm leading-relaxed text-subtle">
-        This portal is where {e.project_name} lives from now on. Bookmark it — no more digging
+        This portal is where {e.project_name} lives from now on. Bookmark it - no more digging
         through email threads for the latest status.
       </p>
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
@@ -653,7 +653,7 @@ export function CallPanel({ engagement: e, go }: { engagement: Engagement; go: G
             <Field
               label="Anything we should know beforehand?"
               htmlFor="call-notes"
-              hint="Goals, references, people who'll join — whatever is on your mind."
+              hint="Goals, references, people who'll join - whatever is on your mind."
             >
               <Textarea id="call-notes" value={notes} onChange={(ev) => setNotes(ev.target.value)} />
             </Field>

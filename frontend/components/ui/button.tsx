@@ -7,9 +7,9 @@ import { useReadOnly } from "@/lib/read-only";
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "default" | "outline" | "ghost" | "destructive" | "secondary";
   size?: "sm" | "md" | "lg" | "icon";
-  /** Shows a spinner and blocks input — never leave an async action silent. */
+  /** Shows a spinner and blocks input - never leave an async action silent. */
   loading?: boolean;
-  /** Stays usable for view-only accounts — for actions that change nothing
+  /** Stays usable for view-only accounts - for actions that change nothing
    *  (cancel, close, copy). Everything else is disabled for them. */
   allowReadOnly?: boolean;
 }

@@ -51,7 +51,7 @@ async def test_invitations_cannot_grant_admin(api, world):
 
 
 async def test_signing_up_with_the_invited_address_joins_automatically(api, world, session):
-    """The common path: no link, no token — just sign up with that email."""
+    """The common path: no link, no token - just sign up with that email."""
     email = f"dana-{uuid.uuid4().hex[:6]}@acme.com"
     await _invite(api, world, email, role="client_owner")
 
@@ -199,7 +199,7 @@ async def test_client_creation_derives_a_slug_when_omitted(api, world):
 
 async def test_inviting_works_when_email_is_not_configured(api, world):
     """Mail is best-effort. With RESEND_API_KEY unset the invitation must still
-    be created — the admin copies the link instead."""
+    be created - the admin copies the link instead."""
     r = await api(world["admin"]).post("/invitations", json={
         "organization_id": world["org_a"].id, "email": f"nomail-{uuid.uuid4().hex[:6]}@acme.com",
     })

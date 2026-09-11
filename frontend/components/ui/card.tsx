@@ -2,7 +2,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Lifts and brightens on hover — use only when the whole card is a target. */
+  /** Lifts and brightens on hover - use only when the whole card is a target. */
   interactive?: boolean;
 }
 

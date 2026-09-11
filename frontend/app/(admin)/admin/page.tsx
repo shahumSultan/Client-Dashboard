@@ -99,7 +99,7 @@ export default function AdminOverview() {
             >
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium text-fg">{c.name}</p>
-                <p className="mt-0.5 text-xs text-faint">{c.industry ?? "—"}</p>
+                <p className="mt-0.5 text-xs text-faint">{c.industry ?? "-"}</p>
               </div>
               <ArrowRight size={14} className="shrink-0 text-faint" aria-hidden="true" />
             </Link>

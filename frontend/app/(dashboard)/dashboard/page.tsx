@@ -22,7 +22,7 @@ export default function DashboardPage() {
   const active = projects.filter((p) => p.is_active && p.status !== "delivered");
   const delivered = projects.filter((p) => p.status === "delivered");
 
-  // Average completion across live work — the single number that answers
+  // Average completion across live work - the single number that answers
   // "how far along is everything?"
   const overall =
     active.length > 0
@@ -49,7 +49,7 @@ export default function DashboardPage() {
             {firstName ? `Welcome back, ${firstName}` : "Welcome back"}
           </h2>
           <p className="mt-2 max-w-lg text-sm leading-relaxed text-subtle">
-            Everything Enigma-Cube is building for you — what&apos;s shipped, what&apos;s
+            Everything Enigma-Cube is building for you - what&apos;s shipped, what&apos;s
             in flight, and what&apos;s still ahead.
           </p>
         </div>

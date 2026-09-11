@@ -19,7 +19,7 @@ import { formatDate } from "@/lib/utils";
 import type { AnalyticsEntry } from "@/lib/types";
 
 /**
- * Two categorical series on one shared count axis — never a dual axis. Both
+ * Two categorical series on one shared count axis - never a dual axis. Both
  * hues are validated for the dark surface: adjacent CVD ΔE 19.2, normal-vision
  * ΔE 29.0, and each clears 3:1 against the card.
  */
@@ -162,7 +162,7 @@ export function ProjectAnalytics({ projectId }: { projectId: string }) {
             ) : (
               <ResponsiveContainer width="100%" height={240}>
                 <LineChart data={chartData} margin={{ top: 4, right: 8, bottom: 0, left: -12 }}>
-                  {/* Recessive grid — horizontal only, so it never competes */}
+                  {/* Recessive grid - horizontal only, so it never competes */}
                   <CartesianGrid stroke={GRID_INK} vertical={false} />
                   <XAxis
                     dataKey="period"
@@ -225,7 +225,7 @@ function Metric({ label, value }: { label: string; value: number | string | null
     <Card className="p-4">
       <p className="text-xs font-medium text-subtle">{label}</p>
       <p className="tabular mt-1.5 text-2xl font-semibold tracking-tight text-fg">
-        {value ?? "—"}
+        {value ?? "-"}
       </p>
     </Card>
   );

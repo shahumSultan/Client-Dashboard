@@ -51,7 +51,7 @@ export default function WelcomePage() {
             </h1>
             <p className="mt-2.5 text-sm leading-relaxed text-subtle">
               Your account isn&apos;t linked to a project workspace. Enigma-Cube
-              invites clients directly — once yours is sent to{" "}
+              invites clients directly - once yours is sent to{" "}
               <span className="text-fg">{user.email}</span>, this page opens your
               portal automatically.
             </p>

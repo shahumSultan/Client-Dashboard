@@ -2,7 +2,7 @@
 # Wipe every row and keep only the admin accounts.
 #
 # Existing admins are preserved by clerk_id so they stay admin on the next
-# request — otherwise the lazy provisioning in get_current_user would recreate
+# request - otherwise the lazy provisioning in get_current_user would recreate
 # them as client_member with no organization and push them into the client
 # signup flow.
 #
@@ -17,7 +17,7 @@ admins=$("${PSQL[@]}" -tAF'|' -c \
   "SELECT clerk_id, email, coalesce(full_name,''), coalesce(avatar_url,'') FROM users WHERE role='admin';")
 
 if [[ -z "$admins" ]]; then
-  echo "No admin found — refusing to wipe, or you would lock yourself out." >&2
+  echo "No admin found - refusing to wipe, or you would lock yourself out." >&2
   echo "Sign in, run ./scripts/make-admin.sh <email>, then retry." >&2
   exit 1
 fi
@@ -56,4 +56,4 @@ done <<< "$admins"
 
 echo
 "${PSQL[@]}" -c "SELECT email, role, organization_id FROM users;"
-echo "Done. Admins have no organization — that is correct; only clients get one."
+echo "Done. Admins have no organization - that is correct; only clients get one."

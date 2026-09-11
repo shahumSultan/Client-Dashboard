@@ -37,12 +37,12 @@ class Settings(BaseSettings):
     # business inbox rather than each admin's personal login address.
     ADMIN_NOTIFICATION_EMAIL: str = "info@enigma-cube.com"
 
-    # AI (Groq — free tier)
+    # AI (Groq - free tier)
     GROQ_API_KEY: str = ""
     GROQ_MODEL: str = "llama-3.3-70b-versatile"
     GROQ_FAST_MODEL: str = "llama-3.1-8b-instant"
 
-    # CORS — comma-separated list; supports Vercel preview deploys etc.
+    # CORS - comma-separated list; supports Vercel preview deploys etc.
     FRONTEND_URL: str = "http://localhost:3000"
     EXTRA_ALLOWED_ORIGINS: str = ""
 

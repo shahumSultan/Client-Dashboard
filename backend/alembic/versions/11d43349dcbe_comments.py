@@ -42,7 +42,7 @@ def upgrade() -> None:
     op.create_index('ix_comments_target', 'comments', ['target_type', 'target_id'], unique=False)
     # ### end Alembic commands ###
 
-    # Alembic does not autogenerate enum value additions — add them by hand.
+    # Alembic does not autogenerate enum value additions - add them by hand.
     # Safe inside a transaction on PG 12+ so long as the new labels are not
     # used before commit.
     for label in ("COMMENT_ADDED", "COMMENT_REPLY"):
