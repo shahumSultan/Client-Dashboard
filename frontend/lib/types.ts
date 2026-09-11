@@ -178,3 +178,111 @@ export interface InvitationPreview {
   role: UserRole;
   expires_at: string;
 }
+
+export type EngagementStage =
+  | "draft"
+  | "awaiting_signature"
+  | "awaiting_payment"
+  | "kickoff"
+  | "complete";
+
+export interface Deliverable {
+  title: string;
+  detail: string | null;
+}
+
+export interface TimelinePhase {
+  phase: string;
+  duration: string | null;
+}
+
+export interface LineItem {
+  description: string;
+  quantity: number;
+  /** Minor units — cents. */
+  unit_amount: number;
+}
+
+export interface AgreementFile {
+  filename: string;
+  size_bytes: number;
+  page_count: number;
+  sha256: string;
+  uploaded_at: string;
+}
+
+export interface Engagement {
+  id: string;
+  project_id: string;
+  project_name: string | null;
+  organization_name: string | null;
+  stage: EngagementStage;
+
+  /** "form": built from the fields below. "pdf": the admin's uploaded document. */
+  agreement_source: "form" | "pdf";
+  document: AgreementFile | null;
+
+  agreement_title: string;
+  scope: string | null;
+  deliverables: Deliverable[] | null;
+  timeline: TimelinePhase[] | null;
+  revision_policy: string | null;
+  payment_terms: string | null;
+  additional_terms: string | null;
+  sent_at: string | null;
+  sender_name: string | null;
+  agreement_hash: string | null;
+
+  signed_at: string | null;
+  signer_name: string | null;
+  signer_title: string | null;
+  signer_email: string | null;
+  signer_ip: string | null;
+
+  invoice_number: string | null;
+  currency: string;
+  line_items: LineItem[] | null;
+  invoice_total: number;
+  invoice_due_date: string | null;
+  invoice_notes: string | null;
+  stripe_payment_url: string | null;
+  bank_details: string | null;
+  payment_reported_at: string | null;
+  payment_method: "bank" | "stripe" | null;
+  payment_reference: string | null;
+  paid_at: string | null;
+
+  welcome_message: string | null;
+  contact_email: string | null;
+  contact_phone: string | null;
+  contact_channel: string | null;
+  response_time: string | null;
+  working_hours: string | null;
+  next_steps: string[] | null;
+  welcome_read_at: string | null;
+
+  call_booking_url: string | null;
+  call_agenda: string[] | null;
+  call_scheduled_for: string | null;
+  call_prep_notes: string | null;
+  call_completed_at: string | null;
+
+  created_at: string;
+  updated_at: string;
+  /** Only on the response to sending. */
+  emailed?: string[];
+}
+
+/** Everything an admin authors — the editable subset of an Engagement. */
+export type EngagementDraft = Partial<
+  Pick<
+    Engagement,
+    | "agreement_source" | "agreement_title" | "scope" | "deliverables" | "timeline"
+    | "revision_policy" | "payment_terms" | "additional_terms"
+    | "invoice_number" | "currency" | "line_items" | "invoice_due_date"
+    | "invoice_notes" | "stripe_payment_url" | "bank_details"
+    | "welcome_message" | "contact_email" | "contact_phone" | "contact_channel"
+    | "response_time" | "working_hours" | "next_steps"
+    | "call_booking_url" | "call_agenda"
+  >
+>;

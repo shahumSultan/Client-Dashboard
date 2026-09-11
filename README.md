@@ -27,7 +27,7 @@ A premium, multi-tenant client portal for the Enigma-Cube AI agency. Clients log
 - **Analytics** — leads, conversions, revenue, AI-generated summaries, trend charts
 - **Multi-tenant** — each organization sees only their own data
 - **RBAC** — admin (Enigma-Cube), client owner, client member roles
-- **Onboarding flow** — step-by-step client setup
+- **Client onboarding** — agreement to e-sign, invoice (Stripe link or bank transfer), welcome pack and kickoff-call booking, in order; the project stays locked until the agreement is signed
 - **Comments & remarks** — clients comment on any milestone, update, file, or the project itself; admins reply in-thread and mark threads resolved
 - **Admin comment inbox** — every client remark across all projects in one reply queue (`/admin/comments`)
 - **Invite-only access** — you create the client, then invite an email; they join that workspace automatically on sign-up
@@ -286,6 +286,7 @@ Vercel dashboards for production.
 | `FRONTEND_URL` | — | `https://portal.enigma-cube.com` | — | your portal domain |
 | `RESEND_API_KEY` | send-only `re_` | send-only `re_` | — | Resend → API Keys |
 | `FROM_EMAIL` | `noreply@enigma-cube.com` | same | — | your verified Resend domain |
+| `ADMIN_NOTIFICATION_EMAIL` | `info@enigma-cube.com` | same | — | defaults to this; set only to change it |
 | `DATABASE_URL` | compose Postgres | Postgres service reference | — | Railway |
 
 **Local uses the Clerk *development* instance deliberately.** `pk_live_`/`sk_live_`
@@ -323,6 +324,7 @@ vercel env ls production                   # Vercel
 | `STORAGE_PUBLIC_URL` | No | Public CDN URL for uploaded files |
 | `RESEND_API_KEY` | No | Sends invitation emails. Unset means invitations still work — copy the link instead |
 | `FROM_EMAIL` | No | Sender address for emails |
+| `ADMIN_NOTIFICATION_EMAIL` | No | Where client-activity alerts go (default `info@enigma-cube.com`). Mail is never sent to, or triggered by, `+clerk_test` accounts |
 
 **Frontend** (Vercel)
 
@@ -365,6 +367,14 @@ E2E_PASSWORD=... CLERK_SECRET_KEY=... CLERK_PUBLISHABLE_KEY=... npx playwright t
 ```
 
 Images land in `frontend/e2e/shots/` (gitignored) alongside `problems.json`.
+
+`e2e/onboarding.spec.ts` drives the whole client onboarding through the UI —
+admin prepares and sends, client signs, pays and books, admin confirms. It
+needs `E2E_PROJECT_ID`: a project of the e2e client with no onboarding yet
+(delete its `engagements` row to run it again). `e2e/onboarding-pdf.spec.ts`
+does the same with an uploaded agreement; it also needs `E2E_PDF` (any PDF) and
+runs in full Chromium (`npx playwright install chromium`), the only build with a
+PDF viewer.
 
 It runs against the **local** stack: Clerk testing tokens, which bypass bot
 protection, are a development-instance feature. Sign-in uses a `+clerk_test`
@@ -467,6 +477,57 @@ they need an invitation rather than asking them to create anything.
 | `DELETE /invitations/{id}` | admin — revoke |
 | `GET /invitations/preview?token=` | what the join page shows |
 | `POST /invitations/accept` | redeem a token |
+
+---
+
+## Client onboarding
+
+The first thing a client receives after deciding to go ahead. One per project,
+at `/admin/projects/<id>/onboarding`:
+
+| Step | Client does | Unlocks |
+|---|---|---|
+| 1. Agreement | Reviews scope, deliverables, timeline, revision policy; types their name to sign | the invoice — and the project itself |
+| 2. Invoice | Pays via the Stripe Payment Link or bank transfer, then says so | welcome pack, kickoff call, the "underway" screen |
+| 3. Welcome pack | Reads the overview, next steps and how to reach you | — |
+| 4. Client portal | Nothing — they're already in, so it starts ticked | — |
+| 5. Kickoff call | Books through your Calendly/Cal.com link and records the time, plus prep notes | — |
+| 6. Underway | Sees what's done, the live milestone timeline and what's next | — |
+
+**Your own agreement.** On the Agreement tab, choose *Use my own document*
+and upload your contract as a PDF (export it from Word or Google Docs; up to
+10 MB, no password). The client reads that exact file in the portal and signs
+it the same way. The signed copy they and you download is your PDF with a
+**signature certificate** appended as the last page — signer, time, IP and the
+file's SHA-256. The file is fingerprinted into the agreement hash, so it can't
+be swapped after sending without recalling it, and a replaced file voids any
+signature on the old one. *Build it here* is still there for quick jobs.
+
+**Preparing one.** *Prepare onboarding* pre-fills your usual terms from the
+last engagement (revision policy, payment terms, bank details, contacts, call
+link and agenda), so they are written once. Scope, deliverables, timeline,
+revision policy, a priced line item and a way to pay are required to send.
+
+**Sending** emails everyone in the client's workspace *and* anyone invited but
+not yet signed up — for a new client it is often the first email they get.
+
+**The signature.** Sending freezes the agreement and records a SHA-256
+fingerprint of its text. To sign, the client must present that fingerprint, so
+nobody can sign a version that changed under them. The signature records name,
+title, account email, IP (`X-Real-IP` from Railway's edge) and time, and the
+fingerprint is printed on the PDF. Before signing you can *Recall* to edit;
+after, the agreement can't change or be deleted. Admins can't sign or report
+payment on a client's behalf.
+
+**Payment.** The client moves on as soon as they report paying; you *Confirm
+funds received* when it lands. The invoice freezes at the report. Stripe
+isn't called directly — create a Payment Link for the amount in Stripe and
+paste it in.
+
+**PDFs.** A form-built agreement and every invoice render on white at
+`/documents/<id>/agreement` and `/documents/<id>/invoice` for the browser's
+*Save as PDF*. An uploaded agreement is served as the file itself
+(`GET /engagements/<id>/document`, and `/document/signed` once signed).
 
 ---
 

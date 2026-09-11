@@ -6,13 +6,31 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/**
+ * Parse a date from the API.
+ *
+ * The backend stores UTC as naive timestamps, so they arrive without a zone
+ * ("2026-09-11T01:14:15") and `new Date` would read them as local time —
+ * hours off, and on the wrong day near midnight. Bare dates ("2026-09-16")
+ * have the opposite problem: `new Date` reads those as UTC midnight, which is
+ * the previous day anywhere west of Greenwich. Each is pinned down here.
+ */
+export function parseApiDate(value: string): Date {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    const [y, m, d] = value.split("-").map(Number);
+    return new Date(y, m - 1, d);
+  }
+  const hasZone = /(Z|[+-]\d{2}:?\d{2})$/.test(value);
+  return new Date(hasZone ? value : `${value}Z`);
+}
+
 export function formatDate(date: string | null | undefined): string {
   if (!date) return "—";
-  return format(new Date(date), "MMM d, yyyy");
+  return format(parseApiDate(date), "MMM d, yyyy");
 }
 
 export function timeAgo(date: string): string {
-  return formatDistanceToNow(new Date(date), { addSuffix: true });
+  return formatDistanceToNow(parseApiDate(date), { addSuffix: true });
 }
 
 export function formatBytes(bytes: number | null | undefined): string {

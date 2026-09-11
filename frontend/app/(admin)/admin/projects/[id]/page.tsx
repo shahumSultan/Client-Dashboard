@@ -22,6 +22,7 @@ import {
   MILESTONE_STATUS,
 } from "@/components/ui/status-pill";
 import { CommentsPanel } from "@/components/comments/CommentsPanel";
+import { OnboardingCard } from "@/components/admin/OnboardingCard";
 import { formatDate, timeAgo, STATUS_LABELS } from "@/lib/utils";
 import type {
   Project,
@@ -177,6 +178,8 @@ export default function AdminProjectDetailPage() {
         <ArrowLeft size={13} aria-hidden="true" />
         All projects
       </Link>
+
+      <OnboardingCard projectId={project.id} />
 
       <Card>
         <CardContent className="pt-6">

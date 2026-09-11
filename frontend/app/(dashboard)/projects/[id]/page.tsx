@@ -38,6 +38,8 @@ import {
   useFiles,
 } from "@/hooks/useProjects";
 import { formatDate, timeAgo, formatBytes, STATUS_LABELS } from "@/lib/utils";
+import { useEngagements } from "@/hooks/useEngagements";
+import { ProjectGate } from "@/components/onboarding/OnboardingBanner";
 import type { ClientRequest } from "@/lib/types";
 
 export default function ProjectDetailPage({
@@ -53,6 +55,8 @@ export default function ProjectDetailPage({
   const { data: milestones = [] } = useMilestones(id);
   const { data: requests = [] } = useRequests(id);
   const { data: files = [] } = useFiles(id);
+  const { data: engagements = [] } = useEngagements(id);
+  const unsigned = engagements.find((e) => e.stage === "awaiting_signature");
 
   if (isLoading) {
     return (
@@ -82,6 +86,21 @@ export default function ProjectDetailPage({
           }
         />
       </Card>
+    );
+  }
+
+  if (unsigned) {
+    return (
+      <div className="space-y-6">
+        <Link
+          href="/projects"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-subtle transition-colors hover:text-fg"
+        >
+          <ArrowLeft size={13} aria-hidden="true" />
+          All projects
+        </Link>
+        <ProjectGate engagement={unsigned} />
+      </div>
     );
   }
 

@@ -9,6 +9,7 @@ import { titleFor } from "@/lib/page-title";
 
 const PAGE_TITLES: Record<string, string> = {
   "/dashboard": "Dashboard",
+  "/onboarding": "Onboarding",
   "/projects": "Projects",
   "/milestones": "Milestones",
   "/requests": "Requests",

@@ -13,6 +13,8 @@ export interface NavItem {
   icon: LucideIcon;
   /** Match the href exactly — for index routes like /admin. */
   exact?: boolean;
+  /** Something here is waiting on the user. */
+  attention?: boolean;
 }
 
 interface SidebarShellProps {
@@ -67,7 +69,7 @@ export function SidebarShell({
         </div>
 
         <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4" aria-label="Main">
-          {items.map(({ label, href, icon: Icon, exact }) => {
+          {items.map(({ label, href, icon: Icon, exact, attention }) => {
             const active = exact
               ? pathname === href
               : pathname === href || pathname.startsWith(href + "/");
@@ -103,6 +105,15 @@ export function SidebarShell({
                   )}
                 />
                 {label}
+                {attention && (
+                  <>
+                    <span
+                      className="ml-auto h-2 w-2 rounded-full bg-brand-soft shadow-[0_0_10px_var(--brand-glow)]"
+                      aria-hidden="true"
+                    />
+                    <span className="sr-only">(action needed)</span>
+                  </>
+                )}
               </Link>
             );
           })}

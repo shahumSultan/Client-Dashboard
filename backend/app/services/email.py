@@ -23,7 +23,21 @@ def _send(payload: dict) -> None:
     resend.Emails.send(payload)
 
 
+def is_test_address(address: str) -> bool:
+    """Clerk's test accounts (`+clerk_test`) — fabricated, never deliverable.
+
+    Mail sent to them bounces, and bounces count against the sending domain's
+    reputation; an e2e run against a stack with a live key would send dozens.
+    """
+    return "+clerk_test" in address.lower()
+
+
 async def _send_async(payload: dict) -> bool:
+    to = [a for a in payload.get("to", []) if not is_test_address(a)]
+    if not to:
+        logger.info("Skipping email to test address(es) %s", payload.get("to"))
+        return False
+    payload = {**payload, "to": to}
     if not is_configured():
         logger.info("Email not configured; skipping send to %s", payload.get("to"))
         return False
@@ -36,7 +50,19 @@ async def _send_async(payload: dict) -> bool:
         return False
 
 
-def _shell(title: str, body_html: str, cta_label: str, cta_url: str) -> str:
+INVITE_FOOTER = (
+    "You received this because someone at Enigma&#8209;Cube invited you to a project workspace. "
+    "If you were not expecting it, you can ignore this email."
+)
+PROJECT_FOOTER = (
+    "You received this because you are part of a project workspace on the "
+    "Enigma&#8209;Cube client portal."
+)
+
+
+def _shell(
+    title: str, body_html: str, cta_label: str, cta_url: str, footer: str = INVITE_FOOTER
+) -> str:
     """Minimal table-based layout — email clients are not browsers.
 
     Deliberately light: a dark card renders unpredictably against the varied
@@ -73,8 +99,7 @@ def _shell(title: str, body_html: str, cta_label: str, cta_url: str) -> str:
           </td></tr>
           <tr><td style="border-top:1px solid #e7e5e4;padding:18px 28px;">
             <p style="margin:0;font-size:11px;color:#a8a29e;">
-              You received this because someone at Enigma&#8209;Cube invited you to a project workspace.
-              If you were not expecting it, you can ignore this email.
+              {footer}
             </p>
           </td></tr>
         </table>
@@ -107,3 +132,34 @@ async def send_invitation_email(
             f"Join {organization_name}", body, "Accept invitation", join_url
         ),
     })
+
+
+def _p(text: str, muted: bool = False) -> str:
+    color = "#78716c" if muted else "#44403c"
+    size = "13px" if muted else "15px"
+    return (
+        f'<p style="margin:0 0 14px;font-size:{size};line-height:1.6;color:{color};">{text}</p>'
+    )
+
+
+async def send_project_email(
+    *, to: list[str], subject: str, title: str, paragraphs: list[str],
+    cta_label: str, cta_url: str,
+) -> list[str]:
+    """One message per recipient, so nobody sees anyone else's address.
+
+    Returns the addresses it actually went to. Callers pass already-escaped
+    HTML fragments; anything user-authored must go through `html.escape`.
+    """
+    body = "".join(_p(t) for t in paragraphs) + '<div style="height:10px"></div>'
+    sent: list[str] = []
+    for address in dict.fromkeys(to):  # de-duplicate, keep order
+        ok = await _send_async({
+            "from": f"Enigma-Cube <{settings.FROM_EMAIL}>",
+            "to": [address],
+            "subject": subject,
+            "html": _shell(title, body, cta_label, cta_url, footer=PROJECT_FOOTER),
+        })
+        if ok:
+            sent.append(address)
+    return sent

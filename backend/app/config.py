@@ -33,6 +33,9 @@ class Settings(BaseSettings):
     # Email (Resend)
     RESEND_API_KEY: str = ""
     FROM_EMAIL: str = "noreply@enigma-cube.com"
+    # Where alerts about client activity go (signed, paid, booked). A shared
+    # business inbox rather than each admin's personal login address.
+    ADMIN_NOTIFICATION_EMAIL: str = "info@enigma-cube.com"
 
     # AI (Groq — free tier)
     GROQ_API_KEY: str = ""
