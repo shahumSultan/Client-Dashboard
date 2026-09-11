@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useProjects } from "@/hooks/useProjects";
 import { useCurrentUser } from "@/hooks/useAuth";
+import { OnboardingBanner } from "@/components/onboarding/OnboardingBanner";
 
 function greeting() {
   const h = new Date().getHours();
@@ -53,6 +54,8 @@ export default function DashboardPage() {
           </p>
         </div>
       </section>
+
+      <OnboardingBanner />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatsCard

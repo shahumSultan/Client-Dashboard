@@ -344,3 +344,51 @@ body {
     animation: none;
   }
 }
+
+/* --------------------------------------------------------------------------
+   Paper — printed documents only.
+   The app is dark-only, but an agreement or invoice that leaves the portal
+   as a PDF goes into someone's files and printer. Rescoping the tokens lets
+   the same components render on white without a second set of markup.
+   -------------------------------------------------------------------------- */
+.paper {
+  --glass: #fafaf9;
+  --glass-strong: #f5f5f4;
+  --glass-border: #e7e5e4;
+  --glass-border-strong: #d6d3d1;
+  --fg: #0d0d0d;
+  --fg-muted: #44403c;
+  --fg-subtle: #57534e;
+  --fg-faint: #a8a29e;
+  --brand-soft: #a92e2e;
+  --brand-wash: rgba(169, 46, 46, 0.07);
+  --success: #047857;
+  --success-wash: rgba(4, 120, 87, 0.08);
+  --warning: #b45309;
+  --warning-wash: rgba(180, 83, 9, 0.08);
+  background: #ffffff;
+  color: var(--fg);
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 16mm 14mm;
+  }
+  html,
+  body {
+    background: #ffffff !important;
+  }
+  .grain::after,
+  .ambient,
+  [data-print-hide] {
+    display: none !important;
+  }
+  .paper {
+    box-shadow: none !important;
+    border: 0 !important;
+  }
+  .paper section {
+    break-inside: avoid;
+  }
+}

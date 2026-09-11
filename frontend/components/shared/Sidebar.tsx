@@ -8,9 +8,11 @@ import {
   Paperclip,
   BarChart3,
   ShieldCheck,
+  FileSignature,
 } from "lucide-react";
 import { SidebarShell, type NavItem } from "@/components/shared/SidebarShell";
 import { useCurrentUser } from "@/hooks/useAuth";
+import { useEngagements, clientActionLabel } from "@/hooks/useEngagements";
 
 const NAV: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -23,10 +25,26 @@ const NAV: NavItem[] = [
 
 export function Sidebar({ open, onClose }: { open?: boolean; onClose?: () => void }) {
   const { data: user } = useCurrentUser();
+  const { data: engagements = [] } = useEngagements();
+
+  // Onboarding only appears once there is paperwork to show, and flags itself
+  // while the client still owes a step.
+  const items: NavItem[] = engagements.length
+    ? [
+        NAV[0],
+        {
+          label: "Onboarding",
+          href: "/onboarding",
+          icon: FileSignature,
+          attention: engagements.some((e) => clientActionLabel(e) !== null),
+        },
+        ...NAV.slice(1),
+      ]
+    : NAV;
 
   return (
     <SidebarShell
-      items={NAV}
+      items={items}
       kicker="Client Portal"
       open={open}
       onClose={onClose}

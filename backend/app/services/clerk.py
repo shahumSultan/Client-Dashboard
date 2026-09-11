@@ -45,3 +45,12 @@ def primary_email(profile: dict) -> str:
 def full_name(profile: dict) -> str | None:
     name = f"{profile.get('first_name') or ''} {profile.get('last_name') or ''}".strip()
     return name or None
+
+
+def verified_emails(profile: dict) -> set[str]:
+    """Every address on the account that Clerk has verified, lower-cased."""
+    return {
+        (entry.get("email_address") or "").lower()
+        for entry in profile.get("email_addresses") or []
+        if (entry.get("verification") or {}).get("status") == "verified"
+    } - {""}
