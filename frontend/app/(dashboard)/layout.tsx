@@ -35,7 +35,7 @@ export default function DashboardLayout({
     // The client portal is scoped to one organization. An admin has none, and
     // for them `list_projects` returns every client's work, which reads as
     // "why can I see all these projects?" — send them to the admin panel.
-    if (user.role === "admin" && !user.organization_id) {
+    if ((user.role === "admin" || user.role === "staff") && !user.organization_id) {
       router.replace("/admin");
       return;
     }
@@ -52,7 +52,7 @@ export default function DashboardLayout({
   if (!user.organization_id) {
     return (
       <PageLoader
-        label={user.role === "admin" ? "Opening admin" : "Setting up your workspace"}
+        label={user.role === "admin" || user.role === "staff" ? "Opening admin" : "Setting up your workspace"}
       />
     );
   }

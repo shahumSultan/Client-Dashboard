@@ -30,6 +30,7 @@ import {
 import { formatMoney, CURRENCIES } from "@/lib/money";
 import { cn, formatDate } from "@/lib/utils";
 import { StageBadge } from "@/components/onboarding/StageBadge";
+import { useReadOnly } from "@/lib/read-only";
 import type { Engagement, EngagementDraft, Project } from "@/lib/types";
 
 // ── Form model ───────────────────────────────────────────────────────────────
@@ -223,6 +224,7 @@ function Editor({ engagement: e }: { engagement: Engagement }) {
   const [form, setForm] = useState<Form>(() => toForm(e));
   const [tab, setTab] = useState("agreement");
   const update = useUpdateEngagement(e.id);
+  const viewOnly = useReadOnly();
   const actions = useEngagementAction(e.id);
   const remove = useDeleteEngagement();
 
@@ -326,7 +328,7 @@ function Editor({ engagement: e }: { engagement: Engagement }) {
                   Recall to edit
                 </Button>
               ) : null}
-              {!e.signed_at && (
+              {!e.signed_at && !viewOnly && (
                 <button
                   type="button"
                   aria-label="Delete onboarding"
@@ -704,6 +706,7 @@ function SourceToggle({
   value: "form" | "pdf";
   onChange: (v: "form" | "pdf") => void;
 }) {
+  const viewOnly = useReadOnly();
   const options = [
     { key: "pdf" as const, label: "Use my own document", hint: "Upload your agreement as a PDF" },
     { key: "form" as const, label: "Build it here", hint: "Fill in scope, deliverables and terms" },
@@ -716,9 +719,10 @@ function SourceToggle({
           type="button"
           role="radio"
           aria-checked={value === o.key}
+          disabled={viewOnly}
           onClick={() => onChange(o.key)}
           className={cn(
-            "cursor-pointer rounded-[12px] border px-4 py-3 text-left transition-colors",
+            "cursor-pointer rounded-[12px] border px-4 py-3 text-left transition-colors disabled:cursor-default",
             value === o.key
               ? "border-brand/50 bg-brand-wash"
               : "border-hairline hover:border-hairline-strong hover:bg-white/[0.03]"
@@ -752,7 +756,8 @@ function AgreementUpload({
 }) {
   const { upload, remove } = useAgreementDocument(e.id);
   const [dragging, setDragging] = useState(false);
-  const locked = !!e.sent_at;
+  const viewOnly = useReadOnly();
+  const locked = !!e.sent_at || viewOnly;
 
   async function take(file: File | undefined) {
     if (!file) return;
@@ -802,6 +807,10 @@ function AgreementUpload({
         )}
       </div>
     );
+  }
+
+  if (viewOnly) {
+    return <p className="text-sm text-subtle">No agreement PDF has been uploaded yet.</p>;
   }
 
   return (

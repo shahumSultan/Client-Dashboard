@@ -2,19 +2,24 @@
 import * as React from "react";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useReadOnly } from "@/lib/read-only";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "default" | "outline" | "ghost" | "destructive" | "secondary";
   size?: "sm" | "md" | "lg" | "icon";
   /** Shows a spinner and blocks input — never leave an async action silent. */
   loading?: boolean;
+  /** Stays usable for view-only accounts — for actions that change nothing
+   *  (cancel, close, copy). Everything else is disabled for them. */
+  allowReadOnly?: boolean;
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
-    { className, variant = "default", size = "md", loading = false, disabled, children, ...props },
+    { className, variant = "default", size = "md", loading = false, allowReadOnly = false, disabled, children, ...props },
     ref
   ) => {
+    const blocked = useReadOnly() && !allowReadOnly;
     const base =
       "relative inline-flex items-center justify-center gap-2 rounded-[10px] font-medium select-none cursor-pointer " +
       "transition-[background-color,border-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] " +
@@ -44,7 +49,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         ref={ref}
-        disabled={disabled || loading}
+        disabled={disabled || loading || blocked}
+        title={blocked ? "View-only access" : props.title}
         aria-busy={loading || undefined}
         className={cn(base, variants[variant], sizes[size], className)}
         {...props}

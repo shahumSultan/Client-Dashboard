@@ -122,7 +122,7 @@ function CreateClientDialog({
         </div>
 
         <DialogFooter>
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button variant="ghost" allowReadOnly onClick={() => onOpenChange(false)}>Cancel</Button>
           <Button
             onClick={() => mutate(form)}
             disabled={!form.name.trim() || !form.slug.trim()}

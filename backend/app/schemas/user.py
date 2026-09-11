@@ -25,5 +25,4 @@ class UserUpdate(BaseModel):
 
 class UserRoleUpdate(BaseModel):
     role: UserRole
-    organization_id: Optional[str] = None
 

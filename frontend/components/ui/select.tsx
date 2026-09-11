@@ -2,6 +2,7 @@
 import * as React from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useReadOnly } from "@/lib/read-only";
 
 /**
  * A styled native <select>.
@@ -13,7 +14,9 @@ import { cn } from "@/lib/utils";
 export const Select = React.forwardRef<
   HTMLSelectElement,
   React.SelectHTMLAttributes<HTMLSelectElement>
->(({ className, children, ...props }, ref) => (
+>(({ className, children, ...props }, ref) => {
+  const viewOnly = useReadOnly();
+  return (
   <div className="relative">
     <select
       ref={ref}
@@ -27,6 +30,7 @@ export const Select = React.forwardRef<
         className
       )}
       {...props}
+      disabled={viewOnly || props.disabled}
     >
       {children}
     </select>
@@ -36,5 +40,6 @@ export const Select = React.forwardRef<
       className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-subtle"
     />
   </div>
-));
+  );
+});
 Select.displayName = "Select";

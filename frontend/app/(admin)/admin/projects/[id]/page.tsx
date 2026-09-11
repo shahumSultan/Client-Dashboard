@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/status-pill";
 import { CommentsPanel } from "@/components/comments/CommentsPanel";
 import { OnboardingCard } from "@/components/admin/OnboardingCard";
+import { useReadOnly } from "@/lib/read-only";
 import { formatDate, timeAgo, STATUS_LABELS } from "@/lib/utils";
 import type {
   Project,
@@ -52,6 +53,7 @@ export default function AdminProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const qc = useQueryClient();
+  const viewOnly = useReadOnly();
 
   const [updateText, setUpdateText] = useState("");
   const [newMilestone, setNewMilestone] = useState({
@@ -224,12 +226,13 @@ export default function AdminProjectDetailPage() {
                   max={100}
                   step={5}
                   value={project.completion_percentage}
+                  disabled={viewOnly}
                   onChange={(e) =>
                     patchProject.mutate({
                       completion_percentage: Number(e.target.value),
                     })
                   }
-                  className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/[0.08] accent-[var(--brand)]"
+                  className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/[0.08] accent-[var(--brand)] disabled:cursor-default disabled:opacity-50"
                 />
                 <span className="tabular w-10 shrink-0 text-right text-sm font-semibold text-fg">
                   {project.completion_percentage}%
@@ -242,9 +245,11 @@ export default function AdminProjectDetailPage() {
                 id="proj-start"
                 type="date"
                 defaultValue={project.start_date ?? ""}
-                onBlur={(e) =>
-                  patchProject.mutate({ start_date: e.target.value || null })
-                }
+                onBlur={(e) => {
+                  // Only a real edit saves — clicking in and out is not one.
+                  if (e.target.value !== (project.start_date ?? ""))
+                    patchProject.mutate({ start_date: e.target.value || null });
+                }}
               />
             </Field>
 
@@ -253,9 +258,10 @@ export default function AdminProjectDetailPage() {
                 id="proj-target"
                 type="date"
                 defaultValue={project.target_date ?? ""}
-                onBlur={(e) =>
-                  patchProject.mutate({ target_date: e.target.value || null })
-                }
+                onBlur={(e) => {
+                  if (e.target.value !== (project.target_date ?? ""))
+                    patchProject.mutate({ target_date: e.target.value || null });
+                }}
               />
             </Field>
           </div>
@@ -264,15 +270,16 @@ export default function AdminProjectDetailPage() {
             <Field
               label="Description"
               htmlFor="proj-description"
-              hint="Saved when you click away."
+              hint={viewOnly ? undefined : "Saved when you click away."}
             >
               <Textarea
                 id="proj-description"
                 rows={3}
                 defaultValue={project.description ?? ""}
-                onBlur={(e) =>
-                  patchProject.mutate({ description: e.target.value || null })
-                }
+                onBlur={(e) => {
+                  if (e.target.value !== (project.description ?? ""))
+                    patchProject.mutate({ description: e.target.value || null });
+                }}
               />
             </Field>
           </div>
@@ -407,13 +414,13 @@ export default function AdminProjectDetailPage() {
                           </option>
                         ))}
                       </Select>
-                      <button
+                      {!viewOnly && <button
                         onClick={() => deleteMilestone.mutate(m.id)}
                         aria-label={`Delete ${m.title}`}
                         className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] text-faint transition-colors hover:bg-danger-wash hover:text-danger cursor-pointer"
                       >
                         <Trash2 size={14} aria-hidden="true" />
-                      </button>
+                      </button>}
                     </li>
                   ))}
               </ul>

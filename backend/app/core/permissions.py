@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from app.models.user import User, UserRole
+from app.models.user import User, UserRole, is_team
 from app.models.project import Project
 from app.models.organization import Organization
 
@@ -13,7 +13,7 @@ async def assert_project_access(user: User, project_id: str, db: AsyncSession) -
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    if user.role == UserRole.ADMIN:
+    if is_team(user):
         return project
 
     if user.organization_id != project.organization_id:
@@ -36,7 +36,7 @@ async def assert_org_access(user: User, organization_id: str, db: AsyncSession) 
     if not org:
         raise HTTPException(status_code=404, detail="Organization not found")
 
-    if user.role == UserRole.ADMIN:
+    if is_team(user):
         return org
 
     if user.organization_id != organization_id:

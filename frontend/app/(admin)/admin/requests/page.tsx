@@ -113,7 +113,7 @@ function RequestDialog({
         </div>
 
         <DialogFooter>
-          <Button variant="ghost" onClick={onClose}>
+          <Button variant="ghost" allowReadOnly onClick={onClose}>
             Cancel
           </Button>
           <Button onClick={() => mutate()} loading={isPending}>

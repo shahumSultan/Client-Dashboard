@@ -3,6 +3,7 @@ import { Plus, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useReadOnly } from "@/lib/read-only";
 
 export interface Column<T> {
   key: keyof T & string;
@@ -35,6 +36,7 @@ export function RowsEditor<T extends Record<string, string>>({
   addLabel?: string;
   disabled?: boolean;
 }) {
+  const viewOnly = useReadOnly();
   const cols = { "--cols": columns.map((c) => c.width ?? "1fr").join(" ") } as React.CSSProperties;
   // One column on phones; the configured tracks from sm up.
   const grid = "grid flex-1 grid-cols-1 gap-2 sm:[grid-template-columns:var(--cols)]";
@@ -72,6 +74,7 @@ export function RowsEditor<T extends Record<string, string>>({
               />
             ))}
           </div>
+          {!viewOnly && (
           <button
             type="button"
             onClick={() => onChange(rows.filter((_, j) => j !== i))}
@@ -83,6 +86,7 @@ export function RowsEditor<T extends Record<string, string>>({
           >
             <X size={14} aria-hidden="true" />
           </button>
+          )}
         </div>
       ))}
 

@@ -49,7 +49,7 @@ export function Sidebar({ open, onClose }: { open?: boolean; onClose?: () => voi
       open={open}
       onClose={onClose}
       footerSlot={
-        user?.role === "admin" ? (
+        user?.role === "admin" || user?.role === "staff" ? (
           <Link
             href="/admin"
             onClick={onClose}

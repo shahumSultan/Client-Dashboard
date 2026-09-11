@@ -8,7 +8,8 @@ from app.database import Base
 
 
 class UserRole(str, enum.Enum):
-    ADMIN = "admin"             # Enigma-Cube team
+    ADMIN = "admin"             # Enigma-Cube team — full control
+    STAFF = "staff"             # Enigma-Cube team — sees everything, changes nothing
     CLIENT_OWNER = "client_owner"
     CLIENT_MEMBER = "client_member"
 
@@ -33,3 +34,8 @@ class User(Base):
 
     organization: Mapped["Organization"] = relationship("Organization", back_populates="users")
     notifications: Mapped[list["Notification"]] = relationship("Notification", back_populates="user")
+
+
+def is_team(user: "User") -> bool:
+    """Enigma-Cube staff of any kind: sees every client, not just one."""
+    return user.role in (UserRole.ADMIN, UserRole.STAFF)

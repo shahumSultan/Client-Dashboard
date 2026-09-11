@@ -43,7 +43,7 @@ async def test_client_cannot_request_an_upload_url(api, world):
 
 async def test_client_cannot_change_roles(api, world):
     r = await api(world["client_a"]).patch(
-        f"/users/{world['member_a'].id}/role", json={"role": "admin"}
+        f"/admin/users/{world['member_a'].id}/role", json={"role": "admin"}
     )
     assert r.status_code == 403
 

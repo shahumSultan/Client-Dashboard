@@ -4,7 +4,7 @@ from sqlalchemy import select, update
 from app.database import get_db
 from app.core.auth import get_current_user, require_admin
 from app.core.permissions import assert_project_access
-from app.models.user import User, UserRole
+from app.models.user import User, UserRole, is_team
 from app.models.project import Project, ProjectUpdate as ProjectUpdateModel
 from app.schemas.project import (
     ProjectCreate, ProjectUpdate, ProjectOut,
@@ -19,7 +19,7 @@ async def list_projects(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    if user.role == UserRole.ADMIN:
+    if is_team(user):
         result = await db.execute(select(Project).where(Project.is_active == True))
     else:
         result = await db.execute(

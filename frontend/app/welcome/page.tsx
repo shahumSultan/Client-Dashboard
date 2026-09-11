@@ -25,11 +25,11 @@ export default function WelcomePage() {
     if (isLoading || !user) return;
     if (user.organization_id) router.replace("/dashboard");
     // Admins never belong to a client workspace.
-    else if (user.role === "admin") router.replace("/admin");
+    else if (user.role === "admin" || user.role === "staff") router.replace("/admin");
   }, [user, isLoading, router]);
 
   if (isLoading || !user) return <PageLoader />;
-  if (user.organization_id || user.role === "admin") {
+  if (user.organization_id || user.role === "admin" || user.role === "staff") {
     return <PageLoader label="Opening your portal" />;
   }
 
