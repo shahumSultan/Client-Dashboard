@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from app.core.time import utcnow
-from app.models.user import User
+from app.models.user import User, is_team
 from app.models.invitation import Invitation
 
 
@@ -25,6 +25,13 @@ async def accept_invitation(db: AsyncSession, user: User, invite: Invitation) ->
         )
     if user.organization_id and user.organization_id != invite.organization_id:
         raise HTTPException(status_code=409, detail="This account already belongs to a workspace")
+    # Accepting would rewrite the role to a client one — for an admin, a
+    # self-demotion nobody might be left to undo.
+    if is_team(user):
+        raise HTTPException(
+            status_code=409,
+            detail="This is an Enigma-Cube team account, so it can't join a client workspace.",
+        )
 
     user.organization_id = invite.organization_id
     user.role = invite.role
@@ -42,7 +49,10 @@ async def auto_accept_matching_invitation(db: AsyncSession, user: User) -> User:
     the address you invited lands in the right workspace without touching a
     link. The token flow stays available for anything unusual.
     """
-    if user.organization_id or not user.email:
+    # Team accounts never have a workspace, so without this check they would
+    # hit it on every request — and one client invitation to their address
+    # would silently rewrite their role to a client one.
+    if user.organization_id or not user.email or is_team(user):
         return user
 
     result = await db.execute(
