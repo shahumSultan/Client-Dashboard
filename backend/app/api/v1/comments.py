@@ -55,7 +55,7 @@ async def _resolve_target(
 
 
 async def _notify_admins(db: AsyncSession, actor: User, comment: Comment, project: Project) -> None:
-    result = await db.execute(select(User).where(User.role == UserRole.ADMIN, User.is_active.is_(True)))
+    result = await db.execute(select(User).where(User.role.in_((UserRole.ADMIN, UserRole.STAFF)), User.is_active.is_(True)))
     for admin in result.scalars().all():
         if admin.id == actor.id:
             continue

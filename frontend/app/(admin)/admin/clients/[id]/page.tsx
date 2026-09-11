@@ -19,6 +19,7 @@ import type { Organization, Project, User } from "@/lib/types";
 
 const ROLE_LABEL: Record<string, string> = {
   admin: "Admin",
+  staff: "Staff",
   client_owner: "Owner",
   client_member: "Member",
 };

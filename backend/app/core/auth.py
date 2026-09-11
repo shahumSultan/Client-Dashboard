@@ -1,6 +1,7 @@
 import logging
+import re
 import time
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
@@ -99,7 +100,29 @@ async def verify_clerk_token(token: str) -> dict:
     return payload
 
 
+# A read-only staff account may still do these — they change nothing but
+# their own inbox and profile.
+_STAFF_WRITABLE = re.compile(r"^/api/v1/(notifications/[^/]+/read|notifications/read-all|users/me)$")
+SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
+
+
+def _guard_read_only(user: User, request: Request) -> None:
+    """Refuse every write from a staff account, at one choke point.
+
+    Enforced here — on the dependency every authenticated route shares —
+    rather than per endpoint, so a route added later is read-only for staff
+    by default instead of by someone remembering to check.
+    """
+    if (
+        user.role == UserRole.STAFF
+        and request.method not in SAFE_METHODS
+        and not _STAFF_WRITABLE.match(request.url.path)
+    ):
+        raise HTTPException(status_code=403, detail="Your account has view-only access.")
+
+
 async def get_current_user(
+    request: Request,
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: AsyncSession = Depends(get_db),
 ) -> User:
@@ -121,6 +144,8 @@ async def get_current_user(
 
     if not user.is_active:
         raise HTTPException(status_code=403, detail="Account is inactive")
+
+    _guard_read_only(user, request)
 
     # Access is invite-only, so a user with no workspace may have one waiting
     # for their address. Only runs while they are unattached, which is at most
@@ -239,10 +264,13 @@ async def _backfill_email(db: AsyncSession, user: User) -> None:
     await db.refresh(user)
 
 
-async def require_admin(user: User = Depends(get_current_user)) -> User:
-    if user.role != UserRole.ADMIN:
-        raise HTTPException(status_code=403, detail="Admin access required")
-    return user
+async def require_admin(request: Request, user: User = Depends(get_current_user)) -> User:
+    """The admin panel. Staff pass on reads only; every write needs an admin."""
+    if user.role == UserRole.ADMIN:
+        return user
+    if user.role == UserRole.STAFF and request.method in SAFE_METHODS:
+        return user
+    raise HTTPException(status_code=403, detail="Admin access required")
 
 
 async def require_client_owner(user: User = Depends(get_current_user)) -> User:

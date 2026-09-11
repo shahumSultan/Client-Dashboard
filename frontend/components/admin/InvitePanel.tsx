@@ -16,6 +16,7 @@ import {
   inviteUrl,
 } from "@/hooks/useInvitations";
 import { formatDate } from "@/lib/utils";
+import { useReadOnly } from "@/lib/read-only";
 import type { UserRole } from "@/lib/types";
 
 const ROLE_LABEL: Record<string, string> = {
@@ -34,6 +35,7 @@ export function InvitePanel({
   const [role, setRole] = useState<UserRole>("client_member");
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
+  const viewOnly = useReadOnly();
 
   const { data: invitations = [], isLoading } = useInvitations(organizationId);
   const create = useCreateInvitation(organizationId);
@@ -151,7 +153,7 @@ export function InvitePanel({
 
               <div className="flex shrink-0 items-center gap-2">
                 <Badge>{ROLE_LABEL[invite.role] ?? invite.role}</Badge>
-                <Button variant="ghost" size="sm" onClick={() => copy(invite.token)}>
+                <Button variant="ghost" size="sm" allowReadOnly onClick={() => copy(invite.token)}>
                   {copied === invite.token ? (
                     <>
                       <Check size={13} aria-hidden="true" />
@@ -164,6 +166,7 @@ export function InvitePanel({
                     </>
                   )}
                 </Button>
+                {!viewOnly && (
                 <button
                   onClick={() => {
                     revoke.mutate(invite.id, {
@@ -176,6 +179,7 @@ export function InvitePanel({
                 >
                   <X size={14} aria-hidden="true" />
                 </button>
+                )}
               </div>
             </li>
           ))}

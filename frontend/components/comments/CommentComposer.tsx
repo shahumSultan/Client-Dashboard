@@ -77,7 +77,7 @@ export function CommentComposer({
         </p>
         <div className="flex items-center gap-2">
           {onCancel && (
-            <Button variant="ghost" size="sm" onClick={onCancel} type="button">
+            <Button variant="ghost" size="sm" allowReadOnly onClick={onCancel} type="button">
               Cancel
             </Button>
           )}

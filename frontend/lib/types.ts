@@ -1,4 +1,5 @@
-export type UserRole = "admin" | "client_owner" | "client_member";
+/** "staff": an Enigma-Cube team member with view-only access to the admin panel. */
+export type UserRole = "admin" | "staff" | "client_owner" | "client_member";
 
 export interface User {
   id: string;

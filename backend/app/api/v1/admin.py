@@ -1,14 +1,14 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from app.database import get_db
 from app.core.auth import require_admin
-from app.models.user import User
+from app.models.user import User, UserRole
 from app.models.organization import Organization
 from app.models.project import Project
 from app.models.request import Request, RequestStatus
 from app.models.milestone import Milestone
-from app.schemas.user import UserOut
+from app.schemas.user import UserOut, UserRoleUpdate
 from app.schemas.request import RequestOut
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
@@ -55,21 +55,29 @@ async def list_all_users(
     return result.scalars().all()
 
 
-@router.patch("/users/{user_id}/role")
+@router.patch("/users/{user_id}/role", response_model=UserOut)
 async def update_user_role(
     user_id: str,
-    body: dict,
+    data: UserRoleUpdate,
     admin: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
-    from app.models.user import UserRole
-    result = await db.execute(select(User).where(User.id == user_id))
-    target = result.scalar_one_or_none()
+    """Set someone's role. Admins only — staff are read-only and cannot promote."""
+    target = await db.get(User, user_id)
     if not target:
-        from fastapi import HTTPException
-        raise HTTPException(404, "User not found")
-    target.role = UserRole(body["role"])
+        raise HTTPException(status_code=404, detail="User not found")
+    # Demoting yourself is the one change that can't be undone from the UI:
+    # with no admin left, nobody can promote anyone back.
+    if target.id == admin.id:
+        raise HTTPException(status_code=409, detail="You can't change your own role.")
+    # Team roles see every client. Someone inside a client's workspace getting
+    # one is almost certainly a mis-click on the wrong row.
+    if data.role in (UserRole.ADMIN, UserRole.STAFF) and target.organization_id:
+        raise HTTPException(
+            status_code=409,
+            detail="This person belongs to a client workspace. Team roles are only for Enigma-Cube staff.",
+        )
+    target.role = data.role
     await db.commit()
     await db.refresh(target)
-    from app.schemas.user import UserOut
-    return UserOut.model_validate(target)
+    return target
