@@ -20,9 +20,30 @@ const fragmentMono = Fragment_Mono({
   variable: "--font-fragment-mono",
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://portal.enigma-cube.com";
+const TITLE = "Enigma-Cube | Client Portal";
+const DESCRIPTION = "Track your project progress in real time.";
+
 export const metadata: Metadata = {
-  title: "Enigma-Cube | Client Portal",
-  description: "Track your project progress in real time.",
+  // Without this, og:image resolves to a relative path and the crawlers that
+  // matter (Slack, WhatsApp, LinkedIn) drop the preview entirely.
+  metadataBase: new URL(SITE_URL),
+  title: TITLE,
+  description: DESCRIPTION,
+  openGraph: {
+    type: "website",
+    siteName: "Enigma-Cube Client Portal",
+    title: TITLE,
+    description: DESCRIPTION,
+    url: SITE_URL,
+  },
+  twitter: {
+    // The card type has to be declared; the default is a small thumbnail that
+    // crops the 1200x630 image to a square.
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
 
 export const viewport: Viewport = {

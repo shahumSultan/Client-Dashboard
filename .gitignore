@@ -26,3 +26,6 @@ Thumbs.db
 
 # graphify (generated knowledge graph - rebuild with /graphify)
 graphify-out/
+
+# Private working notes - never pushed
+notes/
