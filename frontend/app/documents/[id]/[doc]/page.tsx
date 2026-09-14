@@ -106,9 +106,10 @@ export default function DocumentPage({
       <div
         className={cn(
           "paper relative mx-auto max-w-[210mm] rounded-card shadow-[0_24px_80px_-24px_rgba(0,0,0,0.8)] print:max-w-none print:rounded-none print:p-0",
-          letterhead.url
-            ? "px-6 pb-14 pt-10 sm:px-[14mm] sm:pb-[70mm] sm:pt-[40mm]"
-            : "px-8 py-10 sm:px-14 sm:py-14"
+          // With a letterhead the vertical space belongs to the head and foot
+          // spacers inside LetterheadFrame, which scale with the card - padding
+          // here would be a second, differently-sized reservation.
+          letterhead.url ? "px-6 sm:px-[14mm]" : "px-8 py-10 sm:px-14 sm:py-14"
         )}
       >
         {letterhead.url && <LetterheadSheet url={letterhead.url} />}

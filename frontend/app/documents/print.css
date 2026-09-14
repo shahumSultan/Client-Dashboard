@@ -6,9 +6,13 @@
    page injects it in a <style> tag instead, only when a letterhead exists.
 
    Everything below is inert elsewhere: .lh-* and .doc-* match nothing outside
-   this route, and .paper is used only by the document page. */
+   this route, and .paper is used only by the document page.
 
-/* The stationery is positioned, and the text is not, so without this the
+   The letterhead's own geometry, which every number here comes from: the
+   header rule ends at 32.2mm, and the foot decoration begins at 231.8mm of
+   297mm. Rounded outwards to a 40mm head and a 65mm foot. */
+
+/* The stationery is positioned and the text is not, so without this the
    letterhead paints over the whole document - an opaque sheet with nothing
    readable on it. This must stay outside @media print: on screen is exactly
    where it was missing. */
@@ -21,19 +25,56 @@
   z-index: 1;
 }
 
-/* On screen the sheet is drawn as a repeating background at true A4 size, so
-   a two-page document previews with stationery every 297mm - the same rhythm
-   it prints at. The <img> is for print only, where a background would be at
-   the mercy of the "Background graphics" checkbox in the print dialog. */
+/* On screen there are no pages to align a page-shaped image to: the document
+   is one continuous card. So only the head and foot bands are drawn, pinned to
+   the card, and the middle is left clean - .paper's padding is what holds the
+   text clear of them. Both bands are sized as a share of the card's WIDTH, so
+   they stay in proportion to the artwork at any width, phone included. */
 @media screen {
-  .lh-sheet {
-    background-repeat: repeat-y;
-    background-position: top center;
-    background-size: 210mm 297mm;
+  .lh-print {
+    display: none;
   }
 
-  .lh-sheet img {
-    display: none;
+  .lh-head,
+  .lh-foot {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .lh-head {
+    top: 0;
+    aspect-ratio: 210 / 40;
+  }
+
+  .lh-foot {
+    bottom: 0;
+    aspect-ratio: 210 / 65;
+  }
+
+  .lh-head img,
+  .lh-foot img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Pull the foot band's copy up so its window sits over the last 65mm of the
+     sheet: 232 / 297 of the image's own height. */
+  .lh-foot img {
+    transform: translateY(-78.11%);
+  }
+
+  /* The same two bands, reserved in the flow so the text clears them. Sized
+     against the card's CONTENT width (210mm less the 14mm gutters), which is
+     what these spacers span, so they match the bands at any card width. */
+  .doc-head-space {
+    aspect-ratio: 182 / 40;
+  }
+
+  .doc-foot-space {
+    aspect-ratio: 182 / 65;
   }
 }
 
@@ -44,6 +85,12 @@
   .paper {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+
+  /* The screen bands have pages to live on now, so the whole sheet is drawn. */
+  .lh-head,
+  .lh-foot {
+    display: none;
   }
 
   /* The stationery, at the page-area origin, repeating on every page.
@@ -63,10 +110,9 @@
     left: 0;
     width: 210mm;
     height: 297mm;
-    background-image: none !important;
   }
 
-  .lh-sheet img {
+  .lh-print {
     width: 210mm;
     height: 297mm;
     display: block;
@@ -75,10 +121,7 @@
   /* thead and tfoot repeat on every printed page, and unlike padding on the
      content they reserve their band on pages the flow has not reached yet.
      That is what keeps the text clear of the stationery from page two on -
-     no CSS pads "every page" any other way.
-
-     The numbers are the letterhead's own geometry: its header rule ends at
-     32.2mm, and its foot decoration begins at 231.8mm of 297mm. */
+     no CSS pads "every page" any other way. */
   .doc-sheet {
     width: 100%;
     border-collapse: collapse;
@@ -90,9 +133,11 @@
 
   .doc-head-space {
     height: 40mm;
+    aspect-ratio: auto;
   }
 
   .doc-foot-space {
     height: 65mm;
+    aspect-ratio: auto;
   }
 }

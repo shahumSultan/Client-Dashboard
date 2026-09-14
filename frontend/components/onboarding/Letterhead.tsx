@@ -1,34 +1,43 @@
 "use client";
 
 /**
- * The company letterhead, behind a printed document.
+ * The company letterhead, behind a document.
  *
- * One element, both media. On screen it is absolutely positioned inside the
- * .paper card and tiled every 297mm, so a long document previews with the same
- * rhythm it prints at. In print it becomes a fixed box at the page-area origin
- * (see print.css), which Chrome repeats on every page - so every sheet carries
- * the stationery, exactly like preprinted paper.
+ * Print and screen need different things from the same image, because only one
+ * of them has pages.
  *
- * It is deliberately NOT split into a full page-one sheet plus a cropped
- * running header. That arrangement needs a fixed box offset into the @page
- * margin area, and Chrome refuses: a negative offset lands the box at the foot
- * of page one and removes it from every page after.
+ * - In print it is a single fixed box at the page-area origin, which Chrome
+ *   repeats on every page: every sheet carries the whole stationery, exactly
+ *   like preprinted paper. It is deliberately NOT offset into the @page margin
+ *   area - Chrome refuses, landing the box at the foot of page one and
+ *   dropping it from every page after.
+ * - On screen the document is one continuous card, so there is nothing to
+ *   align a page-shaped image to. Tiling it every 297mm drops a second header
+ *   and the foot decoration into the middle of flowing text. Only the head and
+ *   foot bands are drawn instead, pinned to the top and bottom of the card,
+ *   with the text held clear of both by .paper's padding.
  *
- * A plain <img> rather than next/image: blob URLs cannot go through the image
+ * Plain <img> rather than next/image: blob URLs cannot go through the image
  * optimiser.
  */
 export function LetterheadSheet({ url }: { url: string }) {
   return (
     <div
       className="lh-sheet pointer-events-none absolute inset-0 overflow-hidden rounded-card print:rounded-none"
-      // Screen paints the sheet as a repeating background (print.css); print
-      // uses the <img> below. Same object URL, so the bytes decode once.
-      style={{ backgroundImage: `url(${url})` }}
       data-letterhead="sheet"
       aria-hidden="true"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={url} alt="" aria-hidden="true" className="h-full w-full select-none object-cover" />
+      <img src={url} alt="" aria-hidden="true" className="lh-print select-none" />
+
+      <div className="lh-head">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={url} alt="" aria-hidden="true" className="select-none" />
+      </div>
+      <div className="lh-foot">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={url} alt="" aria-hidden="true" className="select-none" />
+      </div>
     </div>
   );
 }
