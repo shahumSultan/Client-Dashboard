@@ -57,6 +57,11 @@ class Engagement(Base):
     sent_at: Mapped[datetime | None] = mapped_column(DateTime)
     sent_by: Mapped[str | None] = mapped_column(String, ForeignKey("users.id"))
     agreement_hash: Mapped[str | None] = mapped_column(String(64))
+    # The stationery this went out on, pinned by content hash so replacing the
+    # letterhead later never changes how an already-signed agreement renders.
+    # Set on send for form agreements only; see services/engagements.py for why
+    # it is folded into agreement_hash conditionally rather than unconditionally.
+    letterhead_sha256: Mapped[str | None] = mapped_column(String(64))
 
     # The signature and the evidence around it - what makes a click-to-sign
     # attributable: who, when, from where, and exactly what they saw.

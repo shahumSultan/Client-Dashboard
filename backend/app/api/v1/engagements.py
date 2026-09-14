@@ -31,6 +31,7 @@ from app.schemas.engagement import (
 )
 from app.services import engagements as rules
 from app.services import documents as pdfs
+from app.services import branding as letterheads
 from app.services.email import send_project_email, is_test_address
 from app.services.notifications import create_notification
 
@@ -248,6 +249,11 @@ async def send_engagement(
 
     e.sent_at = utcnow()
     e.sent_by = admin.id
+    # Pin the stationery this goes out on, before the hash is taken over it.
+    # Form agreements only: an uploaded PDF carries its own letterhead and is
+    # never printed behind ours.
+    if e.agreement_source == "form":
+        e.letterhead_sha256 = await letterheads.current_letterhead_sha256(db)
     e.agreement_hash = rules.agreement_hash(e)
     await db.commit()
     e = await _get(db, e.id, admin)
@@ -294,6 +300,8 @@ async def recall_engagement(
     e.sent_at = None
     e.sent_by = None
     e.agreement_hash = None
+    # Unpin too, so re-sending picks up whatever letterhead is current then.
+    e.letterhead_sha256 = None
     await db.commit()
     return _out(await _get(db, e.id, admin))
 

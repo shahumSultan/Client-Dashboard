@@ -212,6 +212,17 @@ export interface AgreementFile {
   uploaded_at: string;
 }
 
+/** The company letterhead generated documents are printed on. */
+export interface LetterheadMeta {
+  filename: string;
+  content_type: string;
+  size_bytes: number;
+  width_px: number;
+  height_px: number;
+  sha256: string;
+  uploaded_at: string;
+}
+
 export interface Engagement {
   id: string;
   project_id: string;
@@ -233,6 +244,8 @@ export interface Engagement {
   sent_at: string | null;
   sender_name: string | null;
   agreement_hash: string | null;
+  /** The stationery this was sent on. Null for drafts, and for uploaded PDFs. */
+  letterhead_sha256: string | null;
 
   signed_at: string | null;
   signer_name: string | null;

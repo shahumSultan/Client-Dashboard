@@ -17,3 +17,9 @@ websockets==14.1
 email-validator==2.2.0
 pypdf==5.1.0
 fpdf2==2.8.2
+# Letterhead validation (dimensions, aspect, decode check). Already present as
+# an fpdf2 transitive dependency - declared explicitly so a future fpdf2 that
+# drops it cannot silently break uploads. Ranged, not pinned, to stay
+# compatible with whatever fpdf2 resolves.
+pillow>=11,<13
+

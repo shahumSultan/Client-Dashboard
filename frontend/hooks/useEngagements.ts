@@ -92,12 +92,17 @@ export function useAgreementDocument(id: string) {
 }
 
 /**
- * The PDF endpoints need the bearer token, so a plain <a href> can't reach
- * them. Fetch as a blob and hand the browser an object URL instead.
+ * Protected binary endpoints need the bearer token, so a plain <a href> - or
+ * <img src> - can't reach them. Fetch as a blob and hand back an object URL.
  */
-export async function fetchPdf(path: string): Promise<string> {
+export async function fetchBlobUrl(path: string): Promise<string> {
   const { data } = await api.get(path, { responseType: "blob" });
   return URL.createObjectURL(data as Blob);
+}
+
+/** The PDF endpoints, by the same route. */
+export async function fetchPdf(path: string): Promise<string> {
+  return fetchBlobUrl(path);
 }
 
 /** Open a protected PDF in a new tab. */

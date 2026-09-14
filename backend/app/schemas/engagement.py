@@ -158,6 +158,9 @@ class EngagementOut(BaseModel):
     sent_at: Optional[datetime]
     sender_name: Optional[str]
     agreement_hash: Optional[str]
+    # Which stationery this was sent on. The print view asks for this exact
+    # hash, so a signed agreement keeps rendering as it was signed.
+    letterhead_sha256: Optional[str]
 
     signed_at: Optional[datetime]
     signer_name: Optional[str]

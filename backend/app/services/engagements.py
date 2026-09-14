@@ -34,6 +34,13 @@ def agreement_hash(e: Engagement) -> str:
         for field in AGREEMENT_FIELDS:
             if field != "agreement_source":
                 payload[field] = getattr(e, field)
+        # The stationery is part of what the client saw, so it belongs in the
+        # fingerprint. Omitted entirely when absent rather than written as
+        # None: everything sent before letterheads existed has NULL here, and
+        # adding the key would change its canonical JSON - re-hashing every
+        # pending agreement into a 409 at signing time.
+        if e.letterhead_sha256:
+            payload["letterhead_sha256"] = e.letterhead_sha256
     blob = json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str)
     return hashlib.sha256(blob.encode()).hexdigest()
 

@@ -7,6 +7,7 @@ import {
   MessageSquare,
   MessagesSquare,
   Users,
+  Settings,
   ArrowLeft,
 } from "lucide-react";
 import { SidebarShell, type NavItem } from "@/components/shared/SidebarShell";
@@ -19,6 +20,7 @@ const NAV: NavItem[] = [
   { label: "Requests", href: "/admin/requests", icon: MessageSquare },
   { label: "Comments", href: "/admin/comments", icon: MessagesSquare },
   { label: "Users", href: "/admin/users", icon: Users },
+  { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
 export function AdminSidebar({ open, onClose }: { open?: boolean; onClose?: () => void }) {

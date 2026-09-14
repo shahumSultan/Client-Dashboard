@@ -1,0 +1,54 @@
+/* Print rules for the document routes.
+   ---------------------------------------------------------------------------
+   The @page margins are deliberately NOT here. @page cannot be scoped by a
+   selector, and Next does not unload a stylesheet when you navigate away - so
+   margins declared here would follow the user around the app. The document
+   page injects them in a <style> tag instead, only when a letterhead exists.
+
+   Everything below is inert elsewhere: .lh-* matches nothing outside this
+   route, and .paper is used only by the document page. */
+@media print {
+  /* Chrome and Safari do not print background graphics unless asked, which
+     would silently drop the .paper token colours - the invoice status pill,
+     the brand washes and the hairlines. */
+  .paper {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Both are offset by the page margins, because a fixed box is laid out
+     against the page area rather than the content box. */
+  .lh-page,
+  .lh-header {
+    position: fixed;
+    top: -40mm;
+    left: -14mm;
+    width: 210mm;
+  }
+
+  /* A window onto the top of the same image: logo and contact block end at
+     28.5mm, the rule at 32.2mm, so 34mm clears both with a little slack. */
+  .lh-header {
+    height: 34mm;
+    overflow: hidden;
+  }
+
+  /* Absolute, not fixed: the browser paints it on the page its position falls
+     on, which is page one - so only page one carries the foot decoration. */
+  .lh-page {
+    position: absolute;
+    height: 297mm;
+  }
+
+  .lh-page img,
+  .lh-header img {
+    width: 210mm;
+    height: 297mm;
+    display: block;
+  }
+
+  .doc-body {
+    position: relative;
+    z-index: 1;
+  }
+}
