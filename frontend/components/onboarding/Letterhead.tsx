@@ -3,26 +3,28 @@
 /**
  * The company letterhead, behind a printed document.
  *
- * One uploaded asset, two presentations:
+ * One element, both media. On screen it is absolutely positioned inside the
+ * .paper card and tiled every 297mm, so a long document previews with the same
+ * rhythm it prints at. In print it becomes a fixed box at the page-area origin
+ * (see print.css), which Chrome repeats on every page - so every sheet carries
+ * the stationery, exactly like preprinted paper.
  *
- * - `LetterheadPage` is absolutely positioned, so the browser paints it on the
- *   page its position falls on - page one - giving the full stationery,
- *   including the decoration across the foot.
- * - `LetterheadRunningHeader` is fixed, so it repeats on every printed page,
- *   showing a 34mm window onto the *same* image at the same size and origin.
- *   On page one it paints identical pixels over identical pixels and so is
- *   invisible. CSS has no "every page but the first" selector, and with this
- *   arrangement it needs none.
+ * It is deliberately NOT split into a full page-one sheet plus a cropped
+ * running header. That arrangement needs a fixed box offset into the @page
+ * margin area, and Chrome refuses: a negative offset lands the box at the foot
+ * of page one and removes it from every page after.
  *
- * Both use the same object URL, so the bytes are fetched and decoded once.
- * A plain <img> rather than next/image: blob URLs cannot go through the
- * image optimiser.
+ * A plain <img> rather than next/image: blob URLs cannot go through the image
+ * optimiser.
  */
-export function LetterheadPage({ url }: { url: string }) {
+export function LetterheadSheet({ url }: { url: string }) {
   return (
     <div
-      className="lh-page pointer-events-none absolute inset-0 overflow-hidden rounded-card print:rounded-none"
-      data-letterhead="page"
+      className="lh-sheet pointer-events-none absolute inset-0 overflow-hidden rounded-card print:rounded-none"
+      // Screen paints the sheet as a repeating background (print.css); print
+      // uses the <img> below. Same object URL, so the bytes decode once.
+      style={{ backgroundImage: `url(${url})` }}
+      data-letterhead="sheet"
       aria-hidden="true"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -31,15 +33,38 @@ export function LetterheadPage({ url }: { url: string }) {
   );
 }
 
-export function LetterheadRunningHeader({ url }: { url: string }) {
+/**
+ * Reserves the stationery's head and foot on every printed page.
+ *
+ * A table, because thead and tfoot are the only boxes that repeat per page in
+ * paged media - padding on the content would hold space on page one alone.
+ * On screen the spacer rows have no height and the table is a plain block, so
+ * this is invisible outside print.
+ */
+export function LetterheadFrame({ children }: { children: React.ReactNode }) {
   return (
-    <div
-      className="lh-header pointer-events-none hidden print:block"
-      data-letterhead="header"
-      aria-hidden="true"
-    >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={url} alt="" aria-hidden="true" className="select-none" />
-    </div>
+    <table className="doc-sheet">
+      <thead>
+        <tr>
+          <td>
+            <div className="doc-head-space" />
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div className="doc-body">{children}</div>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td>
+            <div className="doc-foot-space" />
+          </td>
+        </tr>
+      </tfoot>
+    </table>
   );
 }

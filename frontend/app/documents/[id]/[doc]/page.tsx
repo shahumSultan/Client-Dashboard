@@ -10,7 +10,7 @@ import { PageLoader } from "@/components/shared/PageLoader";
 import { CubeLogo } from "@/components/shared/BrandMark";
 import { AgreementDocument } from "@/components/onboarding/AgreementDocument";
 import { InvoiceDocument } from "@/components/onboarding/InvoiceDocument";
-import { LetterheadPage, LetterheadRunningHeader } from "@/components/onboarding/Letterhead";
+import { LetterheadSheet, LetterheadFrame } from "@/components/onboarding/Letterhead";
 
 /**
  * A document on white, for saving as PDF or printing.
@@ -68,17 +68,23 @@ export default function DocumentPage({
 
   const title = doc === "agreement" ? e.agreement_title : `Invoice ${e.invoice_number ?? ""}`;
 
+  // The letterhead already carries the mark and the contact block, so the
+  // built-in header is drawn only when there is no letterhead.
+  const body =
+    doc === "agreement" ? <AgreementDocument engagement={e} /> : <InvoiceDocument engagement={e} />;
+
   return (
     <main className="min-h-dvh px-4 py-8 print:p-0">
       <title>{`${title} - ${e.project_name}`}</title>
-      {/* @page cannot be scoped by a selector, so these margins are injected
-          only when there is a letterhead - otherwise every document would
-          print with a 40mm gap it has no use for. The top clears the header
-          rule (ends 32.2mm) and page one stops above the foot decoration
-          (first specks at 231.8mm of 297mm). */}
-      {letterhead.url && (
-        <style>{`@media print{@page{size:A4;margin:40mm 14mm 22mm}@page :first{margin-bottom:70mm}}`}</style>
-      )}
+      {/* @page cannot be scoped by a selector, so this is injected only when
+          there is a letterhead - otherwise every document would print edge to
+          edge with no margin at all.
+
+          The margin is zero on purpose: the stationery is a fixed box, and
+          Chrome will not paint a fixed box inside the page-margin area. The
+          margins the text needs are reserved in the flow instead, by the
+          repeating head and foot rows of LetterheadFrame. */}
+      {letterhead.url && <style>{`@media print{@page{size:A4;margin:0}}`}</style>}
 
       <div data-print-hide className="mx-auto mb-5 flex max-w-[210mm] items-center justify-between gap-4">
         <p className="text-sm text-subtle">
@@ -105,29 +111,20 @@ export default function DocumentPage({
             : "px-8 py-10 sm:px-14 sm:py-14"
         )}
       >
-        {letterhead.url && (
-          <>
-            <LetterheadPage url={letterhead.url} />
-            <LetterheadRunningHeader url={letterhead.url} />
-          </>
-        )}
+        {letterhead.url && <LetterheadSheet url={letterhead.url} />}
 
-        <div className="doc-body">
-          {/* The letterhead already carries the mark and the contact block, so
-              this would be a second copy of both. */}
-          {!letterhead.url && (
+        {letterhead.url ? (
+          <LetterheadFrame>{body}</LetterheadFrame>
+        ) : (
+          <div className="doc-body">
             <div className="mb-10 flex items-center gap-2.5">
               {/* The mark is white; on paper it has to be inverted to show. */}
               <CubeLogo size={28} className="invert" />
               <span className="text-sm font-semibold tracking-tight text-fg">Enigma-Cube</span>
             </div>
-          )}
-          {doc === "agreement" ? (
-            <AgreementDocument engagement={e} />
-          ) : (
-            <InvoiceDocument engagement={e} />
-          )}
-        </div>
+            {body}
+          </div>
+        )}
       </div>
     </main>
   );

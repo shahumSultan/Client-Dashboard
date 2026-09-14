@@ -1,12 +1,42 @@
-/* Print rules for the document routes.
+/* Styles for the document routes, on screen and on paper.
    ---------------------------------------------------------------------------
-   The @page margins are deliberately NOT here. @page cannot be scoped by a
+   The @page block is deliberately NOT here. @page cannot be scoped by a
    selector, and Next does not unload a stylesheet when you navigate away - so
-   margins declared here would follow the user around the app. The document
-   page injects them in a <style> tag instead, only when a letterhead exists.
+   a margin declared here would follow the user around the app. The document
+   page injects it in a <style> tag instead, only when a letterhead exists.
 
-   Everything below is inert elsewhere: .lh-* matches nothing outside this
-   route, and .paper is used only by the document page. */
+   Everything below is inert elsewhere: .lh-* and .doc-* match nothing outside
+   this route, and .paper is used only by the document page. */
+
+/* The stationery is positioned, and the text is not, so without this the
+   letterhead paints over the whole document - an opaque sheet with nothing
+   readable on it. This must stay outside @media print: on screen is exactly
+   where it was missing. */
+.lh-sheet {
+  z-index: 0;
+}
+
+.doc-body {
+  position: relative;
+  z-index: 1;
+}
+
+/* On screen the sheet is drawn as a repeating background at true A4 size, so
+   a two-page document previews with stationery every 297mm - the same rhythm
+   it prints at. The <img> is for print only, where a background would be at
+   the mercy of the "Background graphics" checkbox in the print dialog. */
+@media screen {
+  .lh-sheet {
+    background-repeat: repeat-y;
+    background-position: top center;
+    background-size: 210mm 297mm;
+  }
+
+  .lh-sheet img {
+    display: none;
+  }
+}
+
 @media print {
   /* Chrome and Safari do not print background graphics unless asked, which
      would silently drop the .paper token colours - the invoice status pill,
@@ -16,39 +46,53 @@
     print-color-adjust: exact;
   }
 
-  /* Both are offset by the page margins, because a fixed box is laid out
-     against the page area rather than the content box. */
-  .lh-page,
-  .lh-header {
+  /* The stationery, at the page-area origin, repeating on every page.
+     ---------------------------------------------------------------------
+     top/left MUST stay at 0, and the page margin MUST stay at 0 with it.
+     Chrome will not let a fixed box into the @page margin area: given a
+     negative offset it wraps the box to the foot of page one and then drops
+     it from every page after - which is exactly how this first shipped, and
+     why the letterhead appeared mid-document and sliced in half.
+
+     With a zero page margin the page area is the whole sheet, so the image
+     sits at its true A4 geometry and bleeds to the edge. The space for the
+     text is reserved in the flow instead, by .doc-sheet below. */
+  .lh-sheet {
     position: fixed;
-    top: -40mm;
-    left: -14mm;
+    top: 0;
+    left: 0;
     width: 210mm;
-  }
-
-  /* A window onto the top of the same image: logo and contact block end at
-     28.5mm, the rule at 32.2mm, so 34mm clears both with a little slack. */
-  .lh-header {
-    height: 34mm;
-    overflow: hidden;
-  }
-
-  /* Absolute, not fixed: the browser paints it on the page its position falls
-     on, which is page one - so only page one carries the foot decoration. */
-  .lh-page {
-    position: absolute;
     height: 297mm;
+    background-image: none !important;
   }
 
-  .lh-page img,
-  .lh-header img {
+  .lh-sheet img {
     width: 210mm;
     height: 297mm;
     display: block;
   }
 
-  .doc-body {
-    position: relative;
-    z-index: 1;
+  /* thead and tfoot repeat on every printed page, and unlike padding on the
+     content they reserve their band on pages the flow has not reached yet.
+     That is what keeps the text clear of the stationery from page two on -
+     no CSS pads "every page" any other way.
+
+     The numbers are the letterhead's own geometry: its header rule ends at
+     32.2mm, and its foot decoration begins at 231.8mm of 297mm. */
+  .doc-sheet {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .doc-sheet td {
+    padding: 0 14mm;
+  }
+
+  .doc-head-space {
+    height: 40mm;
+  }
+
+  .doc-foot-space {
+    height: 65mm;
   }
 }

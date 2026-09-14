@@ -44,7 +44,7 @@ test("a generated agreement prints on it", async ({ page }) => {
   await signIn(page, ADMIN);
   await page.goto(`${BASE}/documents/${ENGAGEMENT}/agreement`, { waitUntil: "domcontentloaded" });
 
-  await expect(page.locator('[data-letterhead="page"]')).toBeVisible();
+  await expect(page.locator('[data-letterhead="sheet"]')).toBeVisible();
   // Only enabled once the image has settled - printing before it decodes is
   // how the stationery ends up blank in the PDF.
   await expect(page.getByRole("button", { name: "Print / Save PDF" })).toBeEnabled();
@@ -52,11 +52,21 @@ test("a generated agreement prints on it", async ({ page }) => {
   await expect(page.getByText("Enigma-Cube", { exact: true })).toHaveCount(0);
   await shoot(page, "", "81-agreement-screen");
 
-  // The running header and the @page margins are inert on screen; print media
-  // is the only way to see them applying without a real print dialog.
+  // The print rules are inert on screen; print media is the only way to see
+  // them applying without a real print dialog.
   await page.emulateMedia({ media: "print" });
   await page.waitForTimeout(600);
-  await expect(page.locator('[data-letterhead="header"]')).toBeVisible();
+  await expect(page.locator('[data-letterhead="sheet"]')).toBeVisible();
+
+  // The invariant that this feature got wrong the first time: Chrome will not
+  // paint a fixed box inside the @page margin area. Offset it by even a
+  // millimetre and the stationery lands at the foot of page one and vanishes
+  // from every page after, which no screen-media check can see.
+  const box = await page.locator('[data-letterhead="sheet"]').evaluate((el) => {
+    const cs = getComputedStyle(el);
+    return { position: cs.position, top: cs.top, left: cs.left };
+  });
+  expect(box).toEqual({ position: "fixed", top: "0px", left: "0px" });
   await page.screenshot({ path: `${OUT}/82-agreement-print.png`, fullPage: true });
   await page.emulateMedia({ media: null });
 });
@@ -67,7 +77,7 @@ test("so does the invoice", async ({ page }) => {
   await signIn(page, ADMIN);
   await page.goto(`${BASE}/documents/${ENGAGEMENT}/invoice`, { waitUntil: "domcontentloaded" });
 
-  await expect(page.locator('[data-letterhead="page"]')).toBeVisible();
+  await expect(page.locator('[data-letterhead="sheet"]')).toBeVisible();
   await page.emulateMedia({ media: "print" });
   await page.waitForTimeout(600);
   await page.screenshot({ path: `${OUT}/83-invoice-print.png`, fullPage: true });
@@ -84,7 +94,7 @@ test("removing it brings the built-in mark back", async ({ page }) => {
   await expect(page.getByText("Letterhead removed")).toBeVisible();
 
   await page.goto(`${BASE}/documents/${ENGAGEMENT}/agreement`, { waitUntil: "domcontentloaded" });
-  await expect(page.locator('[data-letterhead="page"]')).toHaveCount(0);
+  await expect(page.locator('[data-letterhead="sheet"]')).toHaveCount(0);
   // Without stationery the document is not left unbranded.
   await expect(page.getByText("Enigma-Cube", { exact: true }).first()).toBeVisible();
   await shoot(page, "", "84-agreement-no-letterhead");
