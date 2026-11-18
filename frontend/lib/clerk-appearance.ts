@@ -44,8 +44,13 @@ export const clerkAppearance = {
     headerTitle: "!font-display !text-fg-strong !text-2xl !font-normal tracking-tight",
     headerSubtitle: "text-muted",
     socialButtonsBlockButton:
-      "!bg-transparent !border !border-hairline-strong !shadow-none !rounded-none text-fg hover:!bg-tint-strong transition-colors",
+      "!relative !bg-transparent !border !border-hairline-strong !shadow-none !rounded-none text-fg hover:!bg-tint-strong transition-colors",
     socialButtonsBlockButtonText: "text-fg font-medium",
+    // Clerk floats "Last used" as a chip over the button's top edge, where the
+    // flat button clips it. Set it inside the button instead, as quiet
+    // metadata in the site's lowercase mono.
+    lastAuthenticationStrategyBadge:
+      "!absolute !right-3 !left-auto !bottom-auto !top-1/2 !transform-none !-translate-y-1/2 !m-0 !h-auto !border-0 !bg-transparent !p-0 !shadow-none !rounded-none !font-mono !text-[11px] !font-normal !lowercase !tracking-normal !text-subtle",
     dividerLine: "bg-hairline",
     dividerText: "!font-mono !lowercase !tracking-normal !text-subtle",
     formFieldLabel: "text-muted font-medium",
