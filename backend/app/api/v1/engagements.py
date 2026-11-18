@@ -32,6 +32,7 @@ from app.schemas.engagement import (
 from app.services import engagements as rules
 from app.services import documents as pdfs
 from app.services import branding as letterheads
+from app.services import company as company_records
 from app.services.email import send_project_email, is_test_address
 from app.services.notifications import create_notification
 
@@ -151,6 +152,9 @@ async def create_engagement(
 
     fields = {k: v for k, v in data.model_dump(exclude={"project_id"}).items() if v is not None}
     e = Engagement(project_id=project.id, **fields)
+    if not e.bank_details:
+        # Start from the company's default account; still editable per invoice.
+        e.bank_details = await company_records.default_bank_details(db)
     if not e.invoice_number:
         e.invoice_number = await rules.next_invoice_number(db)
     db.add(e)

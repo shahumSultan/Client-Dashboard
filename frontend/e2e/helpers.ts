@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { setupClerkTestingToken } from "@clerk/testing/playwright";
+import { clerk, setupClerkTestingToken } from "@clerk/testing/playwright";
 
 export const BASE = process.env.E2E_BASE_URL ?? "http://localhost:3000";
 export const PASSWORD = process.env.E2E_PASSWORD!;
@@ -27,6 +27,17 @@ export function watch(page: Page, label: string) {
 export async function signIn(page: Page, email: string) {
   await setupClerkTestingToken({ page });
   await page.goto(`${BASE}/sign-in`, { waitUntil: "domcontentloaded" });
+
+  // No shared password configured: sign in through Clerk's testing helper,
+  // which uses CLERK_SECRET_KEY instead of driving the form.
+  if (!PASSWORD) {
+    await clerk.signIn({ page, emailAddress: email });
+    await page.waitForFunction(
+      () => !!(window as unknown as { Clerk?: { user?: unknown } }).Clerk?.user
+    );
+    return;
+  }
+
   // Exact match matters: a loose /continue/i also matches "Continue with
   // Google", which navigates away to Google's OAuth page.
   const submit = page.getByRole("button", { name: "Continue", exact: true });

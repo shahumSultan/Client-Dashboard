@@ -11,3 +11,6 @@ from app.models.comment import Comment
 from app.models.invitation import Invitation
 from app.models.engagement import Engagement, EngagementDocument
 from app.models.branding import CompanyLetterhead
+from app.models.company import (
+    CompanyProfile, CompanyBankAccount, TeamMember, CompanyDocument, CompanyDocumentVersion,
+)

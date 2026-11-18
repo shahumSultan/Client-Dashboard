@@ -1,5 +1,8 @@
+from urllib.parse import quote
+
 import boto3
 from botocore.config import Config
+from botocore.exceptions import ClientError
 from fastapi import HTTPException
 
 from app.config import settings
@@ -57,3 +60,57 @@ async def delete_file_from_storage(storage_key: str) -> None:
     if not is_configured():
         return
     _get_client().delete_object(Bucket=settings.STORAGE_BUCKET, Key=storage_key)
+
+
+def _require_configured() -> None:
+    if not is_configured():
+        raise HTTPException(
+            status_code=503,
+            detail="File storage is not configured. Set STORAGE_BUCKET and the "
+                   "other STORAGE_* variables to enable uploads.",
+        )
+
+
+async def generate_presigned_download(
+    storage_key: str, filename: str, content_type: str, inline: bool = True, expires: int = 300
+) -> str:
+    """A short-lived GET link for a private object.
+
+    Five minutes by default: long enough to open, short enough that a link
+    pasted into a chat stops working before anyone else clicks it.
+    """
+    _require_configured()
+    external = settings.STORAGE_EXTERNAL_ENDPOINT or settings.STORAGE_ENDPOINT or None
+    client = _get_client(endpoint_override=external)
+    # RFC 5987 so non-ASCII names survive; the plain fallback is ASCII-only.
+    ascii_name = filename.encode("ascii", "replace").decode().replace('"', "_")
+    disposition = (
+        f'{"inline" if inline else "attachment"}; filename="{ascii_name}"; '
+        f"filename*=UTF-8''{quote(filename)}"
+    )
+    return client.generate_presigned_url(
+        "get_object",
+        Params={
+            "Bucket": settings.STORAGE_BUCKET,
+            "Key": storage_key,
+            "ResponseContentDisposition": disposition,
+            "ResponseContentType": content_type,
+        },
+        ExpiresIn=expires,
+    )
+
+
+async def object_size(storage_key: str) -> int | None:
+    """Size in bytes of an uploaded object, or None if it isn't there.
+
+    A presigned PUT cannot cap the upload size, so this is how the server
+    checks what actually landed before trusting it.
+    """
+    _require_configured()
+    try:
+        head = _get_client().head_object(Bucket=settings.STORAGE_BUCKET, Key=storage_key)
+    except ClientError as e:
+        if e.response.get("Error", {}).get("Code") in ("404", "NoSuchKey", "NotFound"):
+            return None
+        raise
+    return int(head["ContentLength"])

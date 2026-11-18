@@ -3,6 +3,7 @@ import Link from "next/link";
 import {
   LayoutDashboard,
   Building2,
+  Landmark,
   FolderOpen,
   MessageSquare,
   MessagesSquare,
@@ -16,6 +17,7 @@ import { useCurrentUser } from "@/hooks/useAuth";
 const NAV: NavItem[] = [
   { label: "Overview", href: "/admin", icon: LayoutDashboard, exact: true },
   { label: "Clients", href: "/admin/clients", icon: Building2 },
+  { label: "Company", href: "/admin/company", icon: Landmark },
   { label: "Projects", href: "/admin/projects", icon: FolderOpen },
   { label: "Requests", href: "/admin/requests", icon: MessageSquare },
   { label: "Comments", href: "/admin/comments", icon: MessagesSquare },

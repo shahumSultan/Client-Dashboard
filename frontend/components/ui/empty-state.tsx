@@ -25,10 +25,10 @@ export function EmptyState({
         className
       )}
     >
-      <div className="glass mb-5 grid h-14 w-14 place-items-center rounded-2xl">
+      <div className="glass mb-5 grid h-14 w-14 place-items-center">
         <Icon size={22} className="text-brand-soft" aria-hidden="true" />
       </div>
-      <h3 className="text-base font-semibold tracking-tight text-fg">{title}</h3>
+      <h3 className="font-display text-lg font-normal tracking-tight text-fg-strong">{title}</h3>
       <p className="mt-2 max-w-sm text-sm leading-relaxed text-subtle">{description}</p>
       {action && <div className="mt-6">{action}</div>}
     </div>

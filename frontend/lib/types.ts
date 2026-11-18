@@ -300,3 +300,96 @@ export type EngagementDraft = Partial<
     | "call_booking_url" | "call_agenda"
   >
 >;
+
+// ── Company management ───────────────────────────────────────────────────────
+
+export interface CompanyProfile {
+  legal_name: string | null;
+  trading_name: string | null;
+  registration_number: string | null;
+  tax_number: string | null;
+  registered_address: string | null;
+  office_address: string | null;
+  email: string | null;
+  phone: string | null;
+  website: string | null;
+  socials: Record<string, string> | null;
+  notes: string | null;
+  updated_at: string | null;
+}
+
+export interface BankAccount {
+  id: string;
+  label: string;
+  bank_name: string;
+  account_name: string;
+  account_number: string | null;
+  iban: string | null;
+  swift: string | null;
+  branch: string | null;
+  currency: string | null;
+  notes: string | null;
+  is_default: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export type BankAccountInput = Omit<BankAccount, "id" | "created_at" | "updated_at">;
+
+export interface TeamMember {
+  id: string;
+  name: string;
+  title: string | null;
+  email: string | null;
+  phone: string | null;
+  user_id: string | null;
+  notes: string | null;
+  is_active: boolean;
+  sort_order: number;
+  created_at: string;
+}
+
+export type TeamMemberInput = Omit<TeamMember, "id" | "created_at">;
+
+export const DOCUMENT_CATEGORIES = [
+  "legal", "finance", "hr", "brand", "contracts", "policies", "other",
+] as const;
+export type DocumentCategory = (typeof DOCUMENT_CATEGORIES)[number];
+
+export const CATEGORY_LABELS: Record<DocumentCategory, string> = {
+  legal: "Legal",
+  finance: "Finance",
+  hr: "HR",
+  brand: "Brand",
+  contracts: "Contracts",
+  policies: "Policies",
+  other: "Other",
+};
+
+export interface CompanyDocument {
+  id: string;
+  title: string;
+  description: string | null;
+  category: DocumentCategory;
+  tags: string[];
+  expires_on: string | null;
+  is_archived: boolean;
+  version: number;
+  original_name: string;
+  content_type: string;
+  size_bytes: number;
+  uploaded_by: string | null;
+  uploader_name: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CompanyDocumentVersion {
+  id: string;
+  version: number;
+  original_name: string;
+  content_type: string;
+  size_bytes: number;
+  uploaded_by: string | null;
+  created_at: string;
+}
