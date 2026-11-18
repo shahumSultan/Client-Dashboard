@@ -519,7 +519,7 @@ export function PortalPanel({ engagement: e }: { engagement: Engagement }) {
       </p>
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
         {features.map((f) => (
-          <div key={f.title} className=" border border-hairline p-4">
+          <div key={f.title} className="border border-hairline p-4">
             <f.icon size={16} className="text-brand-soft" aria-hidden="true" />
             <p className="mt-3 text-sm font-medium text-fg">{f.title}</p>
             <p className="mt-1 text-xs leading-relaxed text-subtle">{f.body}</p>

@@ -90,7 +90,7 @@ export function InvoiceDocument({
       {e.invoice_notes && <Prose text={e.invoice_notes} className="text-subtle" />}
 
       {showPaymentDetails && e.bank_details && (
-        <section className=" border border-hairline p-4">
+        <section className="border border-hairline p-4">
           <p className="mb-2 font-mono text-[10px] uppercase tracking-wider text-faint">
             Bank transfer
           </p>

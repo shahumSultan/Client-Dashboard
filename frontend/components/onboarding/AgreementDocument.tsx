@@ -134,7 +134,7 @@ export function AgreementDocument({
 
 function Party({ label, name }: { label: string; name: string }) {
   return (
-    <div className=" border border-hairline px-4 py-3">
+    <div className="border border-hairline px-4 py-3">
       <dt className="font-mono text-[10px] uppercase tracking-wider text-faint">{label}</dt>
       <dd className="mt-1 font-medium text-fg">{name}</dd>
     </div>

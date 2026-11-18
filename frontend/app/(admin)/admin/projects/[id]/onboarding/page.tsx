@@ -575,7 +575,7 @@ function Editor({ engagement: e }: { engagement: Engagement }) {
 
 function Locked({ children }: { children: React.ReactNode }) {
   return (
-    <p className=" border border-warning/30 bg-warning-wash px-4 py-3 text-sm text-warning">
+    <p className="border border-warning/30 bg-warning-wash px-4 py-3 text-sm text-warning">
       {children}
     </p>
   );
