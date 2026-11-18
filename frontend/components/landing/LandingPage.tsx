@@ -102,12 +102,25 @@ export function LandingPage({ isSignedIn }: { isSignedIn: boolean }) {
       <header className="px-4 sm:px-10 lg:px-16 2xl:px-[4.5vw]">
         <div className="flex h-[72px] items-center justify-between border-b border-hairline">
           <span className="flex items-center gap-4">
-            <BrandMark />
+            {/* The mark goes home to the company site, as logos do. */}
+            <a href="https://enigma-cube.com" aria-label="Enigma-Cube website">
+              <BrandMark />
+            </a>
             <span className="label-system hidden sm:inline">client portal</span>
           </span>
-          <a href="https://enigma-cube.com" className="link-signal text-sm">
-            Back to enigma-cube.com
-          </a>
+          {/* The site's "Talk to Us" treatment: red square, white words, arrow. */}
+          <Link
+            href={isSignedIn ? "/dashboard" : "/sign-in"}
+            className="group inline-flex items-center gap-2.5 text-[15px] font-semibold text-fg-strong"
+          >
+            <span className="signal-square" aria-hidden="true" />
+            {isSignedIn ? "Open your portal" : "Sign in"}
+            <ArrowRight
+              size={16}
+              aria-hidden="true"
+              className="transition-transform duration-200 group-hover:translate-x-1"
+            />
+          </Link>
         </div>
       </header>
 

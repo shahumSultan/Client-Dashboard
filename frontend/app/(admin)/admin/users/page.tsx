@@ -55,8 +55,9 @@ export default function AdminUsersPage() {
         <div className="text-sm leading-relaxed text-subtle">
           <p className="font-medium text-fg">Adding someone to your team</p>
           <p className="mt-1">
-            Ask them to sign up at the portal with their work email. They&apos;ll appear below with
-            no workspace - then set their role. <span className="text-fg">Staff</span>{" "}can open and
+            Send them the sign-up link,{" "}
+            <span className="font-mono text-fg">/sign-up</span> on this portal, to create an account
+            with their work email. They&apos;ll appear below with no workspace - then set their role. <span className="text-fg">Staff</span>{" "}can open and
             read everything in the admin panel but can&apos;t change anything;{" "}
             <span className="text-fg">Admin</span> has full control.
           </p>
