@@ -138,7 +138,7 @@ function InboxRow({
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <Link
             href={`/admin/projects/${thread.project.id}`}
-            className="flex items-center gap-1 text-xs font-medium text-brand-soft transition-colors hover:text-fg"
+            className="flex items-center gap-1 text-xs font-medium link-signal"
           >
             {thread.project.name}
             <ArrowUpRight size={12} aria-hidden="true" />
@@ -168,7 +168,7 @@ function InboxRow({
               <span className="text-sm font-medium text-fg">
                 {thread.author.full_name ?? thread.author.email}
               </span>
-              <span className="font-mono text-[10px] uppercase tracking-wider text-faint">
+              <span className="font-mono text-[11px] text-subtle">
                 {timeAgo(thread.created_at)}
               </span>
             </div>
@@ -195,7 +195,7 @@ function InboxRow({
                       {r.author.full_name ?? r.author.email}
                     </span>
                     {r.author.role === "admin" && <Badge variant="brand">You</Badge>}
-                    <span className="font-mono text-[10px] uppercase tracking-wider text-faint">
+                    <span className="font-mono text-[11px] text-subtle">
                       {timeAgo(r.created_at)}
                     </span>
                   </div>

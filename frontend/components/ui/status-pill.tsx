@@ -37,7 +37,7 @@ const TONES: Record<Tone, string> = {
   success: "bg-success-wash text-success border-success/25",
   warning: "bg-warning-wash text-warning border-warning/25",
   danger: "bg-danger-wash text-danger border-danger/25",
-  brand: "bg-brand-wash text-brand-soft border-brand/30",
+  brand: "bg-tint text-fg-strong border-brand/60",
 };
 
 interface Descriptor {

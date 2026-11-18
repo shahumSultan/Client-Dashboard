@@ -1,361 +1,235 @@
-"use client";
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
-import {
-  ArrowRight,
-  CheckCircle2,
-  CircleDot,
-  Circle,
-  MessageSquare,
-  GitBranch,
-  BarChart3,
-  FileText,
-  BellRing,
-  ShieldCheck,
-} from "lucide-react";
-import { CubeLogo, BrandMark } from "@/components/shared/BrandMark";
+import { ArrowRight } from "lucide-react";
+import { BrandMark } from "@/components/shared/BrandMark";
+import { ParticleMark } from "@/components/brand/ParticleMark";
+import { ParticleWave } from "@/components/brand/ParticleWave";
 
-const EASE = [0.16, 1, 0.3, 1] as const;
+/**
+ * The portal's front door. It works as a door: the first viewport holds a
+ * working sign-in (the address carries into Clerk's form), the cube assembles
+ * beside it, and everything below explains what's inside for first-time
+ * invitees. No feature cards, no product screenshot: the site's grammar.
+ */
 
-function Reveal({
-  children,
-  delay = 0,
-  className,
-}: {
-  children: React.ReactNode;
-  delay?: number;
-  className?: string;
-}) {
-  // `initial` was an inline opacity:0 cleared only when an observer fired. With
-  // reduced motion - or any time the observer did not run - the section simply
-  // never appeared. whileInView drives the observer itself, and reduced motion
-  // skips the hidden state entirely rather than relying on it being undone.
-  const reduce = useReducedMotion();
-  return (
-    <motion.div
-      className={className}
-      initial={reduce ? false : { opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.5, delay, ease: EASE }}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-/** A miniature of the real product, built from the same glass tokens. */
-function PortalPreview() {
-  const milestones = [
-    { label: "Discovery & scoping", state: "done" },
-    { label: "Data pipeline build", state: "done" },
-    { label: "Model training", state: "active" },
-    { label: "Integration & QA", state: "todo" },
-    { label: "Handover", state: "todo" },
-  ] as const;
-
-  return (
-    <div className="relative pb-28">
-      <div className="glass-strong glass-sheen relative rounded-card-lg p-5 shadow-[0_40px_90px_-40px_rgba(0,0,0,0.95)]">
-        <div className="mb-5 flex items-start justify-between gap-4">
-          <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-faint">
-              Active project
-            </p>
-            <p className="mt-1.5 font-semibold tracking-tight text-fg">
-              Lead Qualification Engine
-            </p>
-          </div>
-          <span className="rounded-none border border-brand/30 bg-brand-wash px-2.5 py-1 text-[11px] font-medium text-brand-soft">
-            In development
-          </span>
-        </div>
-
-        <div className="mb-5">
-          <div className="mb-2 flex items-baseline justify-between text-xs">
-            <span className="text-subtle">Overall progress</span>
-            <span className="tabular font-semibold text-fg">64%</span>
-          </div>
-          <div className="h-1.5 w-full overflow-hidden rounded-none bg-tint-strong">
-            <motion.div
-              className="h-full rounded-none bg-gradient-to-r from-brand to-brand-soft"
-              initial={{ width: 0 }}
-              animate={{ width: "64%" }}
-              transition={{ duration: 1.1, delay: 0.4, ease: EASE }}
-            />
-          </div>
-        </div>
-
-        <ul className="space-y-2.5">
-          {milestones.map((m) => (
-            <li key={m.label} className="flex items-center gap-2.5">
-              {m.state === "done" ? (
-                <CheckCircle2 size={14} className="shrink-0 text-success" aria-hidden="true" />
-              ) : m.state === "active" ? (
-                <CircleDot size={14} className="shrink-0 text-brand-soft" aria-hidden="true" />
-              ) : (
-                <Circle size={14} className="shrink-0 text-faint" aria-hidden="true" />
-              )}
-              <span
-                className={
-                  m.state === "done"
-                    ? "text-xs text-faint line-through"
-                    : m.state === "active"
-                      ? "text-xs font-medium text-fg"
-                      : "text-xs text-subtle"
-                }
-              >
-                {m.label}
-              </span>
-              {m.state === "active" && (
-                <span className="ml-auto rounded-none bg-brand-wash px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-brand-soft">
-                  Now
-                </span>
-              )}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Floating comment card - the feature that defines the product */}
-      <motion.div
-        className="glass-strong absolute bottom-0 left-0 w-60 rounded-card p-3.5 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.9)]"
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.9, ease: EASE }}
-      >
-        <div className="flex items-center gap-2">
-          <MessageSquare size={13} className="text-brand-soft" aria-hidden="true" />
-          <p className="font-mono text-[9px] uppercase tracking-wider text-faint">
-            Your remark
-          </p>
-        </div>
-        <p className="mt-1.5 text-xs leading-relaxed text-muted">
-          &ldquo;Can we add a Slack alert when a lead scores above 80?&rdquo;
-        </p>
-      </motion.div>
-    </div>
-  );
-}
-
-const FEATURES = [
+const INSIDE = [
   {
-    icon: GitBranch,
     title: "A live project timeline",
     body: "Every phase, in order - finished, in progress, and still ahead. No more asking for a status update.",
   },
   {
-    icon: MessageSquare,
     title: "Comment on any piece of work",
     body: "Leave a remark on a milestone, an update or a delivered file. We reply in the same thread.",
   },
   {
-    icon: FileText,
     title: "Deliverables in one place",
     body: "Every file we hand over, versioned and downloadable, attached to the milestone it belongs to.",
   },
   {
-    icon: BarChart3,
     title: "Results you can measure",
     body: "Leads, conversions and revenue attributed to the work - reported against the periods that matter.",
   },
   {
-    icon: BellRing,
     title: "Told, not chased",
     body: "Notifications when a milestone lands, a request moves, or someone replies to you.",
   },
   {
-    icon: ShieldCheck,
     title: "Your workspace only",
     body: "Every project, file and comment is scoped to your organization. Nobody else can see it.",
   },
 ];
 
 const STEPS = [
-  { n: "01", title: "We invite you", body: "You get an invitation at your work email - no sign-up form to fill in." },
-  { n: "02", title: "Your project is waiting", body: "Timeline, milestones and deliverables, set up before you arrive." },
-  { n: "03", title: "Follow along and weigh in", body: "Watch progress, leave remarks, and get replies from the team." },
+  {
+    title: "We invite you",
+    body: "You get an invitation at your work email - no sign-up form to fill in.",
+  },
+  {
+    title: "Your project is waiting",
+    body: "Timeline, milestones and deliverables, set up before you arrive.",
+  },
+  {
+    title: "Follow along and weigh in",
+    body: "Watch progress, leave remarks, and get replies from the team.",
+  },
 ];
+
+function PrimaryAction({ isSignedIn }: { isSignedIn: boolean }) {
+  if (isSignedIn) {
+    return (
+      <Link
+        href="/dashboard"
+        className="ec-cta inline-flex h-14 items-center gap-3 bg-brand px-6 text-[17px] font-bold text-white transition-colors hover:bg-brand-hover"
+      >
+        Open your portal
+        <ArrowRight size={18} aria-hidden="true" />
+      </Link>
+    );
+  }
+  return (
+    // A plain GET form: works before hydration and without JavaScript, and
+    // hands the address to /sign-in, which pre-fills Clerk's field with it.
+    <form action="/sign-in" method="get" className="w-full max-w-[640px]">
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-end">
+        <label className="flex-1">
+          <span className="text-sm font-medium text-fg-strong">Work email</span>
+          <input
+            type="email"
+            name="email"
+            autoComplete="email"
+            required
+            placeholder="you@company.com"
+            className="mt-3 h-12 w-full border-0 border-b border-hairline-strong bg-transparent px-0 text-[17px] text-fg placeholder:text-subtle transition-colors hover:border-muted focus:border-brand focus:outline-none"
+          />
+        </label>
+        <button
+          type="submit"
+          className="ec-cta inline-flex h-14 shrink-0 cursor-pointer items-center justify-between gap-3 bg-brand px-6 text-[17px] font-bold text-white transition-colors hover:bg-brand-hover sm:justify-start"
+        >
+          Continue
+          <ArrowRight size={18} aria-hidden="true" />
+        </button>
+      </div>
+      <p className="mt-4 text-sm text-subtle">
+        Invite-only. Use the address your invitation was sent to.
+      </p>
+    </form>
+  );
+}
 
 export function LandingPage({ isSignedIn }: { isSignedIn: boolean }) {
   return (
-    <div className="relative">
-      <header className="sticky top-0 z-40 border-b border-hairline bg-base/70 backdrop-blur-2xl">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <BrandMark kicker="Client Portal" />
-          <nav className="flex items-center gap-2">
-            {isSignedIn ? (
-              <Link
-                href="/dashboard"
-                className="glow-brand inline-flex h-10 items-center gap-2 bg-brand px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
-              >
-                Open portal
-                <ArrowRight size={15} aria-hidden="true" />
-              </Link>
-            ) : (
-              // One CTA: access is invite-only, so there is no separate
-              // "get started" path to offer alongside signing in.
-              <Link
-                href="/sign-in"
-                className="glow-brand inline-flex h-10 items-center gap-2 bg-brand px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
-              >
-                Sign in
-                <ArrowRight size={15} aria-hidden="true" />
-              </Link>
-            )}
-          </nav>
+    <div className="relative min-h-dvh overflow-x-hidden">
+      <header className="mx-auto max-w-[1440px] px-4 sm:px-10 lg:px-16">
+        <div className="flex h-[72px] items-center justify-between border-b border-hairline">
+          <span className="flex items-center gap-4">
+            <BrandMark />
+            <span className="label-system hidden sm:inline">client portal</span>
+          </span>
+          <a href="https://enigma-cube.com" className="link-signal text-sm">
+            Back to enigma-cube.com
+          </a>
         </div>
       </header>
 
       <main>
-        <section className="relative overflow-hidden px-6 pb-24 pt-16 sm:pt-24">
-          <div className="mx-auto grid max-w-6xl items-center gap-16 lg:grid-cols-2">
-            <div>
-              <motion.p
-                className="inline-flex items-center gap-2 rounded-none border border-hairline bg-glass px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-brand-soft"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, ease: EASE }}
-              >
-                <CubeLogo size={14} />
-                Enigma-Cube Client Portal
-              </motion.p>
-
-              <motion.h1
-                className="mt-6 text-4xl font-normal leading-[1.02] tracking-tight text-fg-strong sm:text-6xl"
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.06, ease: EASE }}
-              >
-                Know exactly where
-                <br />
-                your project stands.
-              </motion.h1>
-
-              <motion.p
-                className="mt-5 max-w-lg text-base leading-relaxed text-muted"
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.12, ease: EASE }}
-              >
-                One place to see what we&apos;ve shipped, what we&apos;re building
-                now, and what&apos;s still to come - and to tell us what you think
-                as we go.
-              </motion.p>
-
-              <motion.div
-                className="mt-8 flex flex-wrap items-center gap-3"
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.18, ease: EASE }}
-              >
-                <Link
-                  href={isSignedIn ? "/dashboard" : "/sign-in"}
-                  className="glow-brand inline-flex h-11 items-center gap-2 bg-brand px-6 text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
-                >
-                  {isSignedIn ? "Open your portal" : "Sign in"}
-                  <ArrowRight size={15} aria-hidden="true" />
-                </Link>
-
-              </motion.div>
+        {/* ── The threshold ─────────────────────────────────────────────── */}
+        <section className="relative mx-auto grid min-h-[calc(100dvh-72px)] max-w-[1440px] items-center gap-10 px-4 pb-44 pt-14 sm:px-10 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:px-16 lg:pt-10">
+          <div className="relative z-10">
+            <h1 className="animate-fade-up text-balance font-display text-[clamp(3.25rem,6.6vw,6rem)] font-light leading-[0.95] tracking-[-0.02em] text-fg-strong">
+              Your project,
+              <br />
+              <em className="italic">in one place.</em>
+            </h1>
+            <div className="mt-12 animate-fade-up [animation-delay:120ms] sm:mt-14">
+              <PrimaryAction isSignedIn={isSignedIn} />
             </div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.2, ease: EASE }}
-            >
-              <PortalPreview />
-            </motion.div>
           </div>
+
+          <div className="relative mx-auto aspect-[389/416] w-full max-w-[220px] sm:max-w-[340px] lg:max-w-[440px]">
+            <ParticleMark density={0.6} />
+          </div>
+
+          {/* The site's wave: a lit field carrying the lower part of the hero, not a strip. */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[44%] min-h-64 [mask-image:linear-gradient(to_bottom,#000_62%,transparent_86%)]">
+            <ParticleWave intensity={1.6} />
+          </div>
+          <p className="label-system absolute bottom-8 left-4 right-4 z-10 flex gap-x-2 [text-shadow:0_0_10px_#0d0d0d,0_0_4px_#0d0d0d] sm:left-10 sm:gap-x-4 lg:left-16">
+            <span>milestones</span>
+            <span aria-hidden="true">·</span>
+            <span>deliverables</span>
+            <span aria-hidden="true">·</span>
+            <span>invoices</span>
+            <span aria-hidden="true">·</span>
+            <span>comments</span>
+          </p>
         </section>
 
-        <section className="border-t border-hairline px-6 py-24">
-          <div className="mx-auto max-w-6xl">
-            <Reveal>
-              <h2 className="max-w-xl text-3xl font-normal tracking-tight text-fg-strong">
-                Everything about your project, in one place
+        {/* ── What's inside ──────────────────────────────────────────────── */}
+        <section className="border-t border-hairline">
+          <div className="mx-auto grid max-w-[1440px] gap-12 px-4 py-24 sm:px-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] lg:px-16 lg:py-36">
+            <div>
+              <h2 className="text-balance font-display text-[clamp(2.25rem,4vw,3.75rem)] font-light leading-[1] tracking-[-0.02em] text-fg-strong">
+                What&apos;s <em className="italic">inside.</em>
               </h2>
-              <p className="mt-3 max-w-lg text-sm leading-relaxed text-subtle">
+              <p className="mt-6 max-w-sm text-[17px] leading-relaxed text-muted">
                 Built so you never have to email us asking how it&apos;s going.
               </p>
-            </Reveal>
-
-            <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {FEATURES.map((f, i) => (
-                <Reveal key={f.title} delay={i * 0.05}>
-                  <article className="glass glass-sheen glass-hover h-full rounded-card p-6">
-                    <span className="grid h-11 w-11 place-items-center rounded-xl bg-brand-wash text-brand-soft">
-                      <f.icon size={19} strokeWidth={2} aria-hidden="true" />
-                    </span>
-                    <h3 className="mt-5 font-semibold tracking-tight text-fg">
-                      {f.title}
-                    </h3>
-                    <p className="mt-2 text-sm leading-relaxed text-subtle">{f.body}</p>
-                  </article>
-                </Reveal>
-              ))}
             </div>
-          </div>
-        </section>
-
-        <section className="border-t border-hairline px-6 py-24">
-          <div className="mx-auto max-w-6xl">
-            <Reveal>
-              <h2 className="text-3xl font-normal tracking-tight text-fg-strong">
-                Getting started
-              </h2>
-            </Reveal>
-
-            <div className="mt-12 grid gap-8 sm:grid-cols-3">
-              {STEPS.map((s, i) => (
-                <Reveal key={s.n} delay={i * 0.08}>
-                  <div className="relative">
-                    <span className="font-mono text-sm font-medium text-brand-soft">
-                      {s.n}
-                    </span>
-                    <h3 className="mt-3 font-semibold tracking-tight text-fg">
-                      {s.title}
-                    </h3>
-                    <p className="mt-2 text-sm leading-relaxed text-subtle">{s.body}</p>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="border-t border-hairline px-6 py-24">
-          <div className="mx-auto max-w-4xl">
-            <Reveal>
-              <div className="glass-strong glass-sheen relative overflow-hidden rounded-card-lg px-8 py-14 text-center">
-                <div className="relative">
-                  <h2 className="text-3xl font-normal tracking-tight text-fg-strong">
-                    Ready when you are
-                  </h2>
-                  <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-subtle">
-                    Enigma-Cube invites clients directly. Sign in with the
-                    address your invitation was sent to.
+            <ul className="border-t border-hairline-strong">
+              {INSIDE.map((item) => (
+                <li
+                  key={item.title}
+                  className="grid gap-2 border-b border-hairline py-7 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] sm:gap-10"
+                >
+                  <h3 className="font-display text-[1.375rem] font-normal leading-snug text-fg-strong">
+                    {item.title}
+                  </h3>
+                  <p className="text-[15px] leading-relaxed text-muted">
+                    {item.body}
                   </p>
-                  <Link
-                    href={isSignedIn ? "/dashboard" : "/sign-in"}
-                    className="glow-brand mt-8 inline-flex h-11 items-center gap-2 bg-brand px-6 text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
-                  >
-                    {isSignedIn ? "Open your portal" : "Sign in"}
-                    <ArrowRight size={15} aria-hidden="true" />
-                  </Link>
-                </div>
-              </div>
-            </Reveal>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        {/* ── Getting started ────────────────────────────────────────────── */}
+        <section className="border-t border-hairline">
+          <div className="mx-auto max-w-[1440px] px-4 py-24 sm:px-10 lg:px-16 lg:py-32">
+            <h2 className="max-w-2xl text-balance font-display text-[clamp(2.25rem,4vw,3.75rem)] font-light leading-[1] tracking-[-0.02em] text-fg-strong">
+              Getting <em className="italic">started.</em>
+            </h2>
+            <ol className="mt-16 grid gap-10 md:grid-cols-3 md:gap-8">
+              {STEPS.map((s) => (
+                <li
+                  key={s.title}
+                  className="relative border-t border-hairline-strong pt-8"
+                >
+                  <span
+                    className="signal-square absolute -top-[3.5px] left-0"
+                    aria-hidden="true"
+                  />
+                  <h3 className="font-display text-[1.375rem] font-normal leading-snug text-fg-strong">
+                    {s.title}
+                  </h3>
+                  <p className="mt-3 max-w-xs text-[15px] leading-relaxed text-muted">
+                    {s.body}
+                  </p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        {/* ── Close ──────────────────────────────────────────────────────── */}
+        <section className="relative overflow-hidden border-t border-hairline">
+          <div className="relative z-10 mx-auto max-w-[1440px] px-4 py-28 text-center sm:px-10 lg:px-16 lg:py-40">
+            <h2 className="mx-auto max-w-3xl text-balance font-display text-[clamp(2.5rem,5vw,4.75rem)] font-light leading-[0.98] tracking-[-0.02em] text-fg-strong">
+              Ready when <em className="italic">you are.</em>
+            </h2>
+            <p className="mx-auto mt-6 max-w-md text-[17px] leading-relaxed text-muted">
+              Enigma-Cube invites clients directly. Sign in with the address
+              your invitation was sent to.
+            </p>
+            <Link
+              href={isSignedIn ? "/dashboard" : "/sign-in"}
+              className="ec-cta mt-10 inline-flex h-14 items-center gap-3 bg-brand px-6 text-[17px] font-bold text-white transition-colors hover:bg-brand-hover"
+            >
+              {isSignedIn ? "Open your portal" : "Sign in"}
+              <ArrowRight size={18} aria-hidden="true" />
+            </Link>
+          </div>
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 opacity-50">
+            <ParticleWave rows={36} cols={120} />
           </div>
         </section>
       </main>
 
-      <footer className="border-t border-hairline px-6 py-10">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4">
+      <footer className="border-t border-hairline">
+        <div className="mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-4 px-4 py-8 sm:px-10 lg:px-16">
           <BrandMark />
-          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-faint">
-            © {new Date().getFullYear()} Enigma-Cube
+          <p className="label-system">
+            © {new Date().getFullYear()} enigma-cube
           </p>
         </div>
       </footer>

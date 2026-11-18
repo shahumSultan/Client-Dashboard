@@ -9,7 +9,7 @@ export function PageLoader({ label }: { label?: string }) {
     <div className="grid h-dvh place-items-center px-6">
       <div className="flex flex-col items-center gap-4" role="status" aria-live="polite">
         <CubeLogo size={44} className="animate-pulse" />
-        <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-subtle">
+        <p className="font-mono text-xs lowercase text-subtle">
           {label ?? "Loading"}
         </p>
       </div>

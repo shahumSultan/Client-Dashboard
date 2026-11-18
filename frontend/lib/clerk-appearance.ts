@@ -29,29 +29,38 @@ export const clerkAppearance = {
     fontFamily: "var(--font-geist), ui-sans-serif, system-ui, sans-serif",
   },
   elements: {
-    rootBox: "w-full",
+    // The page supplies the column; Clerk fills it exactly so the form, the
+    // heading above it and the page's centre all line up.
+    rootBox: "!w-full",
     // The page already shows the wordmark above the card.
     logoBox: "!hidden",
-    cardBox: "w-full shadow-none rounded-none",
-    card: "!bg-raised !border !border-hairline !shadow-none rounded-none",
+    cardBox: "!w-full !max-w-none !shadow-none !rounded-none !border-0",
+    // No box: on the threshold page the form sits on the ground, like the
+    // site's contact form, rather than in a floating card.
+    card: "!bg-transparent !border-0 !shadow-none !rounded-none !p-0",
+    // The page already says who this is for; Clerk's own header repeats the
+    // app name, so it stays hidden except on later steps (verify, factor two).
+    header: "[.cl-signIn-start_&]:!hidden [.cl-signUp-start_&]:!hidden",
     headerTitle: "!font-display !text-fg-strong !text-2xl !font-normal tracking-tight",
     headerSubtitle: "text-muted",
     socialButtonsBlockButton:
-      "!bg-base !border !border-hairline-strong text-fg hover:!bg-elevated transition-colors",
+      "!bg-transparent !border !border-hairline-strong !shadow-none !rounded-none text-fg hover:!bg-tint-strong transition-colors",
     socialButtonsBlockButtonText: "text-fg font-medium",
     dividerLine: "bg-hairline",
-    dividerText: "font-mono uppercase tracking-[0.08em] text-subtle",
+    dividerText: "!font-mono !lowercase !tracking-normal !text-subtle",
     formFieldLabel: "text-muted font-medium",
     formFieldInput:
-      "!border !border-hairline-strong text-fg placeholder:text-faint focus:!border-brand-soft/60",
+      // The site's field: underline only, red rule on focus.
+      "!bg-transparent !border-0 !border-b !border-hairline-strong !shadow-none !rounded-none !px-0 text-fg placeholder:!text-subtle focus:!border-brand focus:!shadow-none focus:!ring-0",
     formButtonPrimary:
-      "ec-cta after:!hidden before:!hidden !bg-brand !bg-none hover:!bg-brand-hover active:!bg-brand-press !text-white !font-bold normal-case !shadow-none",
+      "ec-cta after:!hidden before:!hidden [&_svg]:!hidden !h-12 !text-[15px] !bg-brand !bg-none hover:!bg-brand-hover active:!bg-brand-press !text-white !font-bold normal-case !shadow-none",
     footerActionText: "text-subtle",
     footerActionLink: "!text-brand-soft hover:text-fg-strong transition-colors",
     identityPreviewText: "text-fg",
     identityPreviewEditButton: "text-brand-soft",
     formFieldInputShowPasswordButton: "text-subtle hover:text-fg",
-    otpCodeFieldInput: "bg-raised border-hairline text-fg",
-    footer: "!bg-none bg-transparent",
+    otpCodeFieldInput: "!bg-transparent !border-0 !border-b !border-hairline-strong !shadow-none !rounded-none text-fg",
+    footer: "!bg-none !bg-transparent [&>*]:!bg-transparent !mt-2",
+    footerAction: "!justify-start !px-0",
   },
 };

@@ -65,7 +65,7 @@ export default function AdminOverview() {
         <Link href="/admin/comments" className="mt-4 block">
           <Card interactive className="border-brand/30 bg-brand-wash">
             <CardContent className="flex items-center gap-4 pt-5">
-              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-brand/20 text-brand-soft">
+              <span className="grid h-10 w-10 shrink-0 place-items-center bg-tint-strong text-fg-strong">
                 <MessageSquare size={18} aria-hidden="true" />
               </span>
               <div className="min-w-0 flex-1">
@@ -77,7 +77,7 @@ export default function AdminOverview() {
                   Latest: &ldquo;{openComments[0].body.slice(0, 90)}&rdquo;
                 </p>
               </div>
-              <ArrowRight size={16} className="shrink-0 text-brand-soft" aria-hidden="true" />
+              <ArrowRight size={16} className="shrink-0 text-muted" aria-hidden="true" />
             </CardContent>
           </Card>
         </Link>
@@ -162,7 +162,7 @@ function Panel({
         <h2 className="text-sm font-sans font-semibold tracking-tight text-fg-strong">{title}</h2>
         <Link
           href={href}
-          className="flex items-center gap-1 text-xs font-medium text-brand-soft transition-colors hover:text-fg"
+          className="flex items-center gap-1 text-xs font-medium link-signal"
         >
           View all
           <ArrowRight size={12} aria-hidden="true" />

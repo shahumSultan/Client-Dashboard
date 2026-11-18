@@ -69,8 +69,8 @@ function ProjectRequests({ project }: { project: Project }) {
                     </div>
 
                     {r.admin_response && (
-                      <div className="mt-3 border border-brand/25 bg-brand-wash p-3">
-                        <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-brand-soft">
+                      <div className="mt-3 border-l border-brand bg-tint py-3 pl-4 pr-3">
+                        <p className="text-xs font-medium text-fg-strong">
                           Response from Enigma-Cube
                         </p>
                         <p className="mt-1.5 text-sm leading-relaxed text-muted">
@@ -79,7 +79,7 @@ function ProjectRequests({ project }: { project: Project }) {
                       </div>
                     )}
 
-                    <p className="mt-3 font-mono text-[10px] uppercase tracking-wider text-faint">
+                    <p className="mt-3 font-mono text-[11px] text-subtle">
                       {timeAgo(r.created_at)}
                     </p>
                   </CardContent>

@@ -201,7 +201,7 @@ function UploadDialog({
             <span className="mt-3 text-sm font-medium text-fg">
               Drop files here, or click to choose
             </span>
-            <span className="label-system mt-1.5 normal-case tracking-normal">
+            <span className="mt-1.5 text-xs text-subtle">
               PDF · Word · Excel · PowerPoint · images · CSV · ZIP · up to {MAX_MB} MB each
             </span>
             <input

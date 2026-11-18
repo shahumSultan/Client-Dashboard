@@ -43,8 +43,7 @@ function Company() {
   return (
     <div>
       <div className="mb-7">
-        <p className="label-system">Enigma-Cube</p>
-        <h1 className="mt-1.5 text-3xl font-normal tracking-tight text-fg-strong">Company</h1>
+        <h1 className="text-3xl font-normal tracking-tight text-fg-strong">Company</h1>
         <p className="mt-2 max-w-xl text-sm text-subtle">
           The company&apos;s own records - documents, registration details, bank accounts and team.
           Visible to the Enigma-Cube team only; clients never see this section.

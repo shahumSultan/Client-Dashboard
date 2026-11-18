@@ -31,19 +31,22 @@
     /* Foreground ramp (site --highlight / --text / --muted / --dim) */
     --fg: #eaeaea;
     --fg-strong: #ffffff;
-    --fg-muted: #a9a9a9;
-    --fg-subtle: #7c7c7c;
-    --fg-faint: rgba(234, 234, 234, 0.24);
+    --fg-muted: #a9a9a9;    /* site --muted */
+    --fg-subtle: #919191;
+    --fg-faint: #7c7c7c;    /* site --dim; the floor for any readable text */
 
-    /* Brand. --brand is the site's --signal, used as a fill (CTAs carry
-       bold white text on it, as on the site). --brand-soft is the accent for
-       text on dark. --slate is the cool secondary. */
+    /* Brand. Red is a FILL and a marker, never a text colour - the site sets
+       every word in white or grey and spends red on the primary button, the
+       small square bullet and link underlines. --brand-soft is kept as the
+       name existing components use for "accent text", so it is white here;
+       --signal-ink is the red for the rare mark that must read as red. */
     --brand: #d14a54;
     --brand-hover: #db5c66;
     --brand-press: #b83d47;
-    --brand-soft: #de8992;
+    --brand-soft: #ffffff;
+    --signal-ink: #de8992;
     --brand-glow: rgba(209, 74, 84, 0.25);
-    --brand-wash: rgba(209, 74, 84, 0.12);
+    --brand-wash: rgba(234, 234, 234, 0.06);
     --slate: #3e535c;
     --slate-soft: #a9b3b7;
 
@@ -94,6 +97,7 @@
   --color-brand-press: var(--brand-press);
   --color-brand-soft: var(--brand-soft);
   --color-brand-wash: var(--brand-wash);
+  --color-signal-ink: var(--signal-ink);
   --color-slate: var(--slate);
   --color-slate-soft: var(--slate-soft);
 
@@ -162,13 +166,37 @@ body {
   }
 }
 
-/* System labels: the site's small uppercase mono kickers ("01 / 04"). */
+/* System labels, as the site writes them: lowercase mono metadata in grey
+   ("business systems · automation"). Used for data and metadata - never as
+   an eyebrow above a heading. */
 .label-system {
   font-family: var(--font-mono);
   font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: lowercase;
   color: var(--fg-subtle);
+}
+
+/* The site's text link: the word stays white, the underline carries the red. */
+.link-signal {
+  color: var(--fg-strong);
+  text-decoration: underline;
+  text-decoration-color: var(--brand);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 6px;
+  transition: text-decoration-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.link-signal:hover {
+  text-decoration-color: var(--fg-strong);
+}
+
+/* The site's small square marker (its "Talk to Us" bullet). */
+.signal-square {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+  background: var(--brand);
 }
 
 /* Press feedback on primary actions, matching the site's .ec-cta */

@@ -19,7 +19,7 @@ export function Topbar({ title, onMenuClick }: TopbarProps) {
         <Menu size={20} aria-hidden="true" />
       </button>
 
-      <h1 className="flex-1 truncate font-display text-lg font-normal tracking-tight text-fg-strong">
+      <h1 className="flex-1 truncate text-sm font-medium text-muted">
         {title}
       </h1>
 

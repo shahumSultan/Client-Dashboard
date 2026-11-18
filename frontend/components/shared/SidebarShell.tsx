@@ -83,14 +83,14 @@ export function SidebarShell({
                   "group relative flex items-center gap-3 px-3 py-2.5 text-sm font-medium",
                   "transition-[background-color,color] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
                   active
-                    ? "bg-brand-wash text-fg"
+                    ? "bg-tint-strong text-fg-strong"
                     : "text-subtle hover:bg-tint-strong hover:text-fg"
                 )}
               >
                 {/* Active marker: position plus colour, not colour alone */}
                 <span
                   className={cn(
-                    "absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-brand-soft transition-opacity duration-200",
+                    "absolute left-0 top-0 h-full w-px bg-brand transition-opacity duration-200",
                     active ? "opacity-100" : "opacity-0"
                   )}
                   aria-hidden="true"
@@ -101,14 +101,14 @@ export function SidebarShell({
                   aria-hidden="true"
                   className={cn(
                     "shrink-0 transition-colors",
-                    active ? "text-brand-soft" : "text-faint group-hover:text-muted"
+                    active ? "text-fg-strong" : "text-faint group-hover:text-muted"
                   )}
                 />
                 {label}
                 {attention && (
                   <>
                     <span
-                      className="ml-auto h-2 w-2 rounded-full bg-brand-soft"
+                      className="signal-square ml-auto"
                       aria-hidden="true"
                     />
                     <span className="sr-only">(action needed)</span>

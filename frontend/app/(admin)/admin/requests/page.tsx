@@ -175,7 +175,7 @@ export default function AdminRequestsPage() {
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-fg">{r.title}</p>
-                    <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-faint">
+                    <p className="mt-1 font-mono text-[11px] text-subtle">
                       {STATUS_LABELS[r.category]} · {timeAgo(r.created_at)}
                     </p>
                   </div>

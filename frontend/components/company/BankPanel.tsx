@@ -38,7 +38,7 @@ function CopyValue({ label, value }: { label: string; value: string | null }) {
   return (
     <div className="flex items-center justify-between gap-3 py-2">
       <div className="min-w-0">
-        <p className="label-system text-[10px]">{label}</p>
+        <p className="text-xs text-subtle">{label}</p>
         <p className="mt-0.5 break-all font-mono text-sm text-fg">{value}</p>
       </div>
       <button
@@ -197,9 +197,8 @@ export function BankPanel() {
             <Card key={a.id} className="flex flex-col p-5">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="label-system">{a.currency ?? "Account"}</p>
-                  <h3 className="mt-1 truncate font-display text-lg font-normal text-fg-strong">{a.label}</h3>
-                  <p className="text-sm text-subtle">{a.bank_name}</p>
+                  <h3 className="truncate font-display text-lg font-normal text-fg-strong">{a.label}</h3>
+                  <p className="text-sm text-subtle">{a.bank_name}{a.currency && ` · ${a.currency}`}</p>
                 </div>
                 {a.is_default && <Badge variant="brand">Default</Badge>}
               </div>

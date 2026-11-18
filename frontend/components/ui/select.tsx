@@ -21,9 +21,9 @@ export const Select = React.forwardRef<
     <select
       ref={ref}
       className={cn(
-        "h-11 w-full cursor-pointer appearance-none border border-hairline bg-tint",
-        "pl-3.5 pr-10 text-base text-fg transition-colors duration-200 sm:h-10 sm:text-sm",
-        "hover:border-hairline-strong focus:border-brand-soft/40 focus:bg-tint-strong focus:outline-none",
+        "h-11 w-full cursor-pointer appearance-none border-0 border-b border-hairline-strong bg-transparent",
+        "pl-0 pr-8 text-base text-fg transition-colors duration-200 sm:h-10 sm:text-sm",
+        "hover:border-muted focus:border-brand focus:outline-none focus-visible:outline-none",
         "disabled:cursor-not-allowed disabled:opacity-45",
         // The dropdown list itself is painted by the OS - force dark options
         "[&>option]:bg-elevated [&>option]:text-fg",
@@ -37,7 +37,7 @@ export const Select = React.forwardRef<
     <ChevronDown
       size={16}
       aria-hidden="true"
-      className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-subtle"
+      className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-subtle"
     />
   </div>
   );

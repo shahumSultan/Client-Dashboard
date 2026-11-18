@@ -11,12 +11,13 @@ export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttribute
         ref={ref}
         className={cn(
           // 40px tall on desktop, 44px on touch - text-base avoids iOS auto-zoom
-          "h-11 w-full border border-hairline bg-tint px-3.5 text-base text-fg",
-          "placeholder:text-faint transition-colors duration-200 sm:h-10 sm:text-sm",
-          "hover:border-hairline-strong focus:border-brand-soft/40 focus:bg-tint-strong focus:outline-none",
+          // The site's field: no box, a rule beneath it, the rule turns red on focus.
+          "h-11 w-full border-0 border-b border-hairline-strong bg-transparent px-0 text-base text-fg",
+          "placeholder:text-subtle transition-colors duration-200 sm:h-10 sm:text-sm",
+          "hover:border-muted focus:border-brand focus:outline-none focus-visible:outline-none",
           "disabled:cursor-not-allowed disabled:opacity-45",
           "aria-[invalid=true]:border-danger/60",
-          viewOnly && "cursor-default opacity-70 focus:border-hairline",
+          viewOnly && "cursor-default opacity-70 focus:border-hairline-strong",
           className
         )}
         {...props}

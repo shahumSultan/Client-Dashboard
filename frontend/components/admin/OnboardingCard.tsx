@@ -35,7 +35,7 @@ export function OnboardingCard({ projectId }: { projectId: string }) {
               {e ? NEXT[e.stage] : "Agreement, invoice, welcome pack and kickoff call - not started"}
             </p>
           </div>
-          <span className="flex items-center gap-1.5 text-sm font-medium text-brand-soft">
+          <span className="link-signal flex items-center gap-1.5 text-sm font-medium">
             {e ? "Open" : "Prepare"}
             <ArrowRight size={15} aria-hidden="true" />
           </span>

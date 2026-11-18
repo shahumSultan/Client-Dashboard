@@ -11,12 +11,12 @@ export const Textarea = React.forwardRef<
   <textarea
     ref={ref}
     className={cn(
-      "min-h-[88px] w-full resize-none border border-hairline bg-tint px-3.5 py-3",
-      "text-base leading-relaxed text-fg placeholder:text-faint transition-colors duration-200 sm:text-sm",
-      "hover:border-hairline-strong focus:border-brand-soft/40 focus:bg-tint-strong focus:outline-none",
+      "min-h-[88px] w-full resize-none border-0 border-b border-hairline-strong bg-transparent px-0 py-3",
+      "text-base leading-relaxed text-fg placeholder:text-subtle transition-colors duration-200 sm:text-sm",
+      "hover:border-muted focus:border-brand focus:outline-none focus-visible:outline-none",
       "disabled:cursor-not-allowed disabled:opacity-45",
       "aria-[invalid=true]:border-danger/60",
-      viewOnly && "cursor-default opacity-70 focus:border-hairline",
+      viewOnly && "cursor-default opacity-70 focus:border-hairline-strong",
       className
     )}
     {...props}

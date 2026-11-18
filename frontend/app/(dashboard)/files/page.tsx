@@ -39,7 +39,7 @@ function ProjectFiles({ project }: { project: Project }) {
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-fg">{f.name}</p>
-                  <p className="mt-0.5 font-mono text-[10px] uppercase tracking-wider text-faint">
+                  <p className="mt-0.5 font-mono text-[11px] text-subtle">
                     {formatBytes(f.size_bytes)} · {timeAgo(f.created_at)}
                   </p>
                 </div>

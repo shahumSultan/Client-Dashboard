@@ -51,7 +51,7 @@ export function RowsEditor<T extends Record<string, string>>({
 
       {rows.length > 0 && (
         <div className="hidden gap-2 pr-11 sm:flex" aria-hidden="true">
-          <div className={cn(grid, "px-0.5 font-mono text-[10px] uppercase tracking-wider text-faint")} style={cols}>
+          <div className={cn(grid, "px-0.5 font-mono text-[11px] text-subtle")} style={cols}>
             {columns.map((c) => (
               <span key={c.key}>{c.label}</span>
             ))}

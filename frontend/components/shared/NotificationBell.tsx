@@ -66,7 +66,7 @@ export function NotificationBell() {
             {unread.length > 0 && (
               <button
                 onClick={() => markAllRead.mutate()}
-                className="flex items-center gap-1.5 text-xs font-medium text-brand-soft transition-colors hover:text-fg cursor-pointer"
+                className="flex items-center gap-1.5 text-xs font-medium link-signal cursor-pointer"
               >
                 <CheckCheck size={13} aria-hidden="true" />
                 Mark all read
@@ -116,7 +116,7 @@ export function NotificationBell() {
                         {n.body}
                       </span>
                     )}
-                    <span className="mt-1 block font-mono text-[10px] uppercase tracking-wider text-faint">
+                    <span className="mt-1 block font-mono text-[11px] text-subtle">
                       {timeAgo(n.created_at)}
                     </span>
                   </span>

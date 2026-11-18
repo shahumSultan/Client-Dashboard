@@ -67,7 +67,7 @@ export function CommentComposer({
       <div className="flex items-center justify-between gap-3">
         <p
           className={cn(
-            "font-mono text-[10px] uppercase tracking-wider",
+            "font-mono text-[11px]",
             tooLong ? "text-danger" : "text-faint"
           )}
         >

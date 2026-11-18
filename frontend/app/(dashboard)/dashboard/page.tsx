@@ -35,16 +35,19 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-7">
-      <section className="glass glass-sheen relative overflow-hidden rounded-card-lg px-6 py-7 sm:px-8">
-        {/* Brand pool behind the panel, so the glass has colour to refract */}
-        <div className="relative">
-          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-brand-soft">
+      <section className="pb-1 pt-2">
+        <div>
+          <h2 className="text-balance text-3xl font-normal leading-[1.05] tracking-tight text-fg-strong sm:text-4xl">
             {greeting()}
-          </p>
-          <h2 className="mt-2.5 text-2xl font-normal tracking-tight text-fg-strong">
-            {firstName ? `Welcome back, ${firstName}` : "Welcome back"}
+            {firstName ? (
+              <>
+                , <em className="italic">{firstName}</em>.
+              </>
+            ) : (
+              "."
+            )}
           </h2>
-          <p className="mt-2 max-w-lg text-sm leading-relaxed text-subtle">
+          <p className="mt-3 max-w-lg text-[15px] leading-relaxed text-muted">
             Everything Enigma-Cube is building for you - what&apos;s shipped, what&apos;s
             in flight, and what&apos;s still ahead.
           </p>

@@ -89,7 +89,7 @@ export function ProjectAnalytics({ projectId }: { projectId: string }) {
       {latest?.summary && (
         <Card>
           <CardContent className="pt-5">
-            <p className="mb-2 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-brand-soft">
+            <p className="mb-2 flex items-center gap-2 text-sm font-medium text-fg-strong">
               <Sparkles size={12} aria-hidden="true" />
               Summary
             </p>

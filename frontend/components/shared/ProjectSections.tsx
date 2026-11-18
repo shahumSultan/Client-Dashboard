@@ -65,7 +65,7 @@ export function ProjectSections({
             </div>
             <Link
               href={`/projects/${project.id}`}
-              className="flex items-center gap-1.5 text-xs font-medium text-brand-soft transition-colors hover:text-fg"
+              className="flex items-center gap-1.5 text-xs font-medium link-signal"
             >
               Open project
               <ArrowRight size={13} aria-hidden="true" />

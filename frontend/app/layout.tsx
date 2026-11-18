@@ -10,6 +10,8 @@ import "./globals.css";
 // Geist for body copy, Geist Mono for system labels.
 const robotoSerif = Roboto_Serif({
   subsets: ["latin"],
+  // Italic is how the site stresses a word ("manual *work*"), so load both.
+  style: ["normal", "italic"],
   display: "swap",
   variable: "--font-roboto-serif",
 });

@@ -13,11 +13,10 @@ import { timeAgo } from "@/lib/utils";
 
 export type CompanyTab = "overview" | "documents" | "profile" | "bank" | "team";
 
-function Stat({ kicker, value, label, onClick }: { kicker: string; value: number | string; label: string; onClick: () => void }) {
+function Stat({ value, label, onClick }: { value: number | string; label: string; onClick: () => void }) {
   return (
     <button type="button" onClick={onClick} className="glass glass-hover group cursor-pointer p-5 text-left">
-      <p className="label-system">{kicker}</p>
-      <p className="tabular mt-3 font-display text-4xl font-normal leading-none text-fg-strong">{value}</p>
+      <p className="tabular font-display text-4xl font-normal leading-none text-fg-strong">{value}</p>
       <p className="mt-2 flex items-center gap-1.5 text-sm text-subtle group-hover:text-fg">
         {label}
         <ArrowRight size={13} aria-hidden="true" className="transition-transform group-hover:translate-x-1" />
@@ -62,18 +61,18 @@ export function OverviewPanel({ go }: { go: (tab: CompanyTab) => void }) {
   return (
     <div className="space-y-6">
       <div className="stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat kicker="01" value={all.length} label="Documents" onClick={() => go("documents")} />
-        <Stat kicker="02" value={expiring.length} label="Expiring in 60 days" onClick={() => go("documents")} />
-        <Stat kicker="03" value={banks.data?.length ?? 0} label="Bank accounts" onClick={() => go("bank")} />
-        <Stat kicker="04" value={team.data?.filter((m) => m.is_active).length ?? 0} label="Team members" onClick={() => go("team")} />
+        <Stat value={all.length} label="Documents" onClick={() => go("documents")} />
+        <Stat value={expiring.length} label="Expiring in 60 days" onClick={() => go("documents")} />
+        <Stat value={banks.data?.length ?? 0} label="Bank accounts" onClick={() => go("bank")} />
+        <Stat value={team.data?.filter((m) => m.is_active).length ?? 0} label="Team members" onClick={() => go("team")} />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
         <Card>
           <div className="flex items-center justify-between border-b border-hairline px-5 py-4">
             <h2 className="text-lg font-normal tracking-tight text-fg-strong">Recently updated</h2>
-            <button type="button" onClick={() => go("documents")} className="label-system cursor-pointer hover:text-fg">
-              All documents →
+            <button type="button" onClick={() => go("documents")} className="link-signal cursor-pointer text-xs">
+              All documents
             </button>
           </div>
           {recent.length === 0 ? (
@@ -105,20 +104,19 @@ export function OverviewPanel({ go }: { go: (tab: CompanyTab) => void }) {
           <Card className="p-5">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className="label-system">Company</p>
-                <h2 className="mt-1.5 truncate text-xl font-normal tracking-tight text-fg-strong">
+                <h2 className="truncate text-xl font-normal tracking-tight text-fg-strong">
                   {p?.legal_name || p?.trading_name || "Enigma-Cube"}
                 </h2>
                 {p?.registration_number && (
                   <p className="mt-1 font-mono text-xs text-subtle">Reg. {p.registration_number}</p>
                 )}
               </div>
-              <button type="button" onClick={() => go("profile")} className="label-system shrink-0 cursor-pointer hover:text-fg">
-                Edit →
+              <button type="button" onClick={() => go("profile")} className="link-signal shrink-0 cursor-pointer text-xs">
+                Edit profile
               </button>
             </div>
             {missing.length > 0 && (
-              <p className="mt-4 border-l-2 border-brand pl-3 text-xs leading-relaxed text-muted">
+              <p className="mt-4 border-l border-brand pl-3 text-xs leading-relaxed text-muted">
                 Still missing: {missing.join(", ")}.
               </p>
             )}
@@ -126,10 +124,10 @@ export function OverviewPanel({ go }: { go: (tab: CompanyTab) => void }) {
 
           {expiring.length > 0 && (
             <Card className="p-5">
-              <p className="label-system flex items-center gap-1.5">
-                <CalendarClock size={12} aria-hidden="true" />
+              <h3 className="flex items-center gap-2 text-sm font-medium text-fg-strong">
+                <CalendarClock size={14} className="text-warning" aria-hidden="true" />
                 Needs renewal
-              </p>
+              </h3>
               <ul className="mt-3 space-y-2.5">
                 {expiring.slice(0, 5).map((d) => (
                   <li key={d.id} className="flex items-center justify-between gap-3">
@@ -145,7 +143,7 @@ export function OverviewPanel({ go }: { go: (tab: CompanyTab) => void }) {
 
           {byCategory.length > 0 && (
             <Card className="p-5">
-              <p className="label-system">By category</p>
+              <h3 className="text-sm font-medium text-fg-strong">By category</h3>
               <ul className="mt-3 space-y-2">
                 {byCategory.map(({ c, n }) => (
                   <li key={c} className="flex items-center gap-3 text-sm">

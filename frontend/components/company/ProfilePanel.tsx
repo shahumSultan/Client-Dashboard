@@ -34,11 +34,10 @@ function toForm(p: CompanyProfile): Form {
   return out;
 }
 
-function Section({ kicker, title, children }: { kicker: string; title: string; children: React.ReactNode }) {
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <Card className="p-5 sm:p-6">
-      <p className="label-system">{kicker}</p>
-      <h2 className="mt-1.5 text-lg font-normal tracking-tight text-fg-strong">{title}</h2>
+      <h2 className="text-lg font-normal tracking-tight text-fg-strong">{title}</h2>
       <div className="mt-5 grid gap-5 sm:grid-cols-2">{children}</div>
     </Card>
   );
@@ -96,14 +95,14 @@ function ProfileForm({ data }: { data: CompanyProfile }) {
 
   return (
     <form onSubmit={submit} className="space-y-4">
-      <Section kicker="01 / 03" title="Identity">
+      <Section title="Identity">
         {text("legal_name", "Legal name", { placeholder: "Enigma-Cube (Pvt) Ltd" })}
         {text("trading_name", "Trading name", { placeholder: "Enigma-Cube" })}
         {text("registration_number", "Registration number")}
         {text("tax_number", "Tax number (NTN / VAT)")}
       </Section>
 
-      <Section kicker="02 / 03" title="Contact">
+      <Section title="Contact">
         {text("email", "Email", { type: "email", placeholder: "info@enigma-cube.com" })}
         {text("phone", "Phone", { type: "tel" })}
         {text("website", "Website", { placeholder: "https://enigma-cube.com" })}
@@ -112,7 +111,7 @@ function ProfileForm({ data }: { data: CompanyProfile }) {
         {area("office_address", "Office address")}
       </Section>
 
-      <Section kicker="03 / 03" title="Online & notes">
+      <Section title="Online & notes">
         {SOCIALS.map((s) => (
           <Field key={s} label={s === "x" ? "X / Twitter" : s[0].toUpperCase() + s.slice(1)} htmlFor={`cp-social-${s}`}>
             <Input

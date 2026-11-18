@@ -190,7 +190,7 @@ export default function AdminProjectDetailPage() {
               <h1 className="text-xl font-normal tracking-tight text-fg-strong">
                 {project.name}
               </h1>
-              <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-faint">
+              <p className="mt-1 font-mono text-[11px] text-subtle">
                 {orgName ?? "Unknown client"}
               </p>
             </div>
@@ -386,7 +386,7 @@ export default function AdminProjectDetailPage() {
                     >
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-medium text-fg">{m.title}</p>
-                        <p className="mt-0.5 font-mono text-[10px] uppercase tracking-wider text-faint">
+                        <p className="mt-0.5 font-mono text-[11px] text-subtle">
                           {m.status === "completed"
                             ? `Done ${formatDate(m.completed_date)}`
                             : `Due ${formatDate(m.due_date)}`}
@@ -476,7 +476,7 @@ export default function AdminProjectDetailPage() {
                         <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted">
                           {u.content}
                         </p>
-                        <p className="mt-3 font-mono text-[10px] uppercase tracking-wider text-faint">
+                        <p className="mt-3 font-mono text-[11px] text-subtle">
                           {timeAgo(u.created_at)}
                         </p>
                       </CardContent>

@@ -201,7 +201,7 @@ export default function ProjectDetailPage({
                       <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted">
                         {u.content}
                       </p>
-                      <p className="mt-3 font-mono text-[10px] uppercase tracking-wider text-faint">
+                      <p className="mt-3 font-mono text-[11px] text-subtle">
                         {timeAgo(u.created_at)}
                       </p>
                       <CommentsDisclosure
@@ -298,7 +298,7 @@ export default function ProjectDetailPage({
                         </span>
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-sm font-medium text-fg">{f.name}</p>
-                          <p className="mt-0.5 font-mono text-[10px] uppercase tracking-wider text-faint">
+                          <p className="mt-0.5 font-mono text-[11px] text-subtle">
                             {formatBytes(f.size_bytes)} · {timeAgo(f.created_at)}
                           </p>
                         </div>
@@ -382,8 +382,8 @@ function RequestRow({ request }: { request: ClientRequest }) {
         </div>
 
         {request.admin_response && (
-          <div className="mt-3 border border-brand/25 bg-brand-wash p-3">
-            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-brand-soft">
+          <div className="mt-3 border-l border-brand bg-tint py-3 pl-4 pr-3">
+            <p className="text-xs font-medium text-fg-strong">
               Response from Enigma-Cube
             </p>
             <p className="mt-1.5 text-sm leading-relaxed text-muted">
@@ -392,7 +392,7 @@ function RequestRow({ request }: { request: ClientRequest }) {
           </div>
         )}
 
-        <p className="mt-3 font-mono text-[10px] uppercase tracking-wider text-faint">
+        <p className="mt-3 font-mono text-[11px] text-subtle">
           {timeAgo(request.created_at)}
         </p>
       </CardContent>

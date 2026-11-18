@@ -145,7 +145,7 @@ export function InvitePanel({
             >
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium text-fg">{invite.email}</p>
-                <p className="mt-0.5 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-faint">
+                <p className="mt-0.5 flex items-center gap-1.5 font-mono text-[11px] text-subtle">
                   <Clock size={10} aria-hidden="true" />
                   Expires {formatDate(invite.expires_at)}
                 </p>

@@ -17,18 +17,15 @@ export function OnboardingBanner() {
         <Link key={e.id} href={`/onboarding/${e.id}`} className="block">
           <Card interactive className="relative border-brand/40 px-5 py-4 sm:px-6">
             <div className="relative flex flex-wrap items-center gap-4">
-              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-brand text-white glow-brand">
-                <FileSignature size={18} aria-hidden="true" />
-              </span>
+              <FileSignature size={18} className="shrink-0 text-muted" aria-hidden="true" />
               <div className="min-w-0 flex-1">
-                <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-brand-soft">
-                  Next step
+                <p className="flex items-center gap-2.5 text-sm font-semibold text-fg-strong">
+                  <span className="signal-square" aria-hidden="true" />
+                  {clientActionLabel(e)}
                 </p>
-                <p className="mt-0.5 text-sm font-semibold text-fg">
-                  {clientActionLabel(e)} - {e.project_name}
-                </p>
+                <p className="mt-0.5 pl-[16px] text-xs text-subtle">{e.project_name} · your next step</p>
               </div>
-              <span className="flex items-center gap-1.5 text-sm font-medium text-brand-soft">
+              <span className="link-signal flex items-center gap-1.5 text-sm font-medium">
                 Continue
                 <ArrowRight size={15} aria-hidden="true" />
               </span>
@@ -47,9 +44,7 @@ export function OnboardingBanner() {
 export function ProjectGate({ engagement }: { engagement: Engagement }) {
   return (
     <Card className="px-6 py-16 text-center">
-      <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-brand-wash text-brand-soft">
-        <Lock size={22} aria-hidden="true" />
-      </span>
+      <Lock size={22} className="mx-auto text-muted" aria-hidden="true" />
       <h2 className="mt-5 text-lg font-normal tracking-tight text-fg-strong">
         Sign the agreement to open this project
       </h2>

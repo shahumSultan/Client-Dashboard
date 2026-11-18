@@ -106,7 +106,7 @@ export function MilestoneTimeline({
                     <div className="shrink-0 text-right">
                       <StatusPill descriptor={descriptor} size="sm" />
                       {(m.due_date || m.completed_date) && (
-                        <p className="mt-1.5 font-mono text-[10px] uppercase tracking-wider text-faint">
+                        <p className="mt-1.5 font-mono text-[11px] text-subtle">
                           {m.status === "completed"
                             ? `Done ${formatDate(m.completed_date)}`
                             : `Due ${formatDate(m.due_date)}`}

@@ -80,7 +80,7 @@ export default function ClientDetailPage() {
             </span>
             <div>
               <h1 className="text-xl font-normal tracking-tight text-fg-strong">{org.name}</h1>
-              <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-faint">
+              <p className="mt-1 font-mono text-[11px] text-subtle">
                 {org.industry ?? "No industry"} · /{org.slug}
               </p>
             </div>

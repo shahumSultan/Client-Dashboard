@@ -72,12 +72,10 @@ export function AgreementPanel({ engagement: e, go }: { engagement: Engagement; 
         <CardContent className="pt-7 sm:px-9 sm:pt-9">
           {e.agreement_source === "pdf" ? (
             <>
-              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-brand-soft">
-                Agreement · please read before signing
-              </p>
-              <h2 className="mb-5 mt-3 text-2xl font-normal tracking-tight text-fg-strong">
+              <h2 className="text-2xl font-normal tracking-tight text-fg-strong">
                 {e.agreement_title}
               </h2>
+              <p className="mb-5 mt-1.5 text-sm text-subtle">Please read it through before signing.</p>
               <PdfDocument engagement={e} />
             </>
           ) : (
@@ -295,7 +293,7 @@ function PayCard({ engagement: e, go }: { engagement: Engagement; go: Go }) {
   return (
     <Card className="border-brand/30">
       <div className="px-6 pt-6">
-        <p className="font-mono text-[10px] uppercase tracking-wider text-faint">Amount due</p>
+        <p className="font-mono text-[11px] text-subtle">Amount due</p>
         <p className="tabular font-display mt-1.5 text-3xl font-normal tracking-tight text-fg-strong">
           {formatMoney(e.invoice_total, e.currency)}
         </p>
@@ -392,8 +390,7 @@ export function WelcomePanel({ engagement: e, go }: { engagement: Engagement; go
     <div className="space-y-5">
       <Card className="relative overflow-hidden">
         <CardContent className="relative pt-7 sm:px-9 sm:pt-9">
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-brand-soft">Welcome aboard</p>
-          <h2 className="mt-3 text-2xl font-normal tracking-tight text-fg-strong">
+          <h2 className="text-balance text-3xl font-normal tracking-tight text-fg-strong">
             {e.organization_name}, let&apos;s build {e.project_name}.
           </h2>
           <Prose
@@ -582,8 +579,7 @@ export function CallPanel({ engagement: e, go }: { engagement: Engagement; go: G
   return (
     <div className="grid gap-5 lg:grid-cols-[1fr_360px] lg:items-start">
       <Card className="px-6 py-7 sm:px-8">
-        <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-brand-soft">Kickoff strategy call</p>
-        <h2 className="mt-3 text-xl font-normal tracking-tight text-fg-strong">Let&apos;s align before we build</h2>
+        <h2 className="text-2xl font-normal tracking-tight text-fg-strong">Let&apos;s align before we build</h2>
         <p className="mt-2 text-sm leading-relaxed text-subtle">
           About an hour together to agree on what matters most, so the first thing we deliver is
           already pointed in the right direction.
@@ -686,7 +682,7 @@ export function LaunchPanel({
     <div className="space-y-5">
       <Card className="relative overflow-hidden">
         <CardContent className="relative pt-8 sm:px-9 sm:pt-10">
-          <span className="grid h-12 w-12 place-items-center rounded-2xl bg-brand text-white glow-brand">
+          <span className="grid h-12 w-12 place-items-center border border-hairline-strong bg-tint text-fg-strong">
             <Rocket size={22} aria-hidden="true" />
           </span>
           <h2 className="mt-5 text-2xl font-normal tracking-tight text-fg-strong">
@@ -746,7 +742,7 @@ export function LaunchPanel({
       <Card className="px-6 py-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h3 className="text-sm font-semibold tracking-tight text-fg">Your project timeline</h3>
-          <Link href={`/projects/${e.project_id}`} className="text-xs font-medium text-brand-soft hover:underline">
+          <Link href={`/projects/${e.project_id}`} className="link-signal text-xs font-medium">
             Open project
           </Link>
         </div>

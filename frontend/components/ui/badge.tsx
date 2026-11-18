@@ -9,7 +9,7 @@ export function Badge({ className, variant = "default", ...props }: BadgeProps) 
   const variants = {
     default: "bg-tint-strong text-muted border border-hairline",
     outline: "border border-current bg-transparent",
-    brand: "bg-brand-wash text-brand-soft border border-brand/30",
+    brand: "bg-tint text-fg-strong border border-brand/60",
   };
   return (
     <span

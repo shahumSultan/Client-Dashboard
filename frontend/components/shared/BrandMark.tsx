@@ -44,7 +44,7 @@ export function BrandMark({
           Enigma-Cube
         </span>
         {kicker && (
-          <span className="mt-1 block font-mono text-[10px] uppercase tracking-[0.14em] text-brand-soft">
+          <span className="mt-1 block font-mono text-[11px] lowercase text-subtle">
             {kicker}
           </span>
         )}

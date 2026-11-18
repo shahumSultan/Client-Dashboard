@@ -17,7 +17,7 @@ export function ProjectCard({ project }: { project: Project }) {
             {project.name}
           </h3>
           {project.project_type && (
-            <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-faint">
+            <p className="mt-1 font-mono text-[11px] text-subtle">
               {project.project_type}
             </p>
           )}
@@ -47,7 +47,7 @@ export function ProjectCard({ project }: { project: Project }) {
         ) : (
           <span />
         )}
-        <span className="flex items-center gap-1.5 text-xs font-semibold text-brand-soft">
+        <span className="link-signal flex items-center gap-1.5 text-xs font-semibold">
           View
           <ArrowRight
             size={13}

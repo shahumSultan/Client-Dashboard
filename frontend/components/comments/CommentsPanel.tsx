@@ -260,7 +260,7 @@ function CommentBody({
             {comment.author.full_name ?? comment.author.email}
           </span>
           {fromTeam && <Badge variant="brand">Enigma-Cube</Badge>}
-          <span className="font-mono text-[10px] uppercase tracking-wider text-faint">
+          <span className="font-mono text-[11px] text-subtle">
             {timeAgo(comment.created_at)}
             {comment.edited_at && " · edited"}
           </span>
