@@ -27,7 +27,7 @@ export default function AdminProjectsPage() {
     <div>
       <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight text-fg">Projects</h1>
+          <h1 className="text-xl font-normal tracking-tight text-fg-strong">Projects</h1>
           <p className="mt-1.5 text-sm text-subtle">
             {isLoading
               ? "Loading…"
@@ -69,7 +69,7 @@ export default function AdminProjectsPage() {
               <li key={p.id}>
                 <Link
                   href={`/admin/projects/${p.id}`}
-                  className="group flex items-center justify-between gap-4 border-b border-hairline px-5 py-4 transition-colors last:border-0 hover:bg-white/[0.05]"
+                  className="group flex items-center justify-between gap-4 border-b border-hairline px-5 py-4 transition-colors last:border-0 hover:bg-tint"
                 >
                   <div className="flex min-w-0 items-center gap-4">
                     <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-brand-wash text-brand-soft">

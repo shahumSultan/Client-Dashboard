@@ -57,16 +57,16 @@ def certificate_page(e: Engagement) -> bytes:
     pdf.set_margins(20, 20, 20)
 
     pdf.set_font("Helvetica", "B", 9)
-    pdf.set_text_color(169, 46, 46)
+    pdf.set_text_color(168, 50, 60)
     pdf.set_xy(20, 22)
     pdf.cell(0, 6, "ENIGMA-CUBE  -  SIGNATURE CERTIFICATE")
 
     pdf.set_font("Helvetica", "B", 18)
-    pdf.set_text_color(13, 13, 13)
+    pdf.set_text_color(26, 26, 26)
     pdf.set_xy(20, 32)
     pdf.cell(0, 10, _latin1(e.agreement_title))
     pdf.set_font("Helvetica", "", 10)
-    pdf.set_text_color(87, 83, 78)
+    pdf.set_text_color(85, 85, 85)
     pdf.set_xy(20, 43)
     pdf.cell(0, 6, _latin1(f"{e.project.name}  -  {e.project.organization.name}"))
 
@@ -84,24 +84,24 @@ def certificate_page(e: Engagement) -> bytes:
     ]
 
     y = 60
-    pdf.set_draw_color(231, 229, 228)
+    pdf.set_draw_color(225, 222, 215)
     for label, value in rows:
         pdf.line(20, y, 190, y)
         pdf.set_xy(20, y + 3)
         pdf.set_font("Helvetica", "", 8)
-        pdf.set_text_color(120, 113, 108)
+        pdf.set_text_color(102, 102, 102)
         pdf.cell(48, 5, label.upper())
         pdf.set_xy(68, y + 3)
         mono = "SHA-256" in label or "fingerprint" in label
         pdf.set_font("Courier" if mono else "Helvetica", "", 8 if mono else 10)
-        pdf.set_text_color(13, 13, 13)
+        pdf.set_text_color(26, 26, 26)
         pdf.multi_cell(122, 5, _latin1(value))
         y = max(pdf.get_y(), y + 11) + 2
 
     pdf.line(20, y, 190, y)
     pdf.set_xy(20, y + 8)
     pdf.set_font("Helvetica", "", 9)
-    pdf.set_text_color(87, 83, 78)
+    pdf.set_text_color(85, 85, 85)
     pdf.multi_cell(170, 5, _latin1(
         "The signer reviewed the document above in the Enigma-Cube client portal, confirmed "
         "they were authorised to sign on behalf of the client, consented to sign electronically, "

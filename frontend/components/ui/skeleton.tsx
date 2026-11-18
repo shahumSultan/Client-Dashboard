@@ -5,7 +5,7 @@ export function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivEl
   return (
     <div
       aria-hidden="true"
-      className={cn("shimmer rounded-[10px] bg-white/[0.05]", className)}
+      className={cn("shimmer bg-tint", className)}
       {...props}
     />
   );

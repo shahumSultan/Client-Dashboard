@@ -56,7 +56,7 @@ export default function DocumentPage({
           <button
             type="button"
             onClick={() => openPdf(path).catch(() => undefined)}
-            className="mt-5 inline-flex h-10 cursor-pointer items-center gap-2 rounded-[10px] bg-brand px-4 text-sm font-medium text-white transition-colors hover:bg-brand-hover"
+            className="mt-5 inline-flex h-10 cursor-pointer items-center gap-2 bg-brand px-4 text-sm font-medium text-white transition-colors hover:bg-brand-hover"
           >
             <Printer size={15} aria-hidden="true" />
             {e.signed_at ? "Open signed copy" : "Open PDF"}
@@ -94,7 +94,7 @@ export default function DocumentPage({
           type="button"
           onClick={() => window.print()}
           disabled={!letterhead.settled}
-          className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-[10px] bg-brand px-4 text-sm font-medium text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex h-10 cursor-pointer items-center gap-2 bg-brand px-4 text-sm font-medium text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
         >
           <Printer size={15} aria-hidden="true" />
           {letterhead.settled ? "Print / Save PDF" : "Preparing…"}

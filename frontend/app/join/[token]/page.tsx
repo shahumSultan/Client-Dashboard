@@ -76,7 +76,7 @@ export default function JoinPage({
               <Mismatch invited={preview.email} signedInAs={user.email} />
             ) : (
               <>
-                <h1 className="text-xl font-semibold tracking-tight text-fg">
+                <h1 className="text-xl font-normal tracking-tight text-fg-strong">
                   Join {preview.organization_name}
                 </h1>
                 <p className="mt-2.5 text-sm leading-relaxed text-subtle">
@@ -114,7 +114,7 @@ function Expired() {
       <span className="mx-auto mb-5 grid h-12 w-12 place-items-center rounded-2xl bg-warning-wash text-warning">
         <CircleAlert size={20} aria-hidden="true" />
       </span>
-      <h1 className="text-xl font-semibold tracking-tight text-fg">
+      <h1 className="text-xl font-normal tracking-tight text-fg-strong">
         This invitation is no longer valid
       </h1>
       <p className="mt-2.5 text-sm leading-relaxed text-subtle">
@@ -137,7 +137,7 @@ function Mismatch({
       <span className="mx-auto mb-5 grid h-12 w-12 place-items-center rounded-2xl bg-warning-wash text-warning">
         <MailWarning size={20} aria-hidden="true" />
       </span>
-      <h1 className="text-xl font-semibold tracking-tight text-fg">
+      <h1 className="text-xl font-normal tracking-tight text-fg-strong">
         Wrong account
       </h1>
       <p className="mt-2.5 text-sm leading-relaxed text-subtle">

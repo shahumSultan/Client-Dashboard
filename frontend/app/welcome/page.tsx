@@ -46,7 +46,7 @@ export default function WelcomePage() {
               <MailQuestion size={20} aria-hidden="true" />
             </span>
 
-            <h1 className="text-xl font-semibold tracking-tight text-fg">
+            <h1 className="text-xl font-normal tracking-tight text-fg-strong">
               No workspace yet
             </h1>
             <p className="mt-2.5 text-sm leading-relaxed text-subtle">

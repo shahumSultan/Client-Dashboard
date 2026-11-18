@@ -68,7 +68,7 @@ export function PdfDocument({ engagement: e }: { engagement: Engagement }) {
         </button>
       </div>
 
-      <div className="overflow-hidden rounded-[12px] border border-hairline bg-white">
+      <div className="overflow-hidden border border-hairline bg-white">
         {url ? (
           <iframe
             src={`${url}#navpanes=0&view=FitH`}

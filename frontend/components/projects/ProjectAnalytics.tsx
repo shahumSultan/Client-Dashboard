@@ -24,12 +24,12 @@ import type { AnalyticsEntry } from "@/lib/types";
  * ΔE 29.0, and each clears 3:1 against the card.
  */
 const SERIES = [
-  { key: "leads", label: "Leads processed", color: "#e66767" },
-  { key: "conversions", label: "Conversions", color: "#3987e5" },
+  { key: "leads", label: "Leads processed", color: "#d14a54" },
+  { key: "conversions", label: "Conversions", color: "#a9b3b7" },
 ] as const;
 
-const AXIS_INK = "rgba(255,255,255,0.48)";
-const GRID_INK = "rgba(255,255,255,0.08)";
+const AXIS_INK = "#7c7c7c";
+const GRID_INK = "rgba(234,234,234,0.08)";
 
 export function ProjectAnalytics({ projectId }: { projectId: string }) {
   const { data: entries = [], isLoading } = useAnalytics(projectId);
@@ -177,17 +177,17 @@ export function ProjectAnalytics({ projectId }: { projectId: string }) {
                     width={48}
                   />
                   <Tooltip
-                    cursor={{ stroke: "rgba(255,255,255,0.22)", strokeWidth: 1 }}
+                    cursor={{ stroke: "rgba(234,234,234,0.22)", strokeWidth: 1 }}
                     contentStyle={{
-                      background: "rgba(28,28,28,0.96)",
-                      border: "1px solid rgba(255,255,255,0.12)",
-                      borderRadius: 12,
+                      background: "#1c1c1c",
+                      border: "1px solid rgba(234,234,234,0.16)",
+                      borderRadius: 0,
                       fontSize: 12,
-                      color: "#fff",
+                      color: "#eaeaea",
                       boxShadow: "0 20px 50px -20px rgba(0,0,0,0.9)",
                     }}
-                    labelStyle={{ color: "rgba(255,255,255,0.48)", marginBottom: 4 }}
-                    itemStyle={{ color: "#fff" }}
+                    labelStyle={{ color: "#7c7c7c", marginBottom: 4 }}
+                    itemStyle={{ color: "#eaeaea" }}
                   />
                   <Legend
                     verticalAlign="top"
@@ -224,7 +224,7 @@ function Metric({ label, value }: { label: string; value: number | string | null
   return (
     <Card className="p-4">
       <p className="text-xs font-medium text-subtle">{label}</p>
-      <p className="tabular mt-1.5 text-2xl font-semibold tracking-tight text-fg">
+      <p className="tabular font-display mt-1.5 text-2xl font-normal tracking-tight text-fg-strong">
         {value ?? "-"}
       </p>
     </Card>

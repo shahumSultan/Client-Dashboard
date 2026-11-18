@@ -65,7 +65,7 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
             <ArrowLeft size={13} aria-hidden="true" />
             Dashboard
           </Link>
-          <h1 className="mt-3 text-2xl font-semibold tracking-tight text-fg">
+          <h1 className="mt-3 text-2xl font-normal tracking-tight text-fg-strong">
             Getting started with {e.project_name}
           </h1>
         </div>
@@ -90,8 +90,8 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
                     onClick={() => go(s.key)}
                     aria-current={isActive ? "step" : undefined}
                     className={cn(
-                      "flex w-full cursor-pointer items-center gap-3 rounded-[12px] px-3 py-2.5 text-left transition-colors duration-200",
-                      isActive ? "glass border-brand/30 bg-brand-wash" : "hover:bg-white/[0.05]"
+                      "flex w-full cursor-pointer items-center gap-3 px-3 py-2.5 text-left transition-colors duration-200",
+                      isActive ? "glass border-brand/30 bg-brand-wash" : "hover:bg-tint"
                     )}
                   >
                     <span

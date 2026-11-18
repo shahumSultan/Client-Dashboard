@@ -17,7 +17,7 @@ export default function SignUpPage() {
 
         <div className="mb-8 flex flex-col items-center text-center">
           <BrandMark />
-          <h1 className="mt-6 text-2xl font-semibold tracking-tight text-fg">
+          <h1 className="mt-6 text-2xl font-normal tracking-tight text-fg-strong">
             Create your account
           </h1>
           <p className="mt-2 text-sm text-subtle">

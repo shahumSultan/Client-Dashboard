@@ -92,7 +92,7 @@ export default function AdminSettingsPage() {
             </div>
             {!viewOnly && (
               <div className="flex shrink-0 flex-wrap items-center gap-2">
-                <label className="inline-flex h-8 cursor-pointer items-center gap-2 rounded-[10px] border border-hairline px-3 text-xs font-medium text-fg transition-colors hover:bg-white/[0.06]">
+                <label className="inline-flex h-8 cursor-pointer items-center gap-2 border border-hairline px-3 text-xs font-medium text-fg transition-colors hover:bg-tint-strong">
                   <Upload size={13} aria-hidden="true" />
                   {upload.isPending ? "Uploading…" : "Replace"}
                   <input
@@ -123,7 +123,7 @@ export default function AdminSettingsPage() {
           {/* A4-shaped preview with the text band marked. */}
           <div className="mt-4 flex justify-center">
             <div
-              className="relative w-full max-w-[22rem] overflow-hidden rounded-[10px] border border-hairline bg-white"
+              className="relative w-full max-w-[22rem] overflow-hidden border border-hairline bg-white"
               style={{ aspectRatio: "210 / 297" }}
             >
               {letterhead.url ? (
@@ -170,10 +170,10 @@ export default function AdminSettingsPage() {
             take(ev.dataTransfer.files?.[0]);
           }}
           className={cn(
-            "flex cursor-pointer flex-col items-center justify-center rounded-[14px] border-2 border-dashed px-6 py-12 text-center transition-colors",
+            "flex cursor-pointer flex-col items-center justify-center border-2 border-dashed px-6 py-12 text-center transition-colors",
             dragging
               ? "border-brand-soft bg-brand-wash"
-              : "border-hairline-strong hover:border-brand-soft/50 hover:bg-white/[0.03]"
+              : "border-hairline-strong hover:border-brand-soft/50 hover:bg-tint"
           )}
         >
           {upload.isPending ? (

@@ -34,7 +34,7 @@ function ProjectFiles({ project }: { project: Project }) {
           <Card>
             <CardContent className="pt-5">
               <div className="flex items-center gap-4">
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/[0.06] text-subtle">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-tint-strong text-subtle">
                   <FileText size={17} aria-hidden="true" />
                 </span>
                 <div className="min-w-0 flex-1">
@@ -53,7 +53,7 @@ function ProjectFiles({ project }: { project: Project }) {
                     href={f.public_url}
                     download
                     aria-label={`Download ${f.name}`}
-                    className="grid h-10 w-10 shrink-0 place-items-center rounded-[10px] text-subtle transition-colors hover:bg-white/[0.08] hover:text-fg"
+                    className="grid h-10 w-10 shrink-0 place-items-center text-subtle transition-colors hover:bg-tint-strong hover:text-fg"
                   >
                     <Download size={15} aria-hidden="true" />
                   </a>

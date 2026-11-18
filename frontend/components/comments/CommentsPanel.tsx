@@ -69,7 +69,7 @@ export function CommentsPanel({
       {!bare && (
         <div className="flex items-center gap-2.5">
           <MessageSquare size={16} className="text-brand-soft" aria-hidden="true" />
-          <h2 className="text-sm font-semibold tracking-tight text-fg">{title}</h2>
+          <h2 className="text-sm font-sans font-semibold tracking-tight text-fg-strong">{title}</h2>
           {open > 0 && (
             <Badge variant="brand">
               {open} open

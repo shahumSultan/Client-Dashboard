@@ -27,10 +27,10 @@ const Toaster = (props: ToasterProps) => (
     toastOptions={{
       classNames: {
         toast:
-          "group toast !bg-elevated/95 !backdrop-blur-xl !border-hairline !text-fg !rounded-card shadow-[0_20px_50px_-20px_rgba(0,0,0,0.9)]",
+          "group toast !bg-elevated !border-hairline !text-fg !rounded-card shadow-[0_20px_50px_-20px_rgba(0,0,0,0.9)]",
         description: "!text-subtle",
         actionButton: "!bg-brand !text-white",
-        cancelButton: "!bg-white/[0.08] !text-muted",
+        cancelButton: "!bg-tint-strong !text-muted",
       },
     }}
     {...props}

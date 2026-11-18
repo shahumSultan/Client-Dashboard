@@ -218,12 +218,12 @@ export default function NewProjectPage() {
         <Link
           href="/admin/projects"
           aria-label="Back to projects"
-          className="grid h-10 w-10 place-items-center rounded-[10px] text-subtle transition-colors hover:bg-white/[0.08] hover:text-fg"
+          className="grid h-10 w-10 place-items-center text-subtle transition-colors hover:bg-tint-strong hover:text-fg"
         >
           <ArrowLeft size={18} aria-hidden="true" />
         </Link>
         <div>
-          <h1 className="text-xl font-semibold tracking-tight text-fg">New project</h1>
+          <h1 className="text-xl font-normal tracking-tight text-fg-strong">New project</h1>
           <p className="mt-0.5 text-sm text-subtle">
             It appears in the client&apos;s portal as soon as you create it.
           </p>

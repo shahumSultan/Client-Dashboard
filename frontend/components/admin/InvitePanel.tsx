@@ -80,7 +80,7 @@ export function InvitePanel({
     <Card className="overflow-hidden">
       <div className="flex items-center gap-2 border-b border-hairline px-5 py-4">
         <UserPlus size={15} className="text-faint" aria-hidden="true" />
-        <h2 className="text-sm font-semibold tracking-tight text-fg">Invitations</h2>
+        <h2 className="text-sm font-sans font-semibold tracking-tight text-fg-strong">Invitations</h2>
         {invitations.length > 0 && <Badge>{invitations.length} pending</Badge>}
       </div>
 
@@ -175,7 +175,7 @@ export function InvitePanel({
                     });
                   }}
                   aria-label={`Revoke invitation for ${invite.email}`}
-                  className="grid h-9 w-9 place-items-center rounded-[10px] text-faint transition-colors hover:bg-danger-wash hover:text-danger cursor-pointer"
+                  className="grid h-9 w-9 place-items-center text-faint transition-colors hover:bg-danger-wash hover:text-danger cursor-pointer"
                 >
                   <X size={14} aria-hidden="true" />
                 </button>

@@ -78,7 +78,7 @@ export default function ProjectDetailPage({
           action={
             <Link
               href="/projects"
-              className="glass inline-flex h-10 items-center gap-2 rounded-[10px] px-4 text-sm font-medium text-fg transition-colors hover:bg-glass-strong"
+              className="glass inline-flex h-10 items-center gap-2 px-4 text-sm font-medium text-fg transition-colors hover:bg-glass-strong"
             >
               <ArrowLeft size={14} aria-hidden="true" />
               Back to projects
@@ -119,14 +119,10 @@ export default function ProjectDetailPage({
       </Link>
 
       <section className="glass glass-sheen relative overflow-hidden rounded-card-lg p-6 sm:p-7">
-        <div
-          className="pointer-events-none absolute -right-20 -top-28 h-72 w-72 rounded-full bg-brand/20 blur-[100px]"
-          aria-hidden="true"
-        />
         <div className="relative">
           <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
             <div className="min-w-0">
-              <h1 className="text-xl font-semibold tracking-tight text-fg sm:text-2xl">
+              <h1 className="text-xl font-normal tracking-tight text-fg-strong sm:text-2xl">
                 {project.name}
               </h1>
               {project.description && (
@@ -297,7 +293,7 @@ export default function ProjectDetailPage({
                   <Card>
                     <CardContent className="pt-5">
                       <div className="flex items-center gap-4">
-                        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/[0.06] text-subtle">
+                        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-tint-strong text-subtle">
                           <FileText size={17} aria-hidden="true" />
                         </span>
                         <div className="min-w-0 flex-1">
@@ -316,7 +312,7 @@ export default function ProjectDetailPage({
                             href={f.public_url}
                             download
                             aria-label={`Download ${f.name}`}
-                            className="grid h-10 w-10 shrink-0 place-items-center rounded-[10px] text-subtle transition-colors hover:bg-white/[0.08] hover:text-fg"
+                            className="grid h-10 w-10 shrink-0 place-items-center text-subtle transition-colors hover:bg-tint-strong hover:text-fg"
                           >
                             <Download size={15} aria-hidden="true" />
                           </a>
@@ -386,7 +382,7 @@ function RequestRow({ request }: { request: ClientRequest }) {
         </div>
 
         {request.admin_response && (
-          <div className="mt-3 rounded-[10px] border border-brand/25 bg-brand-wash p-3">
+          <div className="mt-3 border border-brand/25 bg-brand-wash p-3">
             <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-brand-soft">
               Response from Enigma-Cube
             </p>

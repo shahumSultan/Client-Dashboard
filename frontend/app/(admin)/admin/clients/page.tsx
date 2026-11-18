@@ -147,7 +147,7 @@ export default function ClientsPage() {
     <div>
       <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight text-fg">Clients</h1>
+          <h1 className="text-xl font-normal tracking-tight text-fg-strong">Clients</h1>
           <p className="mt-1.5 text-sm text-subtle">
             {isLoading
               ? "Loading…"

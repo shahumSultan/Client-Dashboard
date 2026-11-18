@@ -37,15 +37,11 @@ export default function DashboardPage() {
     <div className="space-y-7">
       <section className="glass glass-sheen relative overflow-hidden rounded-card-lg px-6 py-7 sm:px-8">
         {/* Brand pool behind the panel, so the glass has colour to refract */}
-        <div
-          className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full bg-brand/25 blur-[90px]"
-          aria-hidden="true"
-        />
         <div className="relative">
           <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-brand-soft">
             {greeting()}
           </p>
-          <h2 className="mt-2.5 text-2xl font-semibold tracking-tight text-fg">
+          <h2 className="mt-2.5 text-2xl font-normal tracking-tight text-fg-strong">
             {firstName ? `Welcome back, ${firstName}` : "Welcome back"}
           </h2>
           <p className="mt-2 max-w-lg text-sm leading-relaxed text-subtle">
@@ -82,7 +78,7 @@ export default function DashboardPage() {
       </div>
 
       <section>
-        <h2 className="mb-4 text-sm font-semibold tracking-tight text-fg">
+        <h2 className="mb-4 text-sm font-sans font-semibold tracking-tight text-fg-strong">
           Your projects
         </h2>
 

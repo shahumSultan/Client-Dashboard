@@ -53,7 +53,7 @@ export function Sidebar({ open, onClose }: { open?: boolean; onClose?: () => voi
           <Link
             href="/admin"
             onClick={onClose}
-            className="flex items-center gap-3 rounded-[10px] px-3 py-2.5 text-sm font-medium text-brand-soft transition-colors duration-200 hover:bg-white/[0.06] hover:text-fg"
+            className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-brand-soft transition-colors duration-200 hover:bg-tint-strong hover:text-fg"
           >
             <ShieldCheck size={17} strokeWidth={2} aria-hidden="true" />
             Admin panel

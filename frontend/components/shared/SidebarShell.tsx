@@ -51,7 +51,7 @@ export function SidebarShell({
       <aside
         className={cn(
           "fixed inset-y-0 left-0 z-40 flex w-[264px] flex-col",
-          "border-r border-hairline bg-deep/80 backdrop-blur-2xl",
+          "border-r border-hairline bg-deep",
           "transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
           "lg:static lg:translate-x-0",
           open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
@@ -62,7 +62,7 @@ export function SidebarShell({
           <button
             onClick={onClose}
             aria-label="Close navigation"
-            className="grid h-9 w-9 place-items-center rounded-[10px] text-subtle transition-colors hover:bg-white/[0.08] hover:text-fg lg:hidden cursor-pointer"
+            className="grid h-9 w-9 place-items-center text-subtle transition-colors hover:bg-tint-strong hover:text-fg lg:hidden cursor-pointer"
           >
             <X size={18} aria-hidden="true" />
           </button>
@@ -80,11 +80,11 @@ export function SidebarShell({
                 onClick={onClose}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "group relative flex items-center gap-3 rounded-[10px] px-3 py-2.5 text-sm font-medium",
+                  "group relative flex items-center gap-3 px-3 py-2.5 text-sm font-medium",
                   "transition-[background-color,color] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
                   active
                     ? "bg-brand-wash text-fg"
-                    : "text-subtle hover:bg-white/[0.06] hover:text-fg"
+                    : "text-subtle hover:bg-tint-strong hover:text-fg"
                 )}
               >
                 {/* Active marker: position plus colour, not colour alone */}
@@ -108,7 +108,7 @@ export function SidebarShell({
                 {attention && (
                   <>
                     <span
-                      className="ml-auto h-2 w-2 rounded-full bg-brand-soft shadow-[0_0_10px_var(--brand-glow)]"
+                      className="ml-auto h-2 w-2 rounded-full bg-brand-soft"
                       aria-hidden="true"
                     />
                     <span className="sr-only">(action needed)</span>

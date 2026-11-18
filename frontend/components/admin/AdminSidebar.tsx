@@ -40,7 +40,7 @@ export function AdminSidebar({ open, onClose }: { open?: boolean; onClose?: () =
         <Link
           href="/dashboard"
           onClick={onClose}
-          className="flex items-center gap-3 rounded-[10px] px-3 py-2.5 text-sm font-medium text-subtle transition-colors duration-200 hover:bg-white/[0.06] hover:text-fg"
+          className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-subtle transition-colors duration-200 hover:bg-tint-strong hover:text-fg"
         >
           <ArrowLeft size={17} strokeWidth={2} aria-hidden="true" />
           Back to portal

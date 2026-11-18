@@ -49,7 +49,7 @@ export function TabsList({ className, children }: React.HTMLAttributes<HTMLDivEl
       role="tablist"
       className={cn(
         // Segmented pill rather than an underline - reads as a control on glass
-        "glass mb-6 inline-flex items-center gap-1 rounded-full p-1",
+        "glass mb-6 inline-flex items-center gap-1 rounded-none p-1",
         className
       )}
     >
@@ -73,11 +73,11 @@ export function TabsTrigger({ value, className, children, ...props }: TabsTrigge
       aria-selected={active}
       onClick={() => onChange(value)}
       className={cn(
-        "cursor-pointer rounded-full px-4 py-2 text-sm font-medium",
+        "cursor-pointer rounded-none px-4 py-2 text-sm font-medium",
         "transition-[background-color,color] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
         active
-          ? "bg-brand text-white shadow-[0_6px_18px_-8px_var(--brand-glow)]"
-          : "text-subtle hover:bg-white/[0.06] hover:text-fg",
+          ? "bg-brand text-white"
+          : "text-subtle hover:bg-tint-strong hover:text-fg",
         className
       )}
       {...props}

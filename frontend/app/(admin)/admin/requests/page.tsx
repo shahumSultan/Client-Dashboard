@@ -171,7 +171,7 @@ export default function AdminRequestsPage() {
               <li key={r.id}>
                 <button
                   onClick={() => setSelected(r)}
-                  className="flex w-full items-center justify-between gap-4 border-b border-hairline px-5 py-4 text-left transition-colors last:border-0 hover:bg-white/[0.05] cursor-pointer"
+                  className="flex w-full items-center justify-between gap-4 border-b border-hairline px-5 py-4 text-left transition-colors last:border-0 hover:bg-tint cursor-pointer"
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-fg">{r.title}</p>

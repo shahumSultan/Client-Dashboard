@@ -187,7 +187,7 @@ export default function AdminProjectDetailPage() {
         <CardContent className="pt-6">
           <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
             <div className="min-w-0">
-              <h1 className="text-xl font-semibold tracking-tight text-fg">
+              <h1 className="text-xl font-normal tracking-tight text-fg-strong">
                 {project.name}
               </h1>
               <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-faint">
@@ -232,7 +232,7 @@ export default function AdminProjectDetailPage() {
                       completion_percentage: Number(e.target.value),
                     })
                   }
-                  className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/[0.08] accent-[var(--brand)] disabled:cursor-default disabled:opacity-50"
+                  className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-tint-strong accent-[var(--brand)] disabled:cursor-default disabled:opacity-50"
                 />
                 <span className="tabular w-10 shrink-0 text-right text-sm font-semibold text-fg">
                   {project.completion_percentage}%
@@ -307,7 +307,7 @@ export default function AdminProjectDetailPage() {
         <TabsContent value="milestones">
           <Card className="overflow-hidden">
             <div className="flex items-center justify-between border-b border-hairline px-5 py-4">
-              <h2 className="text-sm font-semibold tracking-tight text-fg">Milestones</h2>
+              <h2 className="text-sm font-sans font-semibold tracking-tight text-fg-strong">Milestones</h2>
               <Button
                 size="sm"
                 variant={showMilestoneForm ? "ghost" : "outline"}
@@ -417,7 +417,7 @@ export default function AdminProjectDetailPage() {
                       {!viewOnly && <button
                         onClick={() => deleteMilestone.mutate(m.id)}
                         aria-label={`Delete ${m.title}`}
-                        className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] text-faint transition-colors hover:bg-danger-wash hover:text-danger cursor-pointer"
+                        className="grid h-9 w-9 shrink-0 place-items-center text-faint transition-colors hover:bg-danger-wash hover:text-danger cursor-pointer"
                       >
                         <Trash2 size={14} aria-hidden="true" />
                       </button>}
@@ -504,7 +504,7 @@ export default function AdminProjectDetailPage() {
         <TabsContent value="danger">
           <Card className="border-danger/25">
             <CardContent className="pt-6">
-              <h2 className="text-sm font-semibold tracking-tight text-fg">
+              <h2 className="text-sm font-sans font-semibold tracking-tight text-fg-strong">
                 Delete this project
               </h2>
               <p className="mt-2 max-w-lg text-sm leading-relaxed text-subtle">

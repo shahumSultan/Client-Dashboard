@@ -1,23 +1,29 @@
 import type { Metadata, Viewport } from "next";
-import { Figtree, Fragment_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Roboto_Serif } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { QueryProvider } from "@/components/shared/QueryProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { clerkAppearance } from "@/lib/clerk-appearance";
 import "./globals.css";
 
-// Brand typefaces, matched to enigma-cube.com.
-const figtree = Figtree({
+// Brand typefaces, matched to enigma-cube.com: Roboto Serif for display,
+// Geist for body copy, Geist Mono for system labels.
+const robotoSerif = Roboto_Serif({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-figtree",
+  variable: "--font-roboto-serif",
 });
 
-const fragmentMono = Fragment_Mono({
+const geist = Geist({
   subsets: ["latin"],
-  weight: "400",
   display: "swap",
-  variable: "--font-fragment-mono",
+  variable: "--font-geist",
+});
+
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-geist-mono",
 });
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://portal.enigma-cube.com";
@@ -60,7 +66,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`h-full antialiased ${figtree.variable} ${fragmentMono.variable}`}
+      className={`h-full antialiased ${robotoSerif.variable} ${geist.variable} ${geistMono.variable}`}
     >
       <body className="min-h-full bg-base font-sans text-fg grain">
         {/* Ambient colour behind every surface - this is what the glass blurs. */}

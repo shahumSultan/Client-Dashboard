@@ -10,16 +10,16 @@ interface TopbarProps {
 
 export function Topbar({ title, onMenuClick }: TopbarProps) {
   return (
-    <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-hairline bg-base/70 px-4 backdrop-blur-2xl lg:px-6">
+    <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-hairline bg-base/90 px-4 backdrop-blur-md lg:px-6">
       <button
         onClick={onMenuClick}
         aria-label="Open navigation"
-        className="grid h-10 w-10 place-items-center rounded-[10px] text-subtle transition-colors hover:bg-white/[0.08] hover:text-fg lg:hidden cursor-pointer"
+        className="grid h-10 w-10 place-items-center text-subtle transition-colors hover:bg-tint-strong hover:text-fg lg:hidden cursor-pointer"
       >
         <Menu size={20} aria-hidden="true" />
       </button>
 
-      <h1 className="flex-1 truncate text-[15px] font-semibold tracking-tight text-fg">
+      <h1 className="flex-1 truncate font-display text-lg font-normal tracking-tight text-fg-strong">
         {title}
       </h1>
 
@@ -29,10 +29,10 @@ export function Topbar({ title, onMenuClick }: TopbarProps) {
         <UserButton
           appearance={{
             elements: {
-              avatarBox: "w-8 h-8 ring-1 ring-white/15",
+              avatarBox: "w-8 h-8 ring-1 ring-hairline-strong",
               userButtonPopoverCard:
-                "bg-elevated border border-white/[0.12] shadow-[0_24px_60px_-24px_rgba(0,0,0,0.9)]",
-              userButtonPopoverActionButton: "text-white/72 hover:bg-white/[0.06]",
+                "bg-elevated border border-hairline-strong shadow-[0_24px_60px_-24px_rgba(0,0,0,0.9)]",
+              userButtonPopoverActionButton: "text-muted hover:bg-tint-strong",
               userButtonPopoverFooter: "hidden",
             },
           }}

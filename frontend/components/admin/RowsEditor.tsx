@@ -80,7 +80,7 @@ export function RowsEditor<T extends Record<string, string>>({
             onClick={() => onChange(rows.filter((_, j) => j !== i))}
             aria-label={`Remove row ${i + 1}`}
             className={cn(
-              "grid h-10 w-9 shrink-0 cursor-pointer place-items-center rounded-[10px] text-faint transition-colors",
+              "grid h-10 w-9 shrink-0 cursor-pointer place-items-center text-faint transition-colors",
               "hover:bg-danger-wash hover:text-danger disabled:pointer-events-none"
             )}
           >

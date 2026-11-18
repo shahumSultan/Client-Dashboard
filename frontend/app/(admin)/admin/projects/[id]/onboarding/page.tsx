@@ -305,7 +305,7 @@ function Editor({ engagement: e }: { engagement: Engagement }) {
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="min-w-0">
               <div className="flex items-center gap-2.5">
-                <h1 className="truncate text-lg font-semibold tracking-tight text-fg">Onboarding</h1>
+                <h1 className="truncate text-lg font-normal tracking-tight text-fg-strong">Onboarding</h1>
                 <StageBadge stage={e.stage} />
               </div>
               <p className="mt-1 text-xs text-subtle">
@@ -337,7 +337,7 @@ function Editor({ engagement: e }: { engagement: Engagement }) {
                       remove.mutate(e.id, { onSuccess: () => toast.success("Deleted") });
                     }
                   }}
-                  className="grid h-8 w-8 cursor-pointer place-items-center rounded-[10px] text-faint transition-colors hover:bg-danger-wash hover:text-danger"
+                  className="grid h-8 w-8 cursor-pointer place-items-center text-faint transition-colors hover:bg-danger-wash hover:text-danger"
                 >
                   <Trash2 size={14} aria-hidden="true" />
                 </button>
@@ -575,7 +575,7 @@ function Editor({ engagement: e }: { engagement: Engagement }) {
 
 function Locked({ children }: { children: React.ReactNode }) {
   return (
-    <p className="rounded-[10px] border border-warning/30 bg-warning-wash px-4 py-3 text-sm text-warning">
+    <p className=" border border-warning/30 bg-warning-wash px-4 py-3 text-sm text-warning">
       {children}
     </p>
   );
@@ -652,7 +652,7 @@ function StatusTrail({
         <>
           <span className="block">{formatCallTime(e.call_scheduled_for)}</span>
           {e.call_prep_notes && (
-            <span className="mt-1.5 block whitespace-pre-line rounded-lg bg-white/[0.04] px-2.5 py-2 text-muted">
+            <span className="mt-1.5 block whitespace-pre-line rounded-lg bg-tint px-2.5 py-2 text-muted">
               {e.call_prep_notes}
             </span>
           )}
@@ -669,7 +669,7 @@ function StatusTrail({
   return (
     <Card className="xl:sticky xl:top-0">
       <div className="border-b border-hairline px-5 py-4">
-        <h2 className="text-sm font-semibold tracking-tight text-fg">Progress</h2>
+        <h2 className="text-sm font-sans font-semibold tracking-tight text-fg-strong">Progress</h2>
       </div>
       <ol className="px-5 py-4">
         {items.map((item, i) => (
@@ -722,10 +722,10 @@ function SourceToggle({
           disabled={viewOnly}
           onClick={() => onChange(o.key)}
           className={cn(
-            "cursor-pointer rounded-[12px] border px-4 py-3 text-left transition-colors disabled:cursor-default",
+            "cursor-pointer border px-4 py-3 text-left transition-colors disabled:cursor-default",
             value === o.key
               ? "border-brand/50 bg-brand-wash"
-              : "border-hairline hover:border-hairline-strong hover:bg-white/[0.03]"
+              : "border-hairline hover:border-hairline-strong hover:bg-tint"
           )}
         >
           <span className="flex items-center gap-2 text-sm font-medium text-fg">
@@ -784,7 +784,7 @@ function AgreementUpload({
         <PdfDocument engagement={e} />
         {!locked && (
           <div className="flex flex-wrap items-center gap-2">
-            <label className="inline-flex h-8 cursor-pointer items-center gap-2 rounded-[10px] border border-hairline px-3 text-xs font-medium text-fg transition-colors hover:bg-white/[0.06]">
+            <label className="inline-flex h-8 cursor-pointer items-center gap-2 border border-hairline px-3 text-xs font-medium text-fg transition-colors hover:bg-tint-strong">
               <Upload size={13} aria-hidden="true" />
               {upload.isPending ? "Uploading…" : "Replace PDF"}
               <input
@@ -826,8 +826,8 @@ function AgreementUpload({
         take(ev.dataTransfer.files?.[0]);
       }}
       className={cn(
-        "flex cursor-pointer flex-col items-center justify-center rounded-[14px] border-2 border-dashed px-6 py-12 text-center transition-colors",
-        dragging ? "border-brand-soft bg-brand-wash" : "border-hairline-strong hover:border-brand-soft/50 hover:bg-white/[0.03]"
+        "flex cursor-pointer flex-col items-center justify-center border-2 border-dashed px-6 py-12 text-center transition-colors",
+        dragging ? "border-brand-soft bg-brand-wash" : "border-hairline-strong hover:border-brand-soft/50 hover:bg-tint"
       )}
     >
       {upload.isPending ? (

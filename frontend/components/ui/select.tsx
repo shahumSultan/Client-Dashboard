@@ -21,9 +21,9 @@ export const Select = React.forwardRef<
     <select
       ref={ref}
       className={cn(
-        "h-11 w-full cursor-pointer appearance-none rounded-[10px] border border-hairline bg-white/[0.05]",
+        "h-11 w-full cursor-pointer appearance-none border border-hairline bg-tint",
         "pl-3.5 pr-10 text-base text-fg transition-colors duration-200 sm:h-10 sm:text-sm",
-        "hover:border-hairline-strong focus:border-brand-soft/40 focus:bg-white/[0.07] focus:outline-none",
+        "hover:border-hairline-strong focus:border-brand-soft/40 focus:bg-tint-strong focus:outline-none",
         "disabled:cursor-not-allowed disabled:opacity-45",
         // The dropdown list itself is painted by the OS - force dark options
         "[&>option]:bg-elevated [&>option]:text-fg",

@@ -25,7 +25,7 @@ export function AgreementDocument({
         <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-brand-soft">
           Agreement · {formatDate(issued)}
         </p>
-        <h1 className="mt-3 text-2xl font-semibold tracking-tight text-fg">
+        <h1 className="mt-3 text-2xl font-normal tracking-tight text-fg-strong">
           {e.agreement_title}
         </h1>
         <p className="mt-2 text-subtle">{e.project_name}</p>
@@ -134,7 +134,7 @@ export function AgreementDocument({
 
 function Party({ label, name }: { label: string; name: string }) {
   return (
-    <div className="rounded-[10px] border border-hairline px-4 py-3">
+    <div className=" border border-hairline px-4 py-3">
       <dt className="font-mono text-[10px] uppercase tracking-wider text-faint">{label}</dt>
       <dd className="mt-1 font-medium text-fg">{name}</dd>
     </div>
@@ -152,7 +152,7 @@ function Section({
 }) {
   return (
     <section>
-      <h2 className="mb-3 flex items-baseline gap-3 text-base font-semibold tracking-tight text-fg">
+      <h2 className="mb-3 flex items-baseline gap-3 text-base font-medium tracking-tight text-fg-strong">
         <span className="font-mono text-[11px] font-normal text-brand-soft">{n}</span>
         {title}
       </h2>

@@ -16,7 +16,7 @@ export function Progress({ value = 0, label, className, ...props }: ProgressProp
       aria-valuemax={100}
       aria-label={label ?? "Progress"}
       className={cn(
-        "relative h-1.5 w-full overflow-hidden rounded-full bg-white/[0.08]",
+        "relative h-1 w-full overflow-hidden bg-tint-strong",
         className
       )}
       {...props}
@@ -24,7 +24,7 @@ export function Progress({ value = 0, label, className, ...props }: ProgressProp
       <div
         // Animate width via transition rather than layout thrash; the bar is a
         // fixed-height track so this never reflows surrounding content.
-        className="h-full rounded-full bg-gradient-to-r from-brand to-brand-soft transition-[width] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
+        className="h-full bg-brand transition-[width] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
         style={{ width: `${pct}%` }}
       />
     </div>

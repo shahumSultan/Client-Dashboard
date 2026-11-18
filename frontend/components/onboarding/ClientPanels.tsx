@@ -30,7 +30,7 @@ type Go = (key: StepKey) => void;
 // A link styled as the primary button. An <a> wrapping a <button> is invalid
 // HTML and gives keyboard users two tab stops for one action.
 const LINK_BUTTON =
-  "inline-flex h-11 w-full items-center justify-center gap-2 rounded-[10px] bg-brand px-6 text-sm " +
+  "inline-flex h-11 w-full items-center justify-center gap-2 bg-brand px-6 text-sm " +
   "font-medium text-white transition-colors duration-200 hover:bg-brand-hover glow-brand";
 
 export function DocumentLink({ engagement: e, doc }: { engagement: Engagement; doc: "agreement" | "invoice" }) {
@@ -75,7 +75,7 @@ export function AgreementPanel({ engagement: e, go }: { engagement: Engagement; 
               <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-brand-soft">
                 Agreement · please read before signing
               </p>
-              <h2 className="mb-5 mt-3 text-2xl font-semibold tracking-tight text-fg">
+              <h2 className="mb-5 mt-3 text-2xl font-normal tracking-tight text-fg-strong">
                 {e.agreement_title}
               </h2>
               <PdfDocument engagement={e} />
@@ -141,7 +141,7 @@ function SignPanel({ engagement: e, go }: { engagement: Engagement; go: Go }) {
       <form onSubmit={submit} noValidate className="space-y-5 px-6 py-6 sm:px-9">
         <div className="flex items-center gap-2.5">
           <PenLine size={16} className="text-brand-soft" aria-hidden="true" />
-          <h2 className="text-base font-semibold tracking-tight text-fg">Sign this agreement</h2>
+          <h2 className="text-base font-medium tracking-tight text-fg-strong">Sign this agreement</h2>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -169,7 +169,7 @@ function SignPanel({ engagement: e, go }: { engagement: Engagement; go: Go }) {
 
         {/* Live preview: seeing the name as a signature makes the act feel real */}
         <div
-          className="flex h-20 items-end rounded-[10px] border border-dashed border-hairline-strong bg-white/[0.03] px-5 pb-3"
+          className="flex h-20 items-end border border-dashed border-hairline-strong bg-tint px-5 pb-3"
           aria-hidden="true"
         >
           <span
@@ -245,7 +245,7 @@ function PaidCard({ engagement: e, go }: { engagement: Engagement; go: Go }) {
       <span className="grid h-11 w-11 place-items-center rounded-2xl bg-success-wash text-success">
         <CircleCheck size={20} aria-hidden="true" />
       </span>
-      <h2 className="mt-4 text-base font-semibold tracking-tight text-fg">
+      <h2 className="mt-4 text-base font-medium tracking-tight text-fg-strong">
         {e.paid_at ? "Payment received" : "Thank you - payment sent"}
       </h2>
       <p className="mt-1.5 text-sm leading-relaxed text-subtle">
@@ -296,13 +296,13 @@ function PayCard({ engagement: e, go }: { engagement: Engagement; go: Go }) {
     <Card className="border-brand/30">
       <div className="px-6 pt-6">
         <p className="font-mono text-[10px] uppercase tracking-wider text-faint">Amount due</p>
-        <p className="tabular mt-1.5 text-3xl font-semibold tracking-tight text-fg">
+        <p className="tabular font-display mt-1.5 text-3xl font-normal tracking-tight text-fg-strong">
           {formatMoney(e.invoice_total, e.currency)}
         </p>
       </div>
 
       {options.length > 1 && (
-        <div role="radiogroup" aria-label="Payment method" className="mx-6 mt-5 grid grid-cols-2 gap-1 rounded-full border border-hairline p-1">
+        <div role="radiogroup" aria-label="Payment method" className="mx-6 mt-5 grid grid-cols-2 gap-1 rounded-none border border-hairline p-1">
           {options.map((o) => (
             <button
               key={o.key}
@@ -311,7 +311,7 @@ function PayCard({ engagement: e, go }: { engagement: Engagement; go: Go }) {
               aria-checked={method === o.key}
               onClick={() => setMethod(o.key)}
               className={cn(
-                "flex cursor-pointer items-center justify-center gap-1.5 rounded-full py-2 text-xs font-medium transition-colors",
+                "flex cursor-pointer items-center justify-center gap-1.5 rounded-none py-2 text-xs font-medium transition-colors",
                 method === o.key ? "bg-brand text-white" : "text-subtle hover:text-fg"
               )}
             >
@@ -335,7 +335,7 @@ function PayCard({ engagement: e, go }: { engagement: Engagement; go: Go }) {
           </>
         ) : (
           <>
-            <div className="relative rounded-[10px] border border-hairline bg-white/[0.03] p-4">
+            <div className="relative border border-hairline bg-tint p-4">
               <p className="whitespace-pre-line pr-8 font-mono text-xs leading-relaxed text-fg">
                 {e.bank_details}
               </p>
@@ -346,7 +346,7 @@ function PayCard({ engagement: e, go }: { engagement: Engagement; go: Go }) {
                 type="button"
                 onClick={copyBank}
                 aria-label="Copy bank details"
-                className="absolute right-2 top-2 grid h-8 w-8 cursor-pointer place-items-center rounded-lg text-faint transition-colors hover:bg-white/[0.06] hover:text-fg"
+                className="absolute right-2 top-2 grid h-8 w-8 cursor-pointer place-items-center rounded-lg text-faint transition-colors hover:bg-tint-strong hover:text-fg"
               >
                 {copied ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}
               </button>
@@ -391,13 +391,9 @@ export function WelcomePanel({ engagement: e, go }: { engagement: Engagement; go
   return (
     <div className="space-y-5">
       <Card className="relative overflow-hidden">
-        <div
-          className="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-brand/25 blur-[90px]"
-          aria-hidden="true"
-        />
         <CardContent className="relative pt-7 sm:px-9 sm:pt-9">
           <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-brand-soft">Welcome aboard</p>
-          <h2 className="mt-3 text-2xl font-semibold tracking-tight text-fg">
+          <h2 className="mt-3 text-2xl font-normal tracking-tight text-fg-strong">
             {e.organization_name}, let&apos;s build {e.project_name}.
           </h2>
           <Prose
@@ -492,7 +488,7 @@ function NextStepsCard({ engagement: e }: { engagement: Engagement }) {
       <ol className="mt-4 space-y-3">
         {e.next_steps.map((s, i) => (
           <li key={i} className="flex gap-3.5 text-sm text-muted">
-            <span className="tabular grid h-6 w-6 shrink-0 place-items-center rounded-full bg-brand-wash font-mono text-[11px] text-brand-soft">
+            <span className="tabular grid h-6 w-6 shrink-0 place-items-center rounded-none bg-brand-wash font-mono text-[11px] text-brand-soft">
               {i + 1}
             </span>
             <span className="pt-0.5">{s}</span>
@@ -516,14 +512,14 @@ export function PortalPanel({ engagement: e }: { engagement: Engagement }) {
       <span className="grid h-11 w-11 place-items-center rounded-2xl bg-success-wash text-success">
         <CircleCheck size={20} aria-hidden="true" />
       </span>
-      <h2 className="mt-4 text-xl font-semibold tracking-tight text-fg">You&apos;re already in</h2>
+      <h2 className="mt-4 text-xl font-normal tracking-tight text-fg-strong">You&apos;re already in</h2>
       <p className="mt-2 max-w-xl text-sm leading-relaxed text-subtle">
         This portal is where {e.project_name} lives from now on. Bookmark it - no more digging
         through email threads for the latest status.
       </p>
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
         {features.map((f) => (
-          <div key={f.title} className="rounded-[10px] border border-hairline p-4">
+          <div key={f.title} className=" border border-hairline p-4">
             <f.icon size={16} className="text-brand-soft" aria-hidden="true" />
             <p className="mt-3 text-sm font-medium text-fg">{f.title}</p>
             <p className="mt-1 text-xs leading-relaxed text-subtle">{f.body}</p>
@@ -587,7 +583,7 @@ export function CallPanel({ engagement: e, go }: { engagement: Engagement; go: G
     <div className="grid gap-5 lg:grid-cols-[1fr_360px] lg:items-start">
       <Card className="px-6 py-7 sm:px-8">
         <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-brand-soft">Kickoff strategy call</p>
-        <h2 className="mt-3 text-xl font-semibold tracking-tight text-fg">Let&apos;s align before we build</h2>
+        <h2 className="mt-3 text-xl font-normal tracking-tight text-fg-strong">Let&apos;s align before we build</h2>
         <p className="mt-2 text-sm leading-relaxed text-subtle">
           About an hour together to agree on what matters most, so the first thing we deliver is
           already pointed in the right direction.
@@ -598,7 +594,7 @@ export function CallPanel({ engagement: e, go }: { engagement: Engagement; go: G
             <ul className="mt-3 space-y-2.5">
               {e.call_agenda.map((a, i) => (
                 <li key={i} className="flex items-start gap-2.5 text-sm text-muted">
-                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-soft" aria-hidden="true" />
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-none bg-brand-soft" aria-hidden="true" />
                   {a}
                 </li>
               ))}
@@ -689,12 +685,11 @@ export function LaunchPanel({
   return (
     <div className="space-y-5">
       <Card className="relative overflow-hidden">
-        <div className="pointer-events-none absolute -left-16 -top-24 h-72 w-72 rounded-full bg-brand/30 blur-[100px]" aria-hidden="true" />
         <CardContent className="relative pt-8 sm:px-9 sm:pt-10">
           <span className="grid h-12 w-12 place-items-center rounded-2xl bg-brand text-white glow-brand">
             <Rocket size={22} aria-hidden="true" />
           </span>
-          <h2 className="mt-5 text-2xl font-semibold tracking-tight text-fg">
+          <h2 className="mt-5 text-2xl font-normal tracking-tight text-fg-strong">
             {e.project_name} is officially underway
           </h2>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-subtle">
@@ -708,12 +703,12 @@ export function LaunchPanel({
                 <button
                   type="button"
                   onClick={() => go(s.key)}
-                  className="flex w-full cursor-pointer items-center gap-2.5 rounded-[10px] px-3 py-2 text-left text-sm transition-colors hover:bg-white/[0.05]"
+                  className="flex w-full cursor-pointer items-center gap-2.5 px-3 py-2 text-left text-sm transition-colors hover:bg-tint"
                 >
                   {s.state === "done" ? (
                     <CircleCheck size={16} className="shrink-0 text-success" aria-hidden="true" />
                   ) : (
-                    <span className="h-4 w-4 shrink-0 rounded-full border-2 border-brand-soft" aria-hidden="true" />
+                    <span className="h-4 w-4 shrink-0 rounded-none border-2 border-brand-soft" aria-hidden="true" />
                   )}
                   <span className={s.state === "done" ? "text-subtle" : "font-medium text-fg"}>{s.label}</span>
                   <span className="sr-only">{s.state === "done" ? "(done)" : "(to do)"}</span>
@@ -764,7 +759,7 @@ export function LaunchPanel({
                 )}
                 <span
                   className={cn(
-                    "relative mt-1 h-[15px] w-[15px] shrink-0 rounded-full border-2",
+                    "relative mt-1 h-[15px] w-[15px] shrink-0 rounded-none border-2",
                     m.status === "completed" ? "border-success bg-success" : m.status === "in_progress" ? "border-brand-soft bg-brand-wash" : "border-hairline-strong"
                   )}
                   aria-hidden="true"
@@ -804,10 +799,10 @@ export function LaunchPanel({
 export function LockedPanel({ step, current, go }: { step: Step; current: StepKey; go: Go }) {
   return (
     <Card className="px-6 py-14 text-center">
-      <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-white/[0.06] text-faint">
+      <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-tint-strong text-faint">
         <Lock size={20} aria-hidden="true" />
       </span>
-      <h2 className="mt-5 text-base font-semibold tracking-tight text-fg">{step.label}</h2>
+      <h2 className="mt-5 text-base font-medium tracking-tight text-fg-strong">{step.label}</h2>
       <p className="mt-1.5 text-sm text-subtle">{step.lockedReason}</p>
       <Button variant="outline" className="mt-6" onClick={() => go(current)}>
         Go to the current step

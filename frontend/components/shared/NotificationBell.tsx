@@ -46,7 +46,7 @@ export function NotificationBell() {
             : "Notifications"
         }
         aria-expanded={open}
-        className="relative grid h-10 w-10 place-items-center rounded-[10px] text-subtle transition-colors duration-200 hover:bg-white/[0.08] hover:text-fg cursor-pointer"
+        className="relative grid h-10 w-10 place-items-center text-subtle transition-colors duration-200 hover:bg-tint-strong hover:text-fg cursor-pointer"
       >
         <Bell size={19} aria-hidden="true" />
         {unread.length > 0 && (
@@ -86,7 +86,7 @@ export function NotificationBell() {
                   key={n.id}
                   className={cn(
                     "flex w-full items-start gap-3 border-b border-hairline px-4 py-3 text-left last:border-b-0",
-                    "transition-colors duration-200 hover:bg-white/[0.06] cursor-pointer",
+                    "transition-colors duration-200 hover:bg-tint-strong cursor-pointer",
                     !n.is_read && "bg-brand-wash/50"
                   )}
                   onClick={() => {
@@ -98,7 +98,7 @@ export function NotificationBell() {
                   <span
                     className={cn(
                       "mt-1.5 h-2 w-2 shrink-0 rounded-full",
-                      n.is_read ? "bg-white/15" : "bg-brand-soft"
+                      n.is_read ? "bg-hairline-strong" : "bg-brand-soft"
                     )}
                     aria-hidden="true"
                   />

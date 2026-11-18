@@ -10,14 +10,14 @@ import type { Milestone, MilestoneStatus } from "@/lib/types";
 const SPINE: Record<MilestoneStatus, string> = {
   completed: "bg-success",
   in_progress: "bg-brand",
-  upcoming: "bg-white/15",
+  upcoming: "bg-hairline-strong",
   delayed: "bg-danger",
 };
 
 const DOT: Record<MilestoneStatus, string> = {
   completed: "bg-success-wash text-success ring-success/30",
   in_progress: "bg-brand-wash text-brand-soft ring-brand/40",
-  upcoming: "bg-white/[0.06] text-faint ring-white/10",
+  upcoming: "bg-tint-strong text-faint ring-hairline",
   delayed: "bg-danger-wash text-danger ring-danger/30",
 };
 
@@ -145,7 +145,7 @@ function Tally({
 }) {
   return (
     <div className="glass rounded-card px-4 py-3">
-      <p className={cn("tabular text-2xl font-semibold tracking-tight", tone)}>
+      <p className={cn("tabular font-display text-2xl font-normal tracking-tight", tone)}>
         {value}
       </p>
       <p className="mt-0.5 text-xs text-subtle">{label}</p>

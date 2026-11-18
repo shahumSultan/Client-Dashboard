@@ -32,7 +32,7 @@ type Tone = "neutral" | "info" | "success" | "warning" | "danger" | "brand";
  * "what's done vs what's left".
  */
 const TONES: Record<Tone, string> = {
-  neutral: "bg-white/[0.06] text-muted border-hairline",
+  neutral: "bg-tint-strong text-muted border-hairline",
   info: "bg-info-wash text-info border-info/25",
   success: "bg-success-wash text-success border-success/25",
   warning: "bg-warning-wash text-warning border-warning/25",
@@ -91,7 +91,7 @@ export function StatusPill({
   return (
     <span
       className={cn(
-        "inline-flex shrink-0 items-center gap-1.5 rounded-full border font-medium whitespace-nowrap",
+        "inline-flex shrink-0 items-center gap-1.5 rounded-none border font-medium whitespace-nowrap",
         size === "sm" ? "px-2 py-0.5 text-[11px]" : "px-2.5 py-1 text-xs",
         TONES[descriptor.tone],
         className

@@ -2,13 +2,9 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 /**
- * The Enigma-Cube mark.
- *
- * The white asset is used rather than the red one: every surface it sits on in
- * this product is dark, and the red version (#d44954) is a lighter, pinker red
- * than the brand primary (#a92e2e) - two reds next to each other read as a
- * mistake. The red asset is kept for the favicon, where the tab background may
- * be light.
+ * The Enigma-Cube mark - the same white asset enigma-cube.com uses in its
+ * header (/brand/ec-logo-white.png). Every surface it sits on here is dark;
+ * the red mark is reserved for the favicon.
  */
 export function CubeLogo({
   size = 32,
@@ -44,11 +40,11 @@ export function BrandMark({
     <div className={cn("flex items-center gap-2.5", className)}>
       <CubeLogo size={28} className="shrink-0" />
       <div className="leading-none">
-        <span className="block text-sm font-semibold tracking-tight text-fg">
+        <span className="block font-display text-[17px] font-normal tracking-tight text-fg-strong">
           Enigma-Cube
         </span>
         {kicker && (
-          <span className="mt-1 block font-mono text-[10px] uppercase tracking-[0.18em] text-brand-soft">
+          <span className="mt-1 block font-mono text-[10px] uppercase tracking-[0.14em] text-brand-soft">
             {kicker}
           </span>
         )}

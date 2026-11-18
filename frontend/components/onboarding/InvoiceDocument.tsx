@@ -29,14 +29,14 @@ export function InvoiceDocument({
           <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-brand-soft">
             Invoice
           </p>
-          <h1 className="tabular mt-3 text-2xl font-semibold tracking-tight text-fg">
+          <h1 className="tabular mt-3 text-2xl font-normal tracking-tight text-fg-strong">
             {e.invoice_number ?? "-"}
           </h1>
           <p className="mt-1.5 text-subtle">{e.project_name}</p>
         </div>
         <span
           className={cn(
-            "rounded-full px-3 py-1 text-xs font-medium",
+            "rounded-none px-3 py-1 text-xs font-medium",
             status.tone === "success" && "bg-success-wash text-success",
             status.tone === "warning" && "bg-warning-wash text-warning",
             status.tone === "muted" && "border border-hairline text-muted"
@@ -90,7 +90,7 @@ export function InvoiceDocument({
       {e.invoice_notes && <Prose text={e.invoice_notes} className="text-subtle" />}
 
       {showPaymentDetails && e.bank_details && (
-        <section className="rounded-[10px] border border-hairline p-4">
+        <section className=" border border-hairline p-4">
           <p className="mb-2 font-mono text-[10px] uppercase tracking-wider text-faint">
             Bank transfer
           </p>

@@ -79,7 +79,7 @@ export default function ClientDetailPage() {
               <Building2 size={24} aria-hidden="true" />
             </span>
             <div>
-              <h1 className="text-xl font-semibold tracking-tight text-fg">{org.name}</h1>
+              <h1 className="text-xl font-normal tracking-tight text-fg-strong">{org.name}</h1>
               <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-faint">
                 {org.industry ?? "No industry"} · /{org.slug}
               </p>
@@ -107,7 +107,7 @@ export default function ClientDetailPage() {
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-hairline px-5 py-4">
           <div className="flex items-center gap-2">
             <FolderOpen size={15} className="text-faint" aria-hidden="true" />
-            <h2 className="text-sm font-semibold tracking-tight text-fg">Projects</h2>
+            <h2 className="text-sm font-sans font-semibold tracking-tight text-fg-strong">Projects</h2>
             <Badge>{projects.length}</Badge>
           </div>
           <Link href={`/admin/projects/new?org=${id}`}>
@@ -128,7 +128,7 @@ export default function ClientDetailPage() {
               <li key={p.id}>
                 <Link
                   href={`/admin/projects/${p.id}`}
-                  className="group flex items-center justify-between gap-4 border-b border-hairline px-5 py-3.5 transition-colors last:border-0 hover:bg-white/[0.05]"
+                  className="group flex items-center justify-between gap-4 border-b border-hairline px-5 py-3.5 transition-colors last:border-0 hover:bg-tint"
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-fg">{p.name}</p>
@@ -159,7 +159,7 @@ export default function ClientDetailPage() {
       <Card className="overflow-hidden">
         <div className="flex items-center gap-2 border-b border-hairline px-5 py-4">
           <Users size={15} className="text-faint" aria-hidden="true" />
-          <h2 className="text-sm font-semibold tracking-tight text-fg">Members</h2>
+          <h2 className="text-sm font-sans font-semibold tracking-tight text-fg-strong">Members</h2>
           <Badge>{users.length}</Badge>
         </div>
 

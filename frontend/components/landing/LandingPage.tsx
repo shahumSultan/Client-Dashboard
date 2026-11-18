@@ -56,10 +56,6 @@ function PortalPreview() {
 
   return (
     <div className="relative pb-28">
-      <div
-        className="absolute -inset-6 bottom-28 rounded-[32px] bg-brand/20 blur-[70px]"
-        aria-hidden="true"
-      />
       <div className="glass-strong glass-sheen relative rounded-card-lg p-5 shadow-[0_40px_90px_-40px_rgba(0,0,0,0.95)]">
         <div className="mb-5 flex items-start justify-between gap-4">
           <div>
@@ -70,7 +66,7 @@ function PortalPreview() {
               Lead Qualification Engine
             </p>
           </div>
-          <span className="rounded-full border border-brand/30 bg-brand-wash px-2.5 py-1 text-[11px] font-medium text-brand-soft">
+          <span className="rounded-none border border-brand/30 bg-brand-wash px-2.5 py-1 text-[11px] font-medium text-brand-soft">
             In development
           </span>
         </div>
@@ -80,9 +76,9 @@ function PortalPreview() {
             <span className="text-subtle">Overall progress</span>
             <span className="tabular font-semibold text-fg">64%</span>
           </div>
-          <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/[0.08]">
+          <div className="h-1.5 w-full overflow-hidden rounded-none bg-tint-strong">
             <motion.div
-              className="h-full rounded-full bg-gradient-to-r from-brand to-brand-soft"
+              className="h-full rounded-none bg-gradient-to-r from-brand to-brand-soft"
               initial={{ width: 0 }}
               animate={{ width: "64%" }}
               transition={{ duration: 1.1, delay: 0.4, ease: EASE }}
@@ -112,7 +108,7 @@ function PortalPreview() {
                 {m.label}
               </span>
               {m.state === "active" && (
-                <span className="ml-auto rounded-full bg-brand-wash px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-brand-soft">
+                <span className="ml-auto rounded-none bg-brand-wash px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-brand-soft">
                   Now
                 </span>
               )}
@@ -191,7 +187,7 @@ export function LandingPage({ isSignedIn }: { isSignedIn: boolean }) {
             {isSignedIn ? (
               <Link
                 href="/dashboard"
-                className="glow-brand inline-flex h-10 items-center gap-2 rounded-[10px] bg-brand px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
+                className="glow-brand inline-flex h-10 items-center gap-2 bg-brand px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
               >
                 Open portal
                 <ArrowRight size={15} aria-hidden="true" />
@@ -201,7 +197,7 @@ export function LandingPage({ isSignedIn }: { isSignedIn: boolean }) {
               // "get started" path to offer alongside signing in.
               <Link
                 href="/sign-in"
-                className="glow-brand inline-flex h-10 items-center gap-2 rounded-[10px] bg-brand px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
+                className="glow-brand inline-flex h-10 items-center gap-2 bg-brand px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
               >
                 Sign in
                 <ArrowRight size={15} aria-hidden="true" />
@@ -216,7 +212,7 @@ export function LandingPage({ isSignedIn }: { isSignedIn: boolean }) {
           <div className="mx-auto grid max-w-6xl items-center gap-16 lg:grid-cols-2">
             <div>
               <motion.p
-                className="inline-flex items-center gap-2 rounded-full border border-hairline bg-glass px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-brand-soft"
+                className="inline-flex items-center gap-2 rounded-none border border-hairline bg-glass px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-brand-soft"
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: EASE }}
@@ -226,7 +222,7 @@ export function LandingPage({ isSignedIn }: { isSignedIn: boolean }) {
               </motion.p>
 
               <motion.h1
-                className="mt-6 text-4xl font-semibold leading-[1.08] tracking-tight text-fg sm:text-5xl"
+                className="mt-6 text-4xl font-normal leading-[1.02] tracking-tight text-fg-strong sm:text-6xl"
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.06, ease: EASE }}
@@ -255,7 +251,7 @@ export function LandingPage({ isSignedIn }: { isSignedIn: boolean }) {
               >
                 <Link
                   href={isSignedIn ? "/dashboard" : "/sign-in"}
-                  className="glow-brand inline-flex h-11 items-center gap-2 rounded-[10px] bg-brand px-6 text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
+                  className="glow-brand inline-flex h-11 items-center gap-2 bg-brand px-6 text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
                 >
                   {isSignedIn ? "Open your portal" : "Sign in"}
                   <ArrowRight size={15} aria-hidden="true" />
@@ -277,7 +273,7 @@ export function LandingPage({ isSignedIn }: { isSignedIn: boolean }) {
         <section className="border-t border-hairline px-6 py-24">
           <div className="mx-auto max-w-6xl">
             <Reveal>
-              <h2 className="max-w-xl text-3xl font-semibold tracking-tight text-fg">
+              <h2 className="max-w-xl text-3xl font-normal tracking-tight text-fg-strong">
                 Everything about your project, in one place
               </h2>
               <p className="mt-3 max-w-lg text-sm leading-relaxed text-subtle">
@@ -306,7 +302,7 @@ export function LandingPage({ isSignedIn }: { isSignedIn: boolean }) {
         <section className="border-t border-hairline px-6 py-24">
           <div className="mx-auto max-w-6xl">
             <Reveal>
-              <h2 className="text-3xl font-semibold tracking-tight text-fg">
+              <h2 className="text-3xl font-normal tracking-tight text-fg-strong">
                 Getting started
               </h2>
             </Reveal>
@@ -333,12 +329,8 @@ export function LandingPage({ isSignedIn }: { isSignedIn: boolean }) {
           <div className="mx-auto max-w-4xl">
             <Reveal>
               <div className="glass-strong glass-sheen relative overflow-hidden rounded-card-lg px-8 py-14 text-center">
-                <div
-                  className="pointer-events-none absolute -top-24 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-brand/25 blur-[90px]"
-                  aria-hidden="true"
-                />
                 <div className="relative">
-                  <h2 className="text-3xl font-semibold tracking-tight text-fg">
+                  <h2 className="text-3xl font-normal tracking-tight text-fg-strong">
                     Ready when you are
                   </h2>
                   <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-subtle">
@@ -347,7 +339,7 @@ export function LandingPage({ isSignedIn }: { isSignedIn: boolean }) {
                   </p>
                   <Link
                     href={isSignedIn ? "/dashboard" : "/sign-in"}
-                    className="glow-brand mt-8 inline-flex h-11 items-center gap-2 rounded-[10px] bg-brand px-6 text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
+                    className="glow-brand mt-8 inline-flex h-11 items-center gap-2 bg-brand px-6 text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
                   >
                     {isSignedIn ? "Open your portal" : "Sign in"}
                     <ArrowRight size={15} aria-hidden="true" />

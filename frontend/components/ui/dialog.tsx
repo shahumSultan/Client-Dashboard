@@ -150,8 +150,8 @@ export function DialogClose({ onClick, className }: { onClick: () => void; class
       onClick={onClick}
       aria-label="Close dialog"
       className={cn(
-        "absolute right-4 top-4 grid h-9 w-9 place-items-center rounded-[10px] text-subtle",
-        "transition-colors duration-200 hover:bg-white/[0.08] hover:text-fg cursor-pointer",
+        "absolute right-4 top-4 grid h-9 w-9 place-items-center text-subtle",
+        "transition-colors duration-200 hover:bg-tint-strong hover:text-fg cursor-pointer",
         className
       )}
     >

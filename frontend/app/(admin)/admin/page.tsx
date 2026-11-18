@@ -95,7 +95,7 @@ export default function AdminOverview() {
             <Link
               key={c.id}
               href={`/admin/clients/${c.id}`}
-              className="flex items-center justify-between gap-3 border-b border-hairline px-5 py-3 transition-colors last:border-0 hover:bg-white/[0.05]"
+              className="flex items-center justify-between gap-3 border-b border-hairline px-5 py-3 transition-colors last:border-0 hover:bg-tint"
             >
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium text-fg">{c.name}</p>
@@ -117,7 +117,7 @@ export default function AdminOverview() {
             <Link
               key={p.id}
               href={`/admin/projects/${p.id}`}
-              className="flex items-center gap-4 border-b border-hairline px-5 py-3 transition-colors last:border-0 hover:bg-white/[0.05]"
+              className="flex items-center gap-4 border-b border-hairline px-5 py-3 transition-colors last:border-0 hover:bg-tint"
             >
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-fg">{p.name}</p>
@@ -159,7 +159,7 @@ function Panel({
   return (
     <Card className="overflow-hidden">
       <div className="flex items-center justify-between border-b border-hairline px-5 py-4">
-        <h2 className="text-sm font-semibold tracking-tight text-fg">{title}</h2>
+        <h2 className="text-sm font-sans font-semibold tracking-tight text-fg-strong">{title}</h2>
         <Link
           href={href}
           className="flex items-center gap-1 text-xs font-medium text-brand-soft transition-colors hover:text-fg"

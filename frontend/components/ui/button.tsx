@@ -21,21 +21,21 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const blocked = useReadOnly() && !allowReadOnly;
     const base =
-      "relative inline-flex items-center justify-center gap-2 rounded-[10px] font-medium select-none cursor-pointer " +
+      "relative inline-flex items-center justify-center gap-2 font-medium select-none cursor-pointer " +
       "transition-[background-color,border-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] " +
       // Scale press gives tactile feedback without shifting surrounding layout
-      "active:scale-[0.98] disabled:opacity-45 disabled:pointer-events-none";
+      "active:scale-[0.97] disabled:opacity-45 disabled:pointer-events-none";
 
     const variants = {
       default:
-        "bg-brand text-white hover:bg-brand-hover active:bg-brand-press glow-brand",
+        "bg-brand font-semibold text-white hover:bg-brand-hover active:bg-brand-press",
       outline:
         "glass text-fg hover:bg-glass-strong hover:border-hairline-strong",
-      ghost: "text-muted hover:text-fg hover:bg-white/[0.06]",
+      ghost: "text-muted hover:text-fg hover:bg-tint-strong",
       destructive:
         "bg-danger-wash text-danger border border-danger/30 hover:bg-danger/20 hover:border-danger/50",
       secondary:
-        "bg-white/[0.08] text-fg border border-hairline hover:bg-white/[0.12]",
+        "bg-tint-strong text-fg border border-hairline hover:bg-hairline-strong",
     };
 
     const sizes = {

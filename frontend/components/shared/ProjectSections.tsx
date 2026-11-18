@@ -58,7 +58,7 @@ export function ProjectSections({
         <section key={project.id} aria-label={project.name}>
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <h2 className="text-sm font-semibold tracking-tight text-fg">
+              <h2 className="text-sm font-sans font-semibold tracking-tight text-fg-strong">
                 {project.name}
               </h2>
               <StatusPill descriptor={PROJECT_STATUS[project.status]} size="sm" />
@@ -87,7 +87,7 @@ export function PageHeading({
 }) {
   return (
     <header className="mb-7">
-      <h1 className="text-xl font-semibold tracking-tight text-fg">{title}</h1>
+      <h1 className="text-xl font-normal tracking-tight text-fg-strong">{title}</h1>
       <p className="mt-1.5 text-sm leading-relaxed text-subtle">{description}</p>
     </header>
   );

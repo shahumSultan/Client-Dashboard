@@ -67,38 +67,38 @@ def _shell(
 
     Deliberately light: a dark card renders unpredictably against the varied
     backgrounds email clients impose, and Gmail strips most of what would make
-    the portal's glass effect work.
+    the portal's look work. It borrows the site's light tone instead.
     """
     return f"""\
 <!doctype html>
 <html>
-  <body style="margin:0;padding:0;background:#f5f5f4;">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f4;padding:32px 16px;">
+  <body style="margin:0;padding:0;background:#eceae5;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#eceae5;padding:32px 16px;">
       <tr><td align="center">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
-               style="max-width:520px;background:#ffffff;border-radius:14px;
-                      border:1px solid #e7e5e4;overflow:hidden;
-                      font-family:'Figtree',-apple-system,'Segoe UI',sans-serif;">
+               style="max-width:520px;background:#ffffff;border-radius:0;
+                      border:1px solid #e1ded7;overflow:hidden;
+                      font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;">
           <tr><td style="background:#0d0d0d;padding:22px 28px;">
-            <span style="color:#ffffff;font-size:15px;font-weight:600;letter-spacing:-0.01em;">Enigma&#8209;Cube</span>
-            <span style="color:#ffb3b3;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;margin-left:8px;">Client Portal</span>
+            <span style="color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:17px;font-weight:400;letter-spacing:-0.01em;">Enigma&#8209;Cube</span>
+            <span style="color:#de8992;font-family:Menlo,Consolas,monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;margin-left:8px;">Client Portal</span>
           </td></tr>
           <tr><td style="padding:32px 28px 8px;">
-            <h1 style="margin:0 0 14px;font-size:20px;line-height:1.3;color:#0d0d0d;font-weight:600;">{title}</h1>
+            <h1 style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:24px;line-height:1.25;color:#0d0d0d;font-weight:400;">{title}</h1>
             {body_html}
           </td></tr>
           <tr><td style="padding:8px 28px 32px;">
             <a href="{cta_url}"
-               style="display:inline-block;background:#a92e2e;color:#ffffff;
-                      text-decoration:none;padding:12px 24px;border-radius:10px;
-                      font-size:14px;font-weight:600;">{cta_label}</a>
-            <p style="margin:20px 0 0;font-size:12px;line-height:1.6;color:#78716c;">
+               style="display:inline-block;background:#d14a54;color:#ffffff;
+                      text-decoration:none;padding:12px 24px;border-radius:0;
+                      font-size:14px;font-weight:700;">{cta_label}</a>
+            <p style="margin:20px 0 0;font-size:12px;line-height:1.6;color:#666666;">
               If the button does not work, paste this into your browser:<br>
-              <span style="color:#a92e2e;word-break:break-all;">{cta_url}</span>
+              <span style="color:#a8323c;word-break:break-all;">{cta_url}</span>
             </p>
           </td></tr>
-          <tr><td style="border-top:1px solid #e7e5e4;padding:18px 28px;">
-            <p style="margin:0;font-size:11px;color:#a8a29e;">
+          <tr><td style="border-top:1px solid #e1ded7;padding:18px 28px;">
+            <p style="margin:0;font-size:11px;color:#7c7c7c;">
               {footer}
             </p>
           </td></tr>
@@ -115,13 +115,13 @@ async def send_invitation_email(
     """Invite a client into their workspace. Returns whether it was sent."""
     inviter = f"{inviter_name} at Enigma-Cube" if inviter_name else "Enigma-Cube"
     body = (
-        f'<p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:#44403c;">'
+        f'<p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:#333333;">'
         f"{inviter} has invited you to the client portal for "
         f'<strong style="color:#0d0d0d;">{organization_name}</strong>.</p>'
-        f'<p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#44403c;">'
+        f'<p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#333333;">'
         f"You will be able to follow your project timeline, see what has been "
         f"delivered, and leave remarks on the work as it progresses.</p>"
-        f'<p style="margin:0 0 24px;font-size:13px;line-height:1.6;color:#78716c;">'
+        f'<p style="margin:0 0 24px;font-size:13px;line-height:1.6;color:#666666;">'
         f"Sign up with <strong>{to}</strong> - the invitation is tied to that address.</p>"
     )
     return await _send_async({
@@ -135,7 +135,7 @@ async def send_invitation_email(
 
 
 def _p(text: str, muted: bool = False) -> str:
-    color = "#78716c" if muted else "#44403c"
+    color = "#666666" if muted else "#333333"
     size = "13px" if muted else "15px"
     return (
         f'<p style="margin:0 0 14px;font-size:{size};line-height:1.6;color:{color};">{text}</p>'
