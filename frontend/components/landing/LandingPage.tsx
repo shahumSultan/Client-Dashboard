@@ -99,7 +99,7 @@ function PrimaryAction({ isSignedIn }: { isSignedIn: boolean }) {
 export function LandingPage({ isSignedIn }: { isSignedIn: boolean }) {
   return (
     <div className="relative min-h-dvh overflow-x-hidden">
-      <header className="mx-auto max-w-[1440px] px-4 sm:px-10 lg:px-16">
+      <header className="px-4 sm:px-10 lg:px-16 2xl:px-[4.5vw]">
         <div className="flex h-[72px] items-center justify-between border-b border-hairline">
           <span className="flex items-center gap-4">
             <BrandMark />
@@ -113,9 +113,9 @@ export function LandingPage({ isSignedIn }: { isSignedIn: boolean }) {
 
       <main>
         {/* ── The threshold ─────────────────────────────────────────────── */}
-        <section className="relative mx-auto grid min-h-[calc(100dvh-72px)] max-w-[1440px] items-center gap-10 px-4 pb-44 pt-14 sm:px-10 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:px-16 lg:pt-10">
+        <section className="relative grid min-h-[calc(100dvh-72px)] items-center gap-10 px-4 pb-44 pt-14 sm:px-10 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:px-16 2xl:px-[4.5vw] lg:pt-10">
           <div className="relative z-10">
-            <h1 className="animate-fade-up text-balance font-display text-[clamp(3.25rem,6.6vw,6rem)] font-light leading-[0.95] tracking-[-0.02em] text-fg-strong">
+            <h1 className="animate-fade-up text-balance font-display text-[clamp(3.25rem,6.1vw,7rem)] font-light leading-[0.95] tracking-[-0.02em] text-fg-strong">
               Your project,
               <br />
               <em className="italic">in one place.</em>
@@ -125,7 +125,7 @@ export function LandingPage({ isSignedIn }: { isSignedIn: boolean }) {
             </div>
           </div>
 
-          <div className="relative mx-auto aspect-[389/416] w-full max-w-[220px] sm:max-w-[340px] lg:max-w-[440px]">
+          <div className="relative mx-auto aspect-[389/416] w-full max-w-[220px] sm:max-w-[340px] lg:max-w-[440px] 2xl:max-w-[560px]">
             <ParticleMark density={0.6} />
           </div>
 
@@ -133,7 +133,7 @@ export function LandingPage({ isSignedIn }: { isSignedIn: boolean }) {
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[44%] min-h-64 [mask-image:linear-gradient(to_bottom,#000_62%,transparent_86%)]">
             <ParticleWave intensity={1.6} />
           </div>
-          <p className="label-system absolute bottom-8 left-4 right-4 z-10 flex gap-x-2 [text-shadow:0_0_10px_#0d0d0d,0_0_4px_#0d0d0d] sm:left-10 sm:gap-x-4 lg:left-16">
+          <p className="label-system absolute bottom-8 left-4 right-4 z-10 flex gap-x-2 2xl:left-[4.5vw] [text-shadow:0_0_10px_#0d0d0d,0_0_4px_#0d0d0d] sm:left-10 sm:gap-x-4 lg:left-16">
             <span>milestones</span>
             <span aria-hidden="true">·</span>
             <span>deliverables</span>
@@ -146,7 +146,7 @@ export function LandingPage({ isSignedIn }: { isSignedIn: boolean }) {
 
         {/* ── What's inside ──────────────────────────────────────────────── */}
         <section className="border-t border-hairline">
-          <div className="mx-auto grid max-w-[1440px] gap-12 px-4 py-24 sm:px-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] lg:px-16 lg:py-36">
+          <div className="grid gap-12 px-4 py-24 sm:px-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] lg:px-16 2xl:px-[4.5vw] lg:py-36">
             <div>
               <h2 className="text-balance font-display text-[clamp(2.25rem,4vw,3.75rem)] font-light leading-[1] tracking-[-0.02em] text-fg-strong">
                 What&apos;s <em className="italic">inside.</em>
@@ -175,7 +175,7 @@ export function LandingPage({ isSignedIn }: { isSignedIn: boolean }) {
 
         {/* ── Getting started ────────────────────────────────────────────── */}
         <section className="border-t border-hairline">
-          <div className="mx-auto max-w-[1440px] px-4 py-24 sm:px-10 lg:px-16 lg:py-32">
+          <div className="px-4 py-24 sm:px-10 lg:px-16 2xl:px-[4.5vw] lg:py-32">
             <h2 className="max-w-2xl text-balance font-display text-[clamp(2.25rem,4vw,3.75rem)] font-light leading-[1] tracking-[-0.02em] text-fg-strong">
               Getting <em className="italic">started.</em>
             </h2>
@@ -203,7 +203,7 @@ export function LandingPage({ isSignedIn }: { isSignedIn: boolean }) {
 
         {/* ── Close ──────────────────────────────────────────────────────── */}
         <section className="relative overflow-hidden border-t border-hairline">
-          <div className="relative z-10 mx-auto max-w-[1440px] px-4 py-28 text-center sm:px-10 lg:px-16 lg:py-40">
+          <div className="relative z-10 px-4 py-28 text-center sm:px-10 lg:px-16 2xl:px-[4.5vw] lg:py-40">
             <h2 className="mx-auto max-w-3xl text-balance font-display text-[clamp(2.5rem,5vw,4.75rem)] font-light leading-[0.98] tracking-[-0.02em] text-fg-strong">
               Ready when <em className="italic">you are.</em>
             </h2>
@@ -226,7 +226,7 @@ export function LandingPage({ isSignedIn }: { isSignedIn: boolean }) {
       </main>
 
       <footer className="border-t border-hairline">
-        <div className="mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-4 px-4 py-8 sm:px-10 lg:px-16">
+        <div className="flex flex-wrap items-center justify-between gap-4 px-4 py-8 sm:px-10 lg:px-16 2xl:px-[4.5vw]">
           <BrandMark />
           <p className="label-system">
             © {new Date().getFullYear()} enigma-cube
