@@ -2,7 +2,8 @@
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Eye } from "lucide-react";
-import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import { AdminSidebar, EMPLOYEE_SECTIONS, employeeMayOpen } from "@/components/admin/AdminSidebar";
+import { isTeamRole } from "@/lib/types";
 import { ReadOnlyProvider } from "@/lib/read-only";
 import { Topbar } from "@/components/shared/Topbar";
 import { useCurrentUser } from "@/hooks/useAuth";
@@ -13,6 +14,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/admin": "Overview",
   "/admin/clients": "Clients",
   "/admin/company": "Company",
+  "/admin/departments": "Departments",
   "/admin/projects": "Projects",
   "/admin/requests": "Requests",
   "/admin/comments": "Comments",
@@ -31,19 +33,25 @@ export default function AdminLayout({
   const router = useRouter();
   const { data: user, isLoading } = useCurrentUser();
 
-  const isTeam = user?.role === "admin" || user?.role === "staff";
+  const isTeam = isTeamRole(user?.role);
+  const isEmployee = user?.role === "employee";
+  // An employee only gets the company sections; everything else is clients,
+  // money or access. Sent to their landing page rather than shown a 403.
+  const outOfBounds = isEmployee && !employeeMayOpen(pathname);
 
   // The API enforces this on every route; this only avoids rendering an
   // admin shell that would fail every request behind it.
   useEffect(() => {
-    if (!isLoading && user && !isTeam) {
-      router.replace("/dashboard");
-    }
-  }, [user, isLoading, isTeam, router]);
+    if (isLoading || !user) return;
+    if (!isTeam) router.replace("/dashboard");
+    else if (outOfBounds) router.replace(EMPLOYEE_SECTIONS[0]);
+  }, [user, isLoading, isTeam, outOfBounds, router]);
 
   if (isLoading || !user) return <PageLoader />;
-  if (!isTeam) return <PageLoader label="Redirecting" />;
-  const viewOnly = user.role === "staff";
+  if (!isTeam || outOfBounds) return <PageLoader label="Redirecting" />;
+  // Employees read the company pages but change nothing there yet (tasks are
+  // where they will write). The API refuses those writes regardless.
+  const viewOnly = isEmployee;
 
   return (
     <div className="flex h-dvh overflow-hidden">
@@ -57,8 +65,8 @@ export default function AdminLayout({
               <div className="mb-6 flex items-start gap-3 rounded-card border border-info/30 bg-info-wash px-4 py-3 text-sm">
                 <Eye size={16} className="mt-0.5 shrink-0 text-info" aria-hidden="true" />
                 <p className="text-muted">
-                  <span className="font-medium text-fg">View-only access.</span> You can open and read
-                  everything here; changes are made by an admin.
+                  <span className="font-medium text-fg">View-only.</span> You can read the company
+                  pages; changes are made by an admin.
                 </p>
               </div>
             )}

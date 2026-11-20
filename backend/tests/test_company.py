@@ -24,9 +24,9 @@ async def clean(session):
 
 
 @pytest_asyncio.fixture
-async def staff(session):
+async def employee(session):
     u = User(clerk_id=f"c_{uuid.uuid4().hex}", email=f"s-{uuid.uuid4().hex[:6]}@ec.com",
-             full_name="Staff", role=UserRole.STAFF)
+             full_name="Employee", role=UserRole.EMPLOYEE)
     session.add(u)
     await session.commit()
     return u
@@ -79,10 +79,13 @@ async def test_clients_cannot_see_company_records(api, world):
             assert r.status_code == 403, f"{who} {path} -> {r.status_code}"
 
 
-async def test_staff_can_read_but_not_write(api, staff):
-    client = api(staff)
-    for path in READS:
+async def test_employees_read_some_company_records_but_write_none(api, employee):
+    client = api(employee)
+    for path in ("/company/profile", "/company/team", "/company/documents", "/departments"):
         assert (await client.get(path)).status_code == 200, path
+    # Money and invitations stay with the admins.
+    assert (await client.get("/company/bank-accounts")).status_code == 403
+    assert (await client.get("/company/team/invitations")).status_code == 403
     r = await client.put("/company/profile", json={"legal_name": "Nope"})
     assert r.status_code == 403
     r = await client.post("/company/uploads", json={"filename": "a.pdf", "size_bytes": 10})
@@ -177,7 +180,7 @@ async def test_confirm_checks_what_actually_landed(api, world, bucket):
     assert ticket["storage_key"] in bucket["deleted"]
 
 
-async def test_document_lifecycle(api, world, bucket, staff):
+async def test_document_lifecycle(api, world, bucket, employee):
     admin = api(world["admin"])
     t1 = await _upload(admin, bucket, size=2048)
     r = await admin.post("/company/documents", json={
@@ -198,9 +201,13 @@ async def test_document_lifecycle(api, world, bucket, staff):
     versions = (await admin.get(f"/company/documents/{doc['id']}/versions")).json()
     assert [v["version"] for v in versions] == [2, 1]
 
-    # Staff can open it; downloads are short-lived signed links.
-    link = (await api(staff).get(f"/company/documents/{doc['id']}/download")).json()
+    # Downloads are short-lived signed links.
+    link = (await admin.get(f"/company/documents/{doc['id']}/download")).json()
     assert t2["storage_key"] in link["url"] and link["expires_in"] == 300
+    # An HR document doesn't exist as far as an employee is concerned.
+    assert (await api(employee).get(f"/company/documents/{doc['id']}/download")).status_code == 404
+    assert (await api(employee).get(f"/company/documents/{doc['id']}/versions")).status_code == 404
+    assert (await api(employee).get("/company/documents")).json() == []
     old = (await admin.get(f"/company/documents/{doc['id']}/download?version=1")).json()
     assert t1["storage_key"] in old["url"]
 
@@ -218,6 +225,27 @@ async def test_document_lifecycle(api, world, bucket, staff):
     assert (await admin.delete(f"/company/documents/{doc['id']}")).status_code == 204
     assert {t1["storage_key"], t2["storage_key"]} <= set(bucket["deleted"])
     assert (await admin.get(f"/company/documents/{doc['id']}/versions")).status_code == 404
+
+
+async def test_employees_open_policy_and_brand_documents_only(api, world, bucket, employee):
+    admin = api(world["admin"])
+    ids = {}
+    for category in ("policies", "brand", "hr", "finance", "legal", "contracts", "other"):
+        t = await _upload(admin, bucket, f"{category}.pdf")
+        r = await admin.post("/company/documents", json={
+            "storage_key": t["storage_key"], "original_name": f"{category}.pdf",
+            "title": category, "category": category,
+        })
+        ids[category] = r.json()["id"]
+
+    client = api(employee)
+    listed = {d["category"] for d in (await client.get("/company/documents")).json()}
+    assert listed == {"policies", "brand"}
+    # Asking for a category explicitly doesn't get around it.
+    assert (await client.get("/company/documents?category=hr")).json() == []
+    for category, doc_id in ids.items():
+        r = await client.get(f"/company/documents/{doc_id}/download")
+        assert r.status_code == (200 if category in ("policies", "brand") else 404), category
 
 
 async def test_svg_is_never_served_inline(api, world, bucket):

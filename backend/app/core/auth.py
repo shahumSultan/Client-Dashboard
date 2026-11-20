@@ -100,25 +100,27 @@ async def verify_clerk_token(token: str) -> dict:
     return payload
 
 
-# A read-only staff account may still do these - they change nothing but
-# their own inbox and profile.
-_STAFF_WRITABLE = re.compile(r"^/api/v1/(notifications/[^/]+/read|notifications/read-all|users/me)$")
+# The only writes an employee may make. Everything else - clients, company
+# records, settings - is admin-only, and tasks join this list when they ship.
+_EMPLOYEE_WRITABLE = re.compile(
+    r"^/api/v1/(notifications/[^/]+/read|notifications/read-all|users/me)$"
+)
 SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
 
 
 def _guard_read_only(user: User, request: Request) -> None:
-    """Refuse every write from a staff account, at one choke point.
+    """Refuse an employee's writes outside their allow-list, at one choke point.
 
     Enforced here - on the dependency every authenticated route shares -
-    rather than per endpoint, so a route added later is read-only for staff
+    rather than per endpoint, so a route added later is closed to employees
     by default instead of by someone remembering to check.
     """
     if (
-        user.role == UserRole.STAFF
+        user.role == UserRole.EMPLOYEE
         and request.method not in SAFE_METHODS
-        and not _STAFF_WRITABLE.match(request.url.path)
+        and not _EMPLOYEE_WRITABLE.match(request.url.path)
     ):
-        raise HTTPException(status_code=403, detail="Your account has view-only access.")
+        raise HTTPException(status_code=403, detail="Only an admin can change this.")
 
 
 async def get_current_user(
@@ -264,13 +266,26 @@ async def _backfill_email(db: AsyncSession, user: User) -> None:
     await db.refresh(user)
 
 
-async def require_admin(request: Request, user: User = Depends(get_current_user)) -> User:
-    """The admin panel. Staff pass on reads only; every write needs an admin."""
+async def require_admin(user: User = Depends(get_current_user)) -> User:
+    """Admins only, for reads and writes alike.
+
+    Guards everything client-facing, plus settings, users and bank accounts.
+    Employees read the few company pages they need through `require_company`.
+    """
     if user.role == UserRole.ADMIN:
         return user
-    if user.role == UserRole.STAFF and request.method in SAFE_METHODS:
-        return user
     raise HTTPException(status_code=403, detail="Admin access required")
+
+
+async def require_company(user: User = Depends(get_current_user)) -> User:
+    """Anyone on the Enigma-Cube team: admins and employees, never clients.
+
+    Writes by employees are still limited by `_guard_read_only`; routes that
+    only admins may change pair this with an explicit role check.
+    """
+    if user.role in (UserRole.ADMIN, UserRole.EMPLOYEE):
+        return user
+    raise HTTPException(status_code=403, detail="Team access required")
 
 
 async def require_client_owner(user: User = Depends(get_current_user)) -> User:

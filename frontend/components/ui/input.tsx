@@ -2,10 +2,15 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { useReadOnly } from "@/lib/read-only";
 
-export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(
-  ({ className, ...props }, ref) => {
+type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
+  /** A search or filter box: it changes the view, not data, so it stays usable for view-only accounts. */
+  allowReadOnly?: boolean;
+};
+
+export const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ className, allowReadOnly, ...props }, ref) => {
     // View-only accounts can still select and copy the text, just not edit it.
-    const viewOnly = useReadOnly();
+    const viewOnly = useReadOnly() && !allowReadOnly;
     return (
       <input
         ref={ref}

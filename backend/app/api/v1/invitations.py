@@ -147,7 +147,7 @@ async def preview_invitation(
     """Show who an invitation is for, so the join page can explain a mismatch."""
     invite = await _find_pending(db, token)
     return InvitationPreview(
-        organization_name=invite.organization.name,
+        organization_name=invite.organization.name if invite.organization else None,
         email=invite.email,
         role=invite.role,
         expires_at=invite.expires_at,

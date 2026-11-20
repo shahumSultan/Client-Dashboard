@@ -26,7 +26,7 @@ A premium, multi-tenant client portal for the Enigma-Cube AI agency. Clients log
 - **File Hub** - deliverables with versioning and download links
 - **Analytics** - leads, conversions, revenue, AI-generated summaries, trend charts
 - **Multi-tenant** - each organization sees only their own data
-- **RBAC** - admin, view-only staff (Enigma-Cube team), client owner, client member roles
+- **RBAC** - admin and employee (Enigma-Cube team), client owner, client member roles
 - **Client onboarding** - agreement to e-sign, invoice (Stripe link or bank transfer), welcome pack and kickoff-call booking, in order; the project stays locked until the agreement is signed
 - **Comments & remarks** - clients comment on any milestone, update, file, or the project itself; admins reply in-thread and mark threads resolved
 - **Admin comment inbox** - every client remark across all projects in one reply queue (`/admin/comments`)
@@ -536,29 +536,41 @@ paste it in.
 | Role | Who | Permissions |
 |---|---|---|
 | `admin` | Enigma-Cube team | Full access - create/edit all orgs, projects, milestones, onboarding, roles |
-| `staff` | Enigma-Cube team, view only | Sees everything an admin sees; **changes nothing** |
+| `employee` | Enigma-Cube team, not an admin | Reads the company profile, team, departments and `policies`/`brand` documents. **Never** clients, bank accounts, users, settings or HR/finance/legal/contracts documents. Changes nothing yet (tasks will be theirs to edit) |
 | `client_owner` | Primary client contact | View own org, edit org profile, submit requests, comment |
 | `client_member` | Additional client users | View own org, submit requests, comment |
 
-Team roles (`admin`, `staff`) have **no organization** - that is correct, and a
+Team roles (`admin`, `employee`) have **no organization** - that is correct, and a
 team member without one is sent to `/admin` rather than the client portal.
 
 Clients are **read-and-comment only** on the work itself - creating or editing
 projects, milestones, analytics and file uploads are all admin-only.
 
-**Adding a team member.** They sign up at the portal; they appear on
-`/admin/users` with no workspace; set their role there. Only an admin can
-change roles, nobody can change their own (so the last admin can't lock
-themselves out), and client users can't be given team roles.
+**Adding a team member.** Invite them from Company → Team (admin or employee).
+They get an email, sign up with that address, and join the team with that role
+and a linked entry in the Team directory. Someone who signed up already can be
+given a role on `/admin/users`. Only an admin can change roles, nobody can
+change their own (so the last admin can't lock themselves out), and client
+users can't be given team roles.
 
-**How `staff` is enforced.** Not per endpoint: `get_current_user` refuses every
-non-GET request from a staff account, apart from marking their own
-notifications read and editing their own profile. A route added later is
-therefore read-only for staff by default. `tests/test_staff_role.py` sweeps
-every write route in the app to hold that line. In the UI, the base
-`Button`/`Input`/`Textarea`/`Select` read a view-only context set by the admin
-layout, so screens built from them disable themselves; pass `allowReadOnly` to
-a `Button` that changes nothing (Cancel, Copy link).
+**How `employee` is enforced.** Three layers:
+- `require_admin` is admin-only for reads and writes, and guards everything
+  client-facing plus users, settings and bank accounts. The few company reads
+  employees get use `require_company`; documents are filtered to
+  `EMPLOYEE_DOC_CATEGORIES`, and any other category answers 404.
+- `sees_all_clients()` (admin only) gates the per-client checks, so an employee
+  fails `assert_project_access`/`assert_org_access` like an outside user.
+  `is_team()` (admin or employee) only means "not a client".
+- `get_current_user` refuses every non-GET request from an employee outside a
+  short allow-list (their own notifications and profile), so a route added
+  later is closed to them by default. `tests/test_employee_role.py` sweeps
+  every write route to hold that line.
+
+In the UI, the admin layout sends employees to `/admin/company` from any other
+section, and the base `Button`/`Input`/`Textarea`/`Select` read a view-only
+context it sets, so screens built from them disable themselves. Pass
+`allowReadOnly` to a control that changes nothing (Cancel, Copy link, a search
+or filter box).
 
 Assign roles via `PATCH /api/v1/admin/users/{id}/role` (admin only).
 

@@ -8,8 +8,9 @@ import {
   openDocument, useBankAccounts, useCompanyDocuments, useCompanyProfile, useTeam,
 } from "@/hooks/useCompany";
 import { errorDetail } from "@/hooks/useEngagements";
+import { useCurrentUser } from "@/hooks/useAuth";
 import { CATEGORY_LABELS, DOCUMENT_CATEGORIES } from "@/lib/types";
-import { timeAgo } from "@/lib/utils";
+import { cn, timeAgo } from "@/lib/utils";
 
 export type CompanyTab = "overview" | "documents" | "profile" | "bank" | "team";
 
@@ -28,7 +29,9 @@ function Stat({ value, label, onClick }: { value: number | string; label: string
 export function OverviewPanel({ go }: { go: (tab: CompanyTab) => void }) {
   const docs = useCompanyDocuments();
   const profile = useCompanyProfile();
-  const banks = useBankAccounts();
+  const { data: me } = useCurrentUser();
+  const isAdmin = me?.role === "admin";
+  const banks = useBankAccounts({ enabled: isAdmin });
   const team = useTeam();
 
   if (docs.isLoading || profile.isLoading) {
@@ -60,10 +63,10 @@ export function OverviewPanel({ go }: { go: (tab: CompanyTab) => void }) {
 
   return (
     <div className="space-y-6">
-      <div className="stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className={cn("stagger grid gap-4 sm:grid-cols-2", isAdmin ? "lg:grid-cols-4" : "lg:grid-cols-3")}>
         <Stat value={all.length} label="Documents" onClick={() => go("documents")} />
         <Stat value={expiring.length} label="Expiring in 60 days" onClick={() => go("documents")} />
-        <Stat value={banks.data?.length ?? 0} label="Bank accounts" onClick={() => go("bank")} />
+        {isAdmin && <Stat value={banks.data?.length ?? 0} label="Bank accounts" onClick={() => go("bank")} />}
         <Stat value={team.data?.filter((m) => m.is_active).length ?? 0} label="Team members" onClick={() => go("team")} />
       </div>
 
@@ -112,10 +115,10 @@ export function OverviewPanel({ go }: { go: (tab: CompanyTab) => void }) {
                 )}
               </div>
               <button type="button" onClick={() => go("profile")} className="link-signal shrink-0 cursor-pointer text-xs">
-                Edit profile
+                {isAdmin ? "Edit profile" : "View profile"}
               </button>
             </div>
-            {missing.length > 0 && (
+            {isAdmin && missing.length > 0 && (
               <p className="mt-4 border-l border-brand pl-3 text-xs leading-relaxed text-muted">
                 Still missing: {missing.join(", ")}.
               </p>

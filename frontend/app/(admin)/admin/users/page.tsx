@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Users, UserPlus } from "lucide-react";
@@ -12,7 +13,7 @@ import { PageHeading } from "@/components/shared/ProjectSections";
 import { useCurrentUser } from "@/hooks/useAuth";
 import { errorDetail } from "@/hooks/useEngagements";
 import { Badge } from "@/components/ui/badge";
-import type { User, Organization } from "@/lib/types";
+import { isTeamRole, type User, type Organization } from "@/lib/types";
 
 export default function AdminUsersPage() {
   const qc = useQueryClient();
@@ -55,10 +56,12 @@ export default function AdminUsersPage() {
         <div className="text-sm leading-relaxed text-subtle">
           <p className="font-medium text-fg">Adding someone to your team</p>
           <p className="mt-1">
-            Send them the sign-up link,{" "}
-            <span className="font-mono text-fg">/sign-up</span> on this portal, to create an account
-            with their work email. They&apos;ll appear below with no workspace - then set their role. <span className="text-fg">Staff</span>{" "}can open and
-            read everything in the admin panel but can&apos;t change anything;{" "}
+            Invite them from{" "}
+            <Link href="/admin/company?tab=team" className="link-signal">Company → Team</Link>: they get an
+            email, sign up with that address, and land on the team with the role you chose. Someone who
+            already signed up appears below - set their role here.{" "}
+            <span className="text-fg">Employee</span> sees tasks, departments, the team and policy and
+            brand documents, never clients or bank accounts;{" "}
             <span className="text-fg">Admin</span> has full control.
           </p>
         </div>
@@ -91,7 +94,7 @@ export default function AdminUsersPage() {
                     name={u.full_name}
                     email={u.email}
                     src={u.avatar_url}
-                    highlight={u.role === "admin" || u.role === "staff"}
+                    highlight={isTeamRole(u.role)}
                   />
                   <div className="min-w-0">
                     <p className="flex items-center gap-2 truncate text-sm font-medium text-fg">
@@ -124,7 +127,7 @@ export default function AdminUsersPage() {
                   >
                     {/* Team roles are for Enigma-Cube people, not anyone in a client's workspace. */}
                     <option value="admin" disabled={!!u.organization_id}>Admin - full control</option>
-                    <option value="staff" disabled={!!u.organization_id}>Staff - view only</option>
+                    <option value="employee" disabled={!!u.organization_id}>Employee</option>
                     <option value="client_owner">Client owner</option>
                     <option value="client_member">Client member</option>
                   </Select>

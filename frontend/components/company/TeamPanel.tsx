@@ -16,6 +16,9 @@ import {
 import { useDeleteTeamMember, useSaveTeamMember, useTeam } from "@/hooks/useCompany";
 import { errorDetail } from "@/hooks/useEngagements";
 import { useReadOnly } from "@/lib/read-only";
+import { useCurrentUser } from "@/hooks/useAuth";
+import { DepartmentChip } from "@/components/company/DepartmentChip";
+import { TeamInvitePanel } from "@/components/company/TeamInvitePanel";
 import type { TeamMember, TeamMemberInput } from "@/lib/types";
 
 const BLANK: TeamMemberInput = {
@@ -31,8 +34,8 @@ function MemberDialog({ member, onClose }: { member: TeamMember | null; onClose:
   const save = useSaveTeamMember();
   const [form, setForm] = useState<TeamMemberInput>(() => {
     if (!member) return BLANK;
-    const { id: _id, created_at: _c, ...rest } = member;
-    void _id; void _c;
+    const { id: _id, created_at: _c, departments: _d, ...rest } = member;
+    void _id; void _c; void _d;
     return rest;
   });
   const set = <K extends keyof TeamMemberInput>(k: K, v: TeamMemberInput[K]) =>
@@ -108,12 +111,14 @@ export function TeamPanel() {
   const { data: team = [], isLoading } = useTeam();
   const remove = useDeleteTeamMember();
   const viewOnly = useReadOnly();
+  const { data: me } = useCurrentUser();
   const [editing, setEditing] = useState<TeamMember | null | "new">(null);
 
   if (isLoading) return <Skeleton className="h-56 w-full" />;
 
   return (
     <div>
+      {me?.role === "admin" && <TeamInvitePanel />}
       {!viewOnly && team.length > 0 && (
         <div className="mb-5 flex justify-end">
           <Button onClick={() => setEditing("new")}>
@@ -153,6 +158,11 @@ export function TeamPanel() {
                     {!m.is_active && <Badge className="py-0 text-[10px]">Former</Badge>}
                   </p>
                   <p className="truncate text-xs text-subtle">{m.title ?? "No role set"}</p>
+                  {m.departments.length > 0 && (
+                    <div className="mt-1.5 flex flex-wrap gap-1.5">
+                      {m.departments.map((d) => <DepartmentChip key={d.id} name={d.name} colour={d.colour} />)}
+                    </div>
+                  )}
                 </div>
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted">
                   {m.email && (

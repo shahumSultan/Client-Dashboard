@@ -47,10 +47,12 @@ export function useSaveCompanyProfile() {
 
 // ── Bank accounts ────────────────────────────────────────────────────────────
 
-export function useBankAccounts() {
+/** Admin-only on the server; pass `enabled: false` for an employee. */
+export function useBankAccounts({ enabled = true }: { enabled?: boolean } = {}) {
   return useQuery<BankAccount[]>({
     queryKey: KEYS.banks,
     queryFn: async () => (await api.get("/company/bank-accounts")).data,
+    enabled,
   });
 }
 

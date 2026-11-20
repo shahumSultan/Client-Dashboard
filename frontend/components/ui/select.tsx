@@ -13,9 +13,12 @@ import { useReadOnly } from "@/lib/read-only";
  */
 export const Select = React.forwardRef<
   HTMLSelectElement,
-  React.SelectHTMLAttributes<HTMLSelectElement>
->(({ className, children, ...props }, ref) => {
-  const viewOnly = useReadOnly();
+  React.SelectHTMLAttributes<HTMLSelectElement> & {
+    /** A filter: it changes the view, not data, so it stays usable for view-only accounts. */
+    allowReadOnly?: boolean;
+  }
+>(({ className, children, allowReadOnly, ...props }, ref) => {
+  const viewOnly = useReadOnly() && !allowReadOnly;
   return (
   <div className="relative">
     <select

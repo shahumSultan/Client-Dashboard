@@ -12,7 +12,8 @@ import { BASE, OUT, problems, signIn, watch } from "./helpers";
  */
 
 const ADMIN = "e2e-admin+clerk_test@enigma-cube.dev";
-const STAFF = "e2e-staff+clerk_test@enigma-cube.dev";
+// An employee; the account predates the rename from "staff".
+const EMPLOYEE = "e2e-staff+clerk_test@enigma-cube.dev";
 const RUN = Date.now().toString(36);
 
 function file(name: string, mimeType: string, size = 2048, head = "") {
@@ -150,17 +151,16 @@ test("admin manages company records and documents", async ({ page, context }) =>
   expect(overflow).toBe(false);
 });
 
-test("staff can read company records but not change them", async ({ page }) => {
+test("employees can read company records but not change them", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1200 });
-  watch(page, "company-staff");
-  await signIn(page, STAFF);
+  watch(page, "company-employee");
+  await signIn(page, EMPLOYEE);
   await page.goto(`${BASE}/admin/company?tab=documents`, { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("tab", { name: "Documents" })).toHaveAttribute("aria-selected", "true");
-  await expect(page.getByText("View-only access.")).toBeVisible();
+  await expect(page.getByText("View-only.")).toBeVisible();
   await expect(page.getByRole("button", { name: "Upload" })).toHaveCount(0);
   await expect(page.getByRole("button", { name: /^Delete / })).toHaveCount(0);
-  await expect(page.getByRole("button", { name: /^Download / }).first()).toBeVisible();
   await page.getByRole("tab", { name: "Profile" }).click();
   await expect(page.getByRole("button", { name: "Save profile" })).toHaveCount(0);
-  await shot(page, "98-company-staff");
+  await shot(page, "98-company-employee");
 });

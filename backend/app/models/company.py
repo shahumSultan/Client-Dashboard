@@ -1,8 +1,8 @@
-"""Enigma-Cube's own records: profile, bank accounts, team and documents.
+"""Enigma-Cube's own records: profile, bank accounts, team, departments and documents.
 
 Everything here belongs to the company, not to a client. None of it is scoped by
 organization_id, and the API keeps it on the team side of the line (admins
-write, staff read, clients never see it).
+write, employees read a subset, clients never see it).
 """
 import uuid
 from datetime import date, datetime
@@ -23,6 +23,9 @@ PROFILE_ID = "company"
 DOCUMENT_CATEGORIES = (
     "legal", "finance", "hr", "brand", "contracts", "policies", "other",
 )
+# What an employee may open. Everything else - contracts, salaries, tax and
+# legal filings - stays with the admins.
+EMPLOYEE_DOC_CATEGORIES = ("policies", "brand")
 
 
 class CompanyProfile(Base):
@@ -93,6 +96,48 @@ class TeamMember(Base):
     sort_order: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, onupdate=utcnow)
+
+
+# Fixed swatches rather than free hex, so every department colour reads on
+# the dark surface and none of them collides with the signal red.
+DEPARTMENT_COLOURS = ("slate", "blue", "teal", "green", "amber", "violet", "rose")
+
+
+class Department(Base):
+    """A group of people at Enigma-Cube: Engineering, Sales, Design..."""
+
+    __tablename__ = "departments"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    name: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
+    description: Mapped[str | None] = mapped_column(Text)
+    lead_user_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("users.id", ondelete="SET NULL")
+    )
+    colour: Mapped[str] = mapped_column(String(20), nullable=False, default="slate")
+    sort_order: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, onupdate=utcnow)
+
+    members: Mapped[list["DepartmentMember"]] = relationship(
+        back_populates="department", cascade="all, delete-orphan"
+    )
+
+
+class DepartmentMember(Base):
+    """Someone in a department. A person can be in several."""
+
+    __tablename__ = "department_members"
+
+    department_id: Mapped[str] = mapped_column(
+        String, ForeignKey("departments.id", ondelete="CASCADE"), primary_key=True
+    )
+    user_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True, index=True
+    )
+    added_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+
+    department: Mapped[Department] = relationship(back_populates="members")
 
 
 class CompanyDocument(Base):

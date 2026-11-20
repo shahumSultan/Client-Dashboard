@@ -8,7 +8,7 @@ web
 
 ## Users
 - **Clients**: owners and members of client businesses that Enigma-Cube builds systems for. They come back between calls to see where their project stands: milestones, deliverables, requests, invoices and the onboarding steps (sign the agreement, pay, book the kickoff call).
-- **The Enigma-Cube team ("partners")**: the founders and team, who run the admin side. Admins manage clients, projects, onboarding and the company's own records. Staff accounts have view-only access.
+- **The Enigma-Cube team ("partners")**: the founders and team, who run the admin side. Admins manage clients, projects, onboarding and the company's own records. Employees see the company side only (team, departments, policy and brand documents), never clients or money.
 
 ## Product Purpose
 Enigma-Cube's private client portal. Every client project lives in one place, so clients never need to email to ask how it's going, and the team runs onboarding, delivery and company records from a single admin panel. Success means clients trust the progress they see, act on the next step without being chased, and the team stops tracking clients and company paperwork in scattered tools.
@@ -24,7 +24,7 @@ This is the working side of enigma-cube.com: the same company and voice that sel
 
 ## Capabilities and Constraints
 - Next.js 16 App Router frontend on Vercel; FastAPI + Postgres backend on Railway; Clerk auth; Cloudflare R2 for files.
-- Roles: admin, staff (view-only), client_owner, client_member.
+- Roles: admin, employee (company side only), client_owner, client_member.
 - The product is dark-only, like the website. Printed documents and emails use the website's light tone.
 
 ## Brand Commitments

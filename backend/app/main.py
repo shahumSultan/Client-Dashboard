@@ -8,7 +8,7 @@ from app.database import get_db
 from app.api.v1 import (
     projects, milestones, requests, files,
     notifications, analytics, onboarding, organizations, users, ai, admin,
-    comments, invitations, engagements, branding, company,
+    comments, invitations, engagements, branding, company, departments,
 )
 
 app = FastAPI(
@@ -44,6 +44,7 @@ for router in [
     admin.router,
     branding.router,
     company.router,
+    departments.router,
 ]:
     app.include_router(router, prefix="/api/v1")
 

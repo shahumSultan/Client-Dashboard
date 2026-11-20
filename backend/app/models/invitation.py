@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime, timedelta
 from app.core.time import utcnow
-from sqlalchemy import String, DateTime, ForeignKey, Enum, Index
+from sqlalchemy import CheckConstraint, String, DateTime, ForeignKey, Enum, Index
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 from app.models.user import UserRole
@@ -16,17 +16,21 @@ def default_expiry() -> datetime:
 
 
 class Invitation(Base):
-    """An admin-issued grant of access to one organization.
+    """An admin-issued grant of access: to one client organization, or - with
+    no organization - to the Enigma-Cube team itself.
 
     Bound to an email address: the token alone is not enough, so a forwarded or
-    leaked link cannot let a stranger into a client's workspace.
+    leaked link cannot let a stranger into a client's workspace or the team.
     """
 
     __tablename__ = "invitations"
 
     id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    organization_id: Mapped[str] = mapped_column(
-        String, ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False
+    # NULL for a team invitation. The check constraint below keeps the role
+    # consistent with that: team roles only without an organization, client
+    # roles only with one.
+    organization_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("organizations.id", ondelete="CASCADE")
     )
     # Stored lower-cased; matching is exact against the user's Clerk email.
     email: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -44,12 +48,20 @@ class Invitation(Base):
     invited_by: Mapped[str | None] = mapped_column(String, ForeignKey("users.id"))
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
-    organization: Mapped["Organization"] = relationship("Organization")
+    organization: Mapped["Organization | None"] = relationship("Organization")
 
     __table_args__ = (
         Index("ix_invitations_email", "email"),
         Index("ix_invitations_org", "organization_id"),
+        CheckConstraint(
+            "(organization_id IS NULL) = (role IN ('admin', 'employee'))",
+            name="ck_invitations_role_matches_scope",
+        ),
     )
+
+    @property
+    def is_team_invite(self) -> bool:
+        return self.organization_id is None
 
     @property
     def is_pending(self) -> bool:

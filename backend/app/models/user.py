@@ -9,7 +9,9 @@ from app.database import Base
 
 class UserRole(str, enum.Enum):
     ADMIN = "admin"             # Enigma-Cube team - full control
-    STAFF = "staff"             # Enigma-Cube team - sees everything, changes nothing
+    # Enigma-Cube team, not an admin: works on tasks and reads company basics,
+    # never sees clients. Was "staff" (read-only everywhere) before 2026-11.
+    EMPLOYEE = "employee"
     CLIENT_OWNER = "client_owner"
     CLIENT_MEMBER = "client_member"
 
@@ -36,6 +38,22 @@ class User(Base):
     notifications: Mapped[list["Notification"]] = relationship("Notification", back_populates="user")
 
 
+TEAM_ROLES = (UserRole.ADMIN, UserRole.EMPLOYEE)
+
+
 def is_team(user: "User") -> bool:
-    """Enigma-Cube staff of any kind: sees every client, not just one."""
-    return user.role in (UserRole.ADMIN, UserRole.STAFF)
+    """An Enigma-Cube account of any kind, as opposed to a client.
+
+    Team accounts never belong to a client workspace. This does NOT mean the
+    account can see clients - that is `sees_all_clients`.
+    """
+    return user.role in TEAM_ROLES
+
+
+def sees_all_clients(user: "User") -> bool:
+    """Reads every client's workspace rather than one. Admins only.
+
+    Employees are on the team but kept away from client data, so they fail
+    both this and the per-organization check.
+    """
+    return user.role == UserRole.ADMIN

@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr, Field, field_validator
 from datetime import datetime
 from typing import Optional
-from app.models.user import UserRole
+from app.models.user import TEAM_ROLES, UserRole
 
 
 class InvitationCreate(BaseModel):
@@ -13,14 +13,26 @@ class InvitationCreate(BaseModel):
     @classmethod
     def _client_roles_only(cls, v: UserRole) -> UserRole:
         # Admin is granted deliberately, never handed out by an emailed link.
-        if v in (UserRole.ADMIN, UserRole.STAFF):
+        if v in TEAM_ROLES:
             raise ValueError("Invitations are for clients; team roles are set on the Users page")
+        return v
+
+
+class TeamInvitationCreate(BaseModel):
+    email: EmailStr
+    role: UserRole = UserRole.EMPLOYEE
+
+    @field_validator("role")
+    @classmethod
+    def _team_roles_only(cls, v: UserRole) -> UserRole:
+        if v not in TEAM_ROLES:
+            raise ValueError("A team invitation is for an admin or an employee")
         return v
 
 
 class InvitationOut(BaseModel):
     id: str
-    organization_id: str
+    organization_id: Optional[str]
     email: str
     role: UserRole
     token: str
@@ -38,7 +50,8 @@ class InvitationOut(BaseModel):
 
 class InvitationPreview(BaseModel):
     """What the join page shows before the invite is accepted."""
-    organization_name: str
+    # None for a team invitation; the join page then says "the Enigma-Cube team".
+    organization_name: Optional[str]
     email: str
     role: UserRole
     expires_at: datetime

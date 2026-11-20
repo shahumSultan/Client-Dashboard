@@ -89,11 +89,61 @@ class TeamMemberIn(BaseModel):
         return _blank_to_none(v)
 
 
+class DepartmentTag(BaseModel):
+    id: str
+    name: str
+    colour: str
+
+
 class TeamMemberOut(TeamMemberIn):
     id: str
     created_at: datetime
+    # Through the linked login; empty for a directory-only entry.
+    departments: list[DepartmentTag] = []
 
     model_config = {"from_attributes": True}
+
+
+# ── Departments ──────────────────────────────────────────────────────────────
+
+Colour = Literal["slate", "blue", "teal", "green", "amber", "violet", "rose"]
+
+
+class DepartmentIn(BaseModel):
+    name: str = Field(..., min_length=1, max_length=100)
+    description: Optional[str] = None
+    lead_user_id: Optional[str] = None
+    colour: Colour = "slate"
+    sort_order: int = 0
+
+    @field_validator("name", mode="before")
+    @classmethod
+    def _strip(cls, v):
+        return v.strip() if isinstance(v, str) else v
+
+    @field_validator("description", "lead_user_id", mode="before")
+    @classmethod
+    def _optional(cls, v):
+        return _blank_to_none(v)
+
+
+class DepartmentPerson(BaseModel):
+    user_id: str
+    name: str
+    email: str
+    avatar_url: Optional[str] = None
+    role: str
+
+
+class DepartmentOut(BaseModel):
+    id: str
+    name: str
+    description: Optional[str]
+    colour: str
+    sort_order: int
+    lead: Optional[DepartmentPerson]
+    members: list[DepartmentPerson]
+    created_at: datetime
 
 
 # ── Documents ────────────────────────────────────────────────────────────────

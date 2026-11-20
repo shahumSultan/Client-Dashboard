@@ -5,6 +5,7 @@ triggered it. Inviting a client succeeds whether or not the mail goes out -
 the admin can always copy the link instead.
 """
 import asyncio
+import html
 import logging
 
 import resend
@@ -163,3 +164,30 @@ async def send_project_email(
         if ok:
             sent.append(address)
     return sent
+
+
+TEAM_INVITE_FOOTER = (
+    "You received this because an admin at Enigma&#8209;Cube invited you to the team workspace. "
+    "If you were not expecting it, you can ignore this email."
+)
+
+
+async def send_team_invitation_email(
+    *, to: str, role_label: str, join_url: str, inviter_name: str | None = None
+) -> bool:
+    """Invite someone onto the Enigma-Cube team. Returns whether it was sent."""
+    inviter = html.escape(inviter_name) if inviter_name else "An admin"
+    body = (
+        _p(f"{inviter} has invited you to join the Enigma&#8209;Cube team workspace "
+           f'as <strong style="color:#0d0d0d;">{html.escape(role_label)}</strong>.')
+        + _p("It's where the team keeps track of tasks, departments and who is working on what.")
+        + _p(f"Sign up with <strong>{html.escape(to)}</strong> - the invitation is tied to that address.",
+             muted=True)
+        + '<div style="height:10px"></div>'
+    )
+    return await _send_async({
+        "from": f"Enigma-Cube <{settings.FROM_EMAIL}>",
+        "to": [to],
+        "subject": "You're invited to the Enigma-Cube team workspace",
+        "html": _shell("Join the team", body, "Accept invitation", join_url, footer=TEAM_INVITE_FOOTER),
+    })
