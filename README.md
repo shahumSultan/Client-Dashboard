@@ -546,12 +546,21 @@ team member without one is sent to `/admin` rather than the client portal.
 Clients are **read-and-comment only** on the work itself - creating or editing
 projects, milestones, analytics and file uploads are all admin-only.
 
-**Adding a team member.** Invite them from Company → Team (admin or employee).
-They get an email, sign up with that address, and join the team with that role
-and a linked entry in the Team directory. Someone who signed up already can be
-given a role on `/admin/users`. Only an admin can change roles, nobody can
-change their own (so the last admin can't lock themselves out), and client
-users can't be given team roles.
+**Managing people.** There is no separate Users page; accounts are managed
+where they belong.
+- **Team accounts** live on Company → Team. Invite someone (admin or
+  employee): they get an email, sign up with that address, and join with that
+  role and a Team directory entry. From the same list an admin changes someone
+  between Admin and Employee, removes their access when they leave (signed
+  out, taken out of departments, kept as a former member; restorable), and
+  adds people who signed up without an invitation, who appear under "Signed
+  up, waiting for access".
+- **Client accounts** live on each client's page: invite, switch between
+  Owner and Member, remove or restore access.
+
+Only an admin changes roles or access, nobody can change their own (so the
+last admin can't lock themselves out), and client users can't be given team
+roles.
 
 **How `employee` is enforced.** Three layers:
 - `require_admin` is admin-only for reads and writes, and guards everything
@@ -572,7 +581,7 @@ context it sets, so screens built from them disable themselves. Pass
 `allowReadOnly` to a control that changes nothing (Cancel, Copy link, a search
 or filter box).
 
-Assign roles via `PATCH /api/v1/admin/users/{id}/role` (admin only).
+Roles and access go through `PATCH /api/v1/admin/users/{id}/role` and `PATCH /api/v1/admin/users/{id}/access` (admin only); `GET /api/v1/admin/users/waiting` lists sign-ups without a workspace.
 
 ---|---|---|
 | `admin` | Enigma-Cube team | Full access - create/edit all orgs, projects, milestones, analytics |

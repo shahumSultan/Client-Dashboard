@@ -59,8 +59,11 @@ test("an employee sees the company side only", async ({ page }) => {
   await shoot(page, "", "81-employee-departments");
 
   // Client pages bounce back to their landing page.
-  for (const path of ["/admin/clients", "/admin/projects", "/admin/users", "/admin/settings"]) {
+  for (const path of ["/admin/clients", "/admin/projects", "/admin/settings"]) {
     await page.goto(`${BASE}${path}`, { waitUntil: "domcontentloaded" });
     await page.waitForURL("**/admin/company");
   }
+  // The old Users page forwards to the Team tab, which they may read.
+  await page.goto(`${BASE}/admin/users`, { waitUntil: "domcontentloaded" });
+  await page.waitForURL("**/admin/company?tab=team");
 });

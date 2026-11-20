@@ -7,7 +7,6 @@ import {
   FolderOpen,
   MessageSquare,
   MessagesSquare,
-  Users,
   Settings,
   ArrowLeft,
   Network,
@@ -23,7 +22,6 @@ const NAV: NavItem[] = [
   { label: "Projects", href: "/admin/projects", icon: FolderOpen },
   { label: "Requests", href: "/admin/requests", icon: MessageSquare },
   { label: "Comments", href: "/admin/comments", icon: MessagesSquare },
-  { label: "Users", href: "/admin/users", icon: Users },
   { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
 

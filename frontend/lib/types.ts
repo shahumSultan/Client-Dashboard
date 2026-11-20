@@ -360,9 +360,11 @@ export interface TeamMember {
   created_at: string;
   /** Through the linked login; empty for a directory-only entry. */
   departments: DepartmentTag[];
+  /** The portal login behind this entry; null for someone listed without one. */
+  account: { role: UserRole; is_active: boolean; avatar_url: string | null } | null;
 }
 
-export type TeamMemberInput = Omit<TeamMember, "id" | "created_at" | "departments">;
+export type TeamMemberInput = Omit<TeamMember, "id" | "created_at" | "departments" | "account">;
 
 export const DEPARTMENT_COLOURS = ["slate", "blue", "teal", "green", "amber", "violet", "rose"] as const;
 export type DepartmentColour = (typeof DEPARTMENT_COLOURS)[number];
