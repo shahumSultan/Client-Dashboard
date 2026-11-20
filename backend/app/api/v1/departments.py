@@ -1,7 +1,7 @@
 """Departments: how the Enigma-Cube team is organised.
 
-Anyone on the team (admins and employees) can read them; only admins create,
-rename, delete, or change who is in one. Members and leads must be team
+Admins see and manage all of them. An employee sees only the departments
+they belong to. Only admins create, rename, delete, or change who is in one. Members and leads must be team
 accounts - a client never belongs to a department.
 """
 from fastapi import APIRouter, Depends, HTTPException
@@ -13,7 +13,7 @@ from sqlalchemy.orm import selectinload
 from app.core.auth import require_admin, require_company
 from app.database import get_db
 from app.models.company import Department, DepartmentMember
-from app.models.user import User, is_team
+from app.models.user import User, UserRole, is_team
 from app.schemas.company import DepartmentIn, DepartmentOut, DepartmentPerson
 
 router = APIRouter(prefix="/departments", tags=["Departments"])
@@ -85,12 +85,18 @@ async def _commit_unique_name(db: AsyncSession) -> None:
 
 
 @router.get("", response_model=list[DepartmentOut])
-async def list_departments(_: User = Depends(require_company), db: AsyncSession = Depends(get_db)):
-    rows = await db.execute(
+async def list_departments(user: User = Depends(require_company), db: AsyncSession = Depends(get_db)):
+    stmt = (
         select(Department)
         .options(selectinload(Department.members))
         .order_by(Department.sort_order, Department.name)
     )
+    # An employee sees only the departments they belong to.
+    if user.role != UserRole.ADMIN:
+        stmt = stmt.where(
+            Department.id.in_(select(DepartmentMember.department_id).where(DepartmentMember.user_id == user.id))
+        )
+    rows = await db.execute(stmt)
     return await _out(db, list(rows.scalars()))
 
 

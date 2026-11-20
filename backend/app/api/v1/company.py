@@ -31,6 +31,7 @@ from app.models.invitation import Invitation
 from app.models.user import User, UserRole, is_team
 from app.schemas.invitation import InvitationOut, TeamInvitationCreate
 from app.services.email import send_team_invitation_email
+from app.services.team import visible_people
 from app.schemas.company import (
     BankAccountIn, BankAccountOut, CompanyProfileIn, CompanyProfileOut, DepartmentTag, TeamAccount,
     DocumentCreate, DocumentOut, DocumentUpdate, DocumentVersionOut, DownloadLink,
@@ -143,12 +144,16 @@ async def delete_bank_account(
 # ── Team ─────────────────────────────────────────────────────────────────────
 
 @router.get("/team", response_model=list[TeamMemberOut])
-async def list_team(_: User = Depends(require_company), db: AsyncSession = Depends(get_db)):
-    rows = await db.execute(
-        select(TeamMember).order_by(
-            TeamMember.is_active.desc(), TeamMember.sort_order, TeamMember.name
-        )
+async def list_team(user: User = Depends(require_company), db: AsyncSession = Depends(get_db)):
+    stmt = select(TeamMember).order_by(
+        TeamMember.is_active.desc(), TeamMember.sort_order, TeamMember.name
     )
+    # Employees see the colleagues in their departments and the admins only;
+    # directory-only entries (no login) aren't in any department.
+    visible = await visible_people(db, user)
+    if visible is not None:
+        stmt = stmt.where(TeamMember.user_id.in_(visible))
+    rows = await db.execute(stmt)
     return await _team_out(db, list(rows.scalars()))
 
 

@@ -10,7 +10,7 @@ import {
   Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import { useDepartments } from "@/hooks/useDepartments";
-import { useAssignablePeople, useCreateTask, useProjectOptions } from "@/hooks/useTasks";
+import { useAssignOptions, useCreateTask, useProjectOptions } from "@/hooks/useTasks";
 import { errorDetail } from "@/hooks/useEngagements";
 import {
   TASK_PRIORITIES, TASK_PRIORITY_LABELS, TASK_STATUSES, TASK_STATUS_LABELS,
@@ -29,7 +29,6 @@ export function NewTaskDialog({
   onCreated?: (id: string) => void;
 }) {
   const create = useCreateTask();
-  const { data: people = [] } = useAssignablePeople();
   const { data: departments = [] } = useDepartments();
   const projects = useProjectOptions({ enabled: isAdmin });
   const [form, setForm] = useState<TaskInput>({
@@ -38,11 +37,16 @@ export function NewTaskDialog({
     ...defaults,
   });
   const set = <K extends keyof TaskInput>(k: K, v: TaskInput[K]) => setForm((f) => ({ ...f, [k]: v }));
+  // Who may be assigned depends on the department (a lead assigns within
+  // theirs). Changing department drops an assignee who isn't in the new one.
+  const { canAssign, people } = useAssignOptions(form.department_id);
+  const assigneeOk = !form.assignee_id || (canAssign && people.some((p) => p.user_id === form.assignee_id));
+  const setDepartment = (id: string | null) => setForm((f) => ({ ...f, department_id: id }));
 
   const submit = (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!form.title.trim()) return;
-    create.mutate(form, {
+    create.mutate({ ...form, assignee_id: assigneeOk ? form.assignee_id : null }, {
       onSuccess: (task) => {
         toast.success("Task created");
         onCreated?.(task.id);
@@ -82,24 +86,29 @@ export function NewTaskDialog({
                 />
               </Field>
             </div>
-            <Field label="Assignee" htmlFor="task-assignee">
-              <Select
-                id="task-assignee"
-                value={form.assignee_id ?? ""}
-                onChange={(e) => set("assignee_id", e.target.value || null)}
-              >
-                <option value="">Unassigned</option>
-                {people.map((p) => <option key={p.user_id} value={p.user_id}>{p.name}</option>)}
-              </Select>
-            </Field>
             <Field label="Department" htmlFor="task-department">
               <Select
                 id="task-department"
                 value={form.department_id ?? ""}
-                onChange={(e) => set("department_id", e.target.value || null)}
+                onChange={(e) => setDepartment(e.target.value || null)}
               >
-                <option value="">None</option>
+                <option value="">{isAdmin ? "None" : "None - just me"}</option>
                 {departments.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
+              </Select>
+            </Field>
+            <Field
+              label="Assignee"
+              htmlFor="task-assignee"
+              hint={canAssign ? undefined : "Only an admin or the department's lead assigns tasks."}
+            >
+              <Select
+                id="task-assignee"
+                value={assigneeOk ? (form.assignee_id ?? "") : ""}
+                onChange={(e) => set("assignee_id", e.target.value || null)}
+                disabled={!canAssign}
+              >
+                <option value="">Unassigned</option>
+                {people.map((p) => <option key={p.user_id} value={p.user_id}>{p.name}</option>)}
               </Select>
             </Field>
             <Field label="Priority" htmlFor="task-priority">

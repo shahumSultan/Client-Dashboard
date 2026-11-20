@@ -28,15 +28,17 @@ router = APIRouter(prefix="/tasks", tags=["Tasks"])
 DONE_WINDOW_DAYS = 30
 
 
-async def _get(db: AsyncSession, task_id: str) -> Task:
+async def _get(db: AsyncSession, task_id: str, user: User) -> Task:
+    """A task the user may see. Another department's task answers exactly as
+    a missing one does, so its existence isn't confirmed either."""
     task = await db.get(Task, task_id)
-    if not task:
+    if not task or not rules.can_see(user, task, await rules.department_ids(db, user)):
         raise HTTPException(status_code=404, detail="Task not found")
     return task
 
 
 async def _editable(db: AsyncSession, user: User, task_id: str) -> Task:
-    task = await _get(db, task_id)
+    task = await _get(db, task_id, user)
     if not rules.can_edit(user, task, await rules.department_ids(db, user)):
         raise HTTPException(
             status_code=403,
@@ -63,7 +65,12 @@ async def list_tasks(
     user: User = Depends(require_company),
     db: AsyncSession = Depends(get_db),
 ):
-    stmt = select(Task).where(Task.is_archived.is_(archived)).order_by(Task.position, Task.created_at)
+    mine = await rules.department_ids(db, user)
+    stmt = (
+        select(Task)
+        .where(Task.is_archived.is_(archived), rules.visible_to(user, mine))
+        .order_by(Task.position, Task.created_at)
+    )
     if department_id:
         stmt = stmt.where(Task.department_id == department_id)
     if assignee == "me":
@@ -92,8 +99,12 @@ async def list_tasks(
 async def create_task(
     data: TaskCreate, user: User = Depends(require_company), db: AsyncSession = Depends(get_db)
 ):
-    assignee = await rules.check_assignee(db, data.assignee_id)
     await rules.check_department(db, data.department_id)
+    await rules.check_department_choice(user, data.department_id, await rules.department_ids(db, user))
+    assignee = None
+    if data.assignee_id is not None:
+        led = await rules.led_department_ids(db, user)
+        assignee = await rules.check_assignment(db, user, data.assignee_id, data.department_id, led)
     await rules.check_project(db, user, data.project_id)
 
     task = Task(**data.model_dump(), created_by=user.id)
@@ -115,7 +126,7 @@ async def create_task(
 
 @router.get("/{task_id}", response_model=TaskOut)
 async def get_task(task_id: str, user: User = Depends(require_company), db: AsyncSession = Depends(get_db)):
-    return await _one(db, user, await _get(db, task_id))
+    return await _one(db, user, await _get(db, task_id, user))
 
 
 @router.patch("/{task_id}", response_model=TaskOut)
@@ -137,8 +148,14 @@ async def update_task(
     if edited:
         rules.record(db, task, user, "edited", {"fields": edited})
 
+    # Department first: an assignment is judged against where the task ends up.
+    final_department = data.department_id if "department_id" in sent else task.department_id
+    if "department_id" in sent and data.department_id != task.department_id:
+        await rules.check_department_choice(user, data.department_id, await rules.department_ids(db, user))
+
     if "assignee_id" in sent and data.assignee_id != task.assignee_id:
-        new = await rules.check_assignee(db, data.assignee_id)
+        led = await rules.led_department_ids(db, user)
+        new = await rules.check_assignment(db, user, data.assignee_id, final_department, led)
         old = await db.get(User, task.assignee_id) if task.assignee_id else None
         task.assignee_id = data.assignee_id
         rules.record(db, task, user, "assigned", {
@@ -220,7 +237,7 @@ async def move_task(
 async def delete_task(task_id: str, user: User = Depends(require_company), db: AsyncSession = Depends(get_db)):
     if not rules.can_delete(user):
         raise HTTPException(status_code=403, detail="Only an admin can delete a task. Archive it instead.")
-    await db.delete(await _get(db, task_id))
+    await db.delete(await _get(db, task_id, user))
     await db.commit()
     return Response(status_code=204)
 
@@ -236,7 +253,7 @@ def _comment_out(c: TaskComment, people: dict, user: User) -> TaskCommentOut:
 
 @router.get("/{task_id}/comments", response_model=list[TaskCommentOut])
 async def list_comments(task_id: str, user: User = Depends(require_company), db: AsyncSession = Depends(get_db)):
-    await _get(db, task_id)
+    await _get(db, task_id, user)
     rows = list((await db.execute(
         select(TaskComment).where(TaskComment.task_id == task_id).order_by(TaskComment.created_at)
     )).scalars())
@@ -252,7 +269,7 @@ async def add_comment(
     db: AsyncSession = Depends(get_db),
 ):
     """Anyone on the team may comment on any task, not only those who can edit it."""
-    task = await _get(db, task_id)
+    task = await _get(db, task_id, user)
     comment = TaskComment(task_id=task.id, author_id=user.id, body=data.body)
     db.add(comment)
     rules.record(db, task, user, "comment", {"excerpt": data.body[:140]})
@@ -284,7 +301,7 @@ async def delete_comment(
 
 @router.get("/{task_id}/activity", response_model=list[TaskActivityOut])
 async def list_activity(task_id: str, user: User = Depends(require_company), db: AsyncSession = Depends(get_db)):
-    await _get(db, task_id)
+    await _get(db, task_id, user)
     rows = list((await db.execute(
         select(TaskActivity).where(TaskActivity.task_id == task_id).order_by(TaskActivity.created_at.desc())
     )).scalars())

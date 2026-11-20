@@ -103,6 +103,8 @@ class TaskOut(BaseModel):
     # What the person asking may do with it, so the UI needn't re-derive rules.
     can_edit: bool
     can_delete: bool
+    # Admin, or the lead of the task's department.
+    can_assign: bool
 
 
 class TaskCommentIn(BaseModel):

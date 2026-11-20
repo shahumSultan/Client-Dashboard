@@ -1,16 +1,19 @@
 """Task rules in one place: who may change what, ordering, history, bells.
 
 Who may do what:
-- Admins: everything, including deleting tasks and linking client projects.
-- Employees: create tasks; edit and move tasks they created, are assigned
-  to, or that sit in one of their departments; comment on any task; never
-  delete one or set its client project.
+- Admins: everything - see, assign, delete, link client projects.
+- Employees see only tasks in their own departments, plus tasks assigned to
+  them or created by them; everything else doesn't exist for them (404).
+  They edit, move and comment on what they can see, file new tasks only
+  under their own departments, and never delete or link client projects.
+- Assigning: an admin assigns anyone; a department's lead assigns that
+  department's tasks to its members; nobody else sets or changes assignees.
 - Clients: nothing - the routes refuse them before any of this runs.
 """
 from datetime import date
 
 from fastapi import HTTPException
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select, true
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.time import utcnow
@@ -43,7 +46,12 @@ async def department_ids(db: AsyncSession, user: User) -> set[str]:
     return set(rows.scalars())
 
 
-def can_edit(user: User, task: Task, my_departments: set[str]) -> bool:
+async def led_department_ids(db: AsyncSession, user: User) -> set[str]:
+    rows = await db.execute(select(Department.id).where(Department.lead_user_id == user.id))
+    return set(rows.scalars())
+
+
+def can_see(user: User, task: Task, my_departments: set[str]) -> bool:
     if user.role == UserRole.ADMIN:
         return True
     if user.role != UserRole.EMPLOYEE:
@@ -53,6 +61,56 @@ def can_edit(user: User, task: Task, my_departments: set[str]) -> bool:
         or task.assignee_id == user.id
         or (task.department_id is not None and task.department_id in my_departments)
     )
+
+
+# An employee edits exactly what they can see: their departments' work and
+# their own. Kept as its own name so the two can diverge later.
+can_edit = can_see
+
+
+def visible_to(user: User, my_departments: set[str]):
+    """SQL filter matching can_see, for lists."""
+    if user.role == UserRole.ADMIN:
+        return true()
+    clauses = [Task.created_by == user.id, Task.assignee_id == user.id]
+    if my_departments:
+        clauses.append(Task.department_id.in_(my_departments))
+    return or_(*clauses)
+
+
+def can_assign(user: User, task: Task, led: set[str]) -> bool:
+    return user.role == UserRole.ADMIN or (task.department_id is not None and task.department_id in led)
+
+
+async def check_department_choice(user: User, dept_id: str | None, my_departments: set[str]) -> None:
+    """Employees file tasks only under departments they belong to."""
+    if dept_id is None or user.role == UserRole.ADMIN:
+        return
+    if dept_id not in my_departments:
+        raise HTTPException(status_code=403, detail="You can only put tasks in your own departments.")
+
+
+async def check_assignment(
+    db: AsyncSession, user: User, assignee_id: str | None, dept_id: str | None, led: set[str]
+) -> User | None:
+    """Admins assign anyone on the team; a lead assigns within their department."""
+    if user.role != UserRole.ADMIN:
+        if dept_id is None or dept_id not in led:
+            raise HTTPException(
+                status_code=403,
+                detail="Only an admin or the department's lead can assign tasks.",
+            )
+        if assignee_id is not None:
+            member = await db.scalar(
+                select(DepartmentMember.user_id).where(
+                    DepartmentMember.department_id == dept_id, DepartmentMember.user_id == assignee_id
+                )
+            )
+            if member is None:
+                raise HTTPException(
+                    status_code=422, detail="A lead can assign tasks only to people in their department."
+                )
+    return await check_assignee(db, assignee_id)
 
 
 def can_delete(user: User) -> bool:
@@ -215,6 +273,7 @@ async def to_out(db: AsyncSession, user: User, tasks: list[Task]) -> list[TaskOu
             .where(Project.id.in_(project_ids))
         )
         projects = {r.id: f"{r.org} · {r.name}" for r in rows}
+    led = await led_department_ids(db, user)
     counts = dict((await db.execute(
         select(TaskComment.task_id, func.count())
         .where(TaskComment.task_id.in_([t.id for t in tasks]))
@@ -237,6 +296,7 @@ async def to_out(db: AsyncSession, user: User, tasks: list[Task]) -> list[TaskOu
             is_archived=t.is_archived, comment_count=counts.get(t.id, 0),
             created_at=t.created_at, updated_at=t.updated_at,
             can_edit=can_edit(user, t, mine), can_delete=can_delete(user),
+            can_assign=can_assign(user, t, led),
         ))
     return out
 

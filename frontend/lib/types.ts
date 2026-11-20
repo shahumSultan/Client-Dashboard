@@ -495,6 +495,8 @@ export interface Task {
   updated_at: string;
   can_edit: boolean;
   can_delete: boolean;
+  /** Admin, or the lead of the task's department. */
+  can_assign: boolean;
 }
 
 export interface TaskInput {
