@@ -58,7 +58,7 @@ export function NotificationBell() {
 
       {open && (
         <div
-          className="glass-strong glass-sheen absolute right-0 top-12 z-50 w-[min(21rem,calc(100vw-2rem))] overflow-hidden rounded-card shadow-[0_28px_70px_-24px_rgba(0,0,0,0.9)]"
+          className="glass-strong absolute right-0 top-12 z-50 w-[min(21rem,calc(100vw-2rem))] overflow-hidden rounded-card shadow-[0_28px_70px_-24px_rgba(0,0,0,0.9)]"
           style={{ animation: "fade-up var(--dur) var(--ease) both" }}
         >
           <div className="flex items-center justify-between border-b border-hairline px-4 py-3">
