@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
+from app.services.departments import remove_from_departments
 from app.database import get_db
 from app.core.auth import require_admin
 from app.models.user import TEAM_ROLES, User, UserRole
@@ -70,14 +71,17 @@ async def update_user_role(
     # with no admin left, nobody can promote anyone back.
     if target.id == admin.id:
         raise HTTPException(status_code=409, detail="You can't change your own role.")
-    # Team roles see every client. Someone inside a client's workspace getting
-    # one is almost certainly a mis-click on the wrong row.
+    # Team roles are for Enigma-Cube people. Someone inside a client's
+    # workspace getting one is almost certainly a mis-click on the wrong row.
     if data.role in TEAM_ROLES and target.organization_id:
         raise HTTPException(
             status_code=409,
             detail="This person belongs to a client workspace. Team roles are only for Enigma-Cube staff.",
         )
+    leaving_team = target.role in TEAM_ROLES and data.role not in TEAM_ROLES
     target.role = data.role
+    if leaving_team:
+        await remove_from_departments(db, target.id)
     await db.commit()
     await db.refresh(target)
     return target

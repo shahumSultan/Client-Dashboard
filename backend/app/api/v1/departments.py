@@ -35,13 +35,17 @@ async def _out(db: AsyncSession, depts: list[Department]) -> list[DepartmentOut]
     if ids:
         rows = await db.execute(select(User).where(User.id.in_(ids)))
         users = {u.id: u for u in rows.scalars()}
+    # Only active team accounts count. Leaving the team clears membership
+    # (services.departments), but a deactivated or stray row must still never
+    # show a client - or an ex-colleague - as part of a department.
+    current = {uid: u for uid, u in users.items() if u.is_active and is_team(u)}
     out = []
     for d in depts:
         members = sorted(
-            (users[m.user_id] for m in d.members if m.user_id in users and users[m.user_id].is_active),
+            (current[m.user_id] for m in d.members if m.user_id in current),
             key=lambda u: (u.full_name or u.email).lower(),
         )
-        lead = users.get(d.lead_user_id or "")
+        lead = current.get(d.lead_user_id or "")
         out.append(DepartmentOut(
             id=d.id, name=d.name, description=d.description, colour=d.colour,
             sort_order=d.sort_order, created_at=d.created_at,
@@ -113,7 +117,7 @@ async def update_department(
     db: AsyncSession = Depends(get_db),
 ):
     dept = await _get(db, dept_id)
-    if data.lead_user_id:
+    if data.lead_user_id and data.lead_user_id != dept.lead_user_id:
         await _team_user(db, data.lead_user_id)
         if all(m.user_id != data.lead_user_id for m in dept.members):
             dept.members.append(DepartmentMember(user_id=data.lead_user_id))

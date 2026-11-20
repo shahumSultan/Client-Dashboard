@@ -117,3 +117,37 @@ async def test_deleting_a_department_keeps_the_people(api, world, employee, sess
     assert (await admin.delete(f"/departments/{dept['id']}")).status_code == 204
     assert (await admin.get("/departments")).json() == []
     assert await session.get(User, employee.id) is not None
+
+
+async def test_leaving_the_team_clears_department_seats(api, world, employee):
+    """Review finding on #9: a lead turned client stayed listed, and the
+    department could no longer be saved (the lead failed re-validation)."""
+    admin = api(world["admin"])
+    dept = (await admin.post("/departments", json={"name": "Sales", "lead_user_id": employee.id})).json()
+    other = (await admin.post("/departments", json={"name": "Ops"})).json()
+    await admin.put(f"/departments/{other['id']}/members/{employee.id}")
+
+    r = await admin.patch(f"/admin/users/{employee.id}/role", json={"role": "client_member"})
+    assert r.status_code == 200, r.text
+
+    listed = {d["name"]: d for d in (await admin.get("/departments")).json()}
+    assert listed["Sales"]["lead"] is None and listed["Sales"]["members"] == []
+    assert listed["Ops"]["members"] == []
+    r = await admin.put(f"/departments/{dept['id']}", json={"name": "Sales & Marketing"})
+    assert r.status_code == 200, r.text
+
+
+async def test_a_stray_row_never_shows_a_non_team_account(api, world, session, employee):
+    """Defence in depth: even a membership row that escaped clean-up stays hidden."""
+    from app.models.company import DepartmentMember
+    admin = api(world["admin"])
+    dept = (await admin.post("/departments", json={"name": "Design", "lead_user_id": employee.id})).json()
+    session.add(DepartmentMember(department_id=dept["id"], user_id=world["client_a"].id))
+    employee.is_active = False
+    await session.commit()
+
+    listed = (await admin.get("/departments")).json()[0]
+    assert listed["members"] == [] and listed["lead"] is None
+    # Still editable: the unchanged lead isn't re-validated.
+    r = await admin.put(f"/departments/{dept['id']}", json={"name": "Design", "lead_user_id": employee.id})
+    assert r.status_code == 200, r.text
