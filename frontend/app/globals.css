@@ -280,6 +280,17 @@ body {
 
 /* ---------------------------------------------------------- animations --- */
 
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translate3d(24px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @keyframes fade-up {
   from {
     opacity: 0;

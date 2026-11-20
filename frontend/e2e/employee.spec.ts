@@ -22,13 +22,18 @@ test("an employee sees the company side only", async ({ page }) => {
   watch(page, "employee");
   await signIn(page, EMPLOYEE);
 
-  // /admin is the client overview: they land on Company instead.
+  // /admin is the client overview: they land on Tasks, where they work.
   await page.goto(`${BASE}/admin`, { waitUntil: "domcontentloaded" });
-  await page.waitForURL("**/admin/company");
+  await page.waitForURL("**/admin/tasks");
+  await expect(page.getByText("View-only.")).toHaveCount(0);
+
+  // The company pages are read-only for them.
+  await page.goto(`${BASE}/admin/company`, { waitUntil: "domcontentloaded" });
   await expect(page.getByText("View-only.")).toBeVisible();
 
   // The sidebar offers only what they can open.
   const nav = page.getByRole("navigation");
+  await expect(nav.getByRole("link", { name: "Tasks" })).toBeVisible();
   await expect(nav.getByRole("link", { name: "Company" })).toBeVisible();
   await expect(nav.getByRole("link", { name: "Departments" })).toBeVisible();
   for (const hidden of ["Clients", "Projects", "Requests", "Comments", "Users", "Settings"]) {
@@ -61,7 +66,7 @@ test("an employee sees the company side only", async ({ page }) => {
   // Client pages bounce back to their landing page.
   for (const path of ["/admin/clients", "/admin/projects", "/admin/settings"]) {
     await page.goto(`${BASE}${path}`, { waitUntil: "domcontentloaded" });
-    await page.waitForURL("**/admin/company");
+    await page.waitForURL("**/admin/tasks");
   }
   // The old Users page forwards to the Team tab, which they may read.
   await page.goto(`${BASE}/admin/users`, { waitUntil: "domcontentloaded" });

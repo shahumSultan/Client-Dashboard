@@ -15,3 +15,4 @@ from app.models.company import (
     CompanyProfile, CompanyBankAccount, TeamMember, CompanyDocument, CompanyDocumentVersion,
     Department, DepartmentMember,
 )
+from app.models.task import Task, TaskComment, TaskActivity

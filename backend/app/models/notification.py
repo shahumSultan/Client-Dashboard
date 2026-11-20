@@ -16,6 +16,9 @@ class NotificationType(str, enum.Enum):
     ONBOARDING_STEP = "onboarding_step"
     COMMENT_ADDED = "comment_added"
     COMMENT_REPLY = "comment_reply"
+    TASK_ASSIGNED = "task_assigned"
+    TASK_COMMENT = "task_comment"
+    TASK_STATUS = "task_status"
 
 
 class Notification(Base):

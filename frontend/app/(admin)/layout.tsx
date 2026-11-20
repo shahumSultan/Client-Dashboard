@@ -13,6 +13,7 @@ import { titleFor } from "@/lib/page-title";
 const PAGE_TITLES: Record<string, string> = {
   "/admin": "Overview",
   "/admin/clients": "Clients",
+  "/admin/tasks": "Tasks",
   "/admin/company": "Company",
   "/admin/departments": "Departments",
   "/admin/projects": "Projects",
@@ -48,9 +49,10 @@ export default function AdminLayout({
 
   if (isLoading || !user) return <PageLoader />;
   if (!isTeam || outOfBounds) return <PageLoader label="Redirecting" />;
-  // Employees read the company pages but change nothing there yet (tasks are
-  // where they will write). The API refuses those writes regardless.
-  const viewOnly = isEmployee;
+  // Employees read the company pages but change nothing there; tasks are
+  // where they work, and each task carries its own rules. The API refuses
+  // anything else regardless.
+  const viewOnly = isEmployee && !pathname.startsWith("/admin/tasks");
 
   return (
     <div className="flex h-dvh overflow-hidden">

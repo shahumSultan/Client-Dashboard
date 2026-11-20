@@ -446,3 +446,80 @@ export interface CompanyDocumentVersion {
   uploaded_by: string | null;
   created_at: string;
 }
+
+// ── Tasks ────────────────────────────────────────────────────────────────────
+
+export const TASK_STATUSES = ["todo", "in_progress", "in_review", "done"] as const;
+export type TaskStatus = (typeof TASK_STATUSES)[number];
+export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
+  todo: "To do",
+  in_progress: "In progress",
+  in_review: "In review",
+  done: "Done",
+};
+
+export const TASK_PRIORITIES = ["urgent", "high", "normal", "low"] as const;
+export type TaskPriority = (typeof TASK_PRIORITIES)[number];
+export const TASK_PRIORITY_LABELS: Record<TaskPriority, string> = {
+  urgent: "Urgent",
+  high: "High",
+  normal: "Normal",
+  low: "Low",
+};
+
+export interface TaskPerson {
+  user_id: string;
+  name: string;
+  avatar_url: string | null;
+  /** False once they've left the team; their name stays on the task. */
+  is_current: boolean;
+}
+
+export interface Task {
+  id: string;
+  title: string;
+  description: string | null;
+  status: TaskStatus;
+  priority: TaskPriority;
+  department: DepartmentTag | null;
+  assignee: TaskPerson | null;
+  creator: TaskPerson | null;
+  /** "Client · Project". Employees see the label but can't open it. */
+  project: { id: string; label: string } | null;
+  due_date: string | null;
+  completed_at: string | null;
+  position: number;
+  is_archived: boolean;
+  comment_count: number;
+  created_at: string;
+  updated_at: string;
+  can_edit: boolean;
+  can_delete: boolean;
+}
+
+export interface TaskInput {
+  title: string;
+  description: string | null;
+  status: TaskStatus;
+  priority: TaskPriority;
+  department_id: string | null;
+  assignee_id: string | null;
+  project_id: string | null;
+  due_date: string | null;
+}
+
+export interface TaskComment {
+  id: string;
+  body: string;
+  author: TaskPerson | null;
+  created_at: string;
+  can_delete: boolean;
+}
+
+export interface TaskActivity {
+  id: string;
+  kind: string;
+  data: Record<string, unknown> | null;
+  actor: TaskPerson | null;
+  created_at: string;
+}

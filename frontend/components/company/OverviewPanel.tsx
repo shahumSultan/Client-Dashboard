@@ -9,6 +9,7 @@ import {
 } from "@/hooks/useCompany";
 import { errorDetail } from "@/hooks/useEngagements";
 import { useCurrentUser } from "@/hooks/useAuth";
+import { TaskSummaryCard } from "@/components/tasks/TaskSummaryCard";
 import { CATEGORY_LABELS, DOCUMENT_CATEGORIES } from "@/lib/types";
 import { cn, timeAgo } from "@/lib/utils";
 
@@ -69,6 +70,8 @@ export function OverviewPanel({ go }: { go: (tab: CompanyTab) => void }) {
         {isAdmin && <Stat value={banks.data?.length ?? 0} label="Bank accounts" onClick={() => go("bank")} />}
         <Stat value={team.data?.filter((m) => m.is_active).length ?? 0} label="Team members" onClick={() => go("team")} />
       </div>
+
+      <TaskSummaryCard />
 
       <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
         <Card>

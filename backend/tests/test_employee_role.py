@@ -3,7 +3,7 @@
 They read the company profile, the team, departments, and policy/brand
 documents. Everything client-facing, plus users, settings, bank accounts and
 the restricted document categories, is admin-only. Their only writes are their
-own inbox and profile (tasks join that list when they ship).
+own inbox and profile, and tasks (see tests/test_tasks.py).
 """
 import re
 import uuid
@@ -48,7 +48,8 @@ async def test_every_other_write_endpoint_refuses_employees(api, employee):
     client = api(employee)
     checked = 0
     for method, path in _write_routes():
-        if (method, path) in EMPLOYEE_WRITABLE:
+        # Tasks are theirs to work on; tests/test_tasks.py covers those rules.
+        if (method, path) in EMPLOYEE_WRITABLE or path.startswith("/api/v1/tasks"):
             continue
         url = re.sub(r"\{[^}]+\}", "x", path).removeprefix("/api/v1")
         r = await client.request(method, url, json={})
