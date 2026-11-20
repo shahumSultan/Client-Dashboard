@@ -531,12 +531,30 @@ paste it in.
 
 ---
 
+## Tasks
+
+`/admin/tasks` is the team's board: To do, In progress, In review, Done. Cards
+carry an assignee (a team account), department, priority, due date and,
+optionally, the client project they're for. Clients never see tasks.
+
+- **Admins** do everything, including deleting tasks and linking a client
+  project.
+- **Employees** create tasks and comment on any task; they edit and move tasks
+  they created, are assigned to, or that sit in one of their departments.
+  They see a linked project's "Client · Project" label but can't open it.
+- Every change writes a `task_activity` row (the history on each task), and
+  the people involved - assignee and creator, never whoever made the change -
+  get a bell. Done cards leave the board after 30 days; archived ones keep
+  their comments and history.
+- Moves send `{status, after_id}`; the server takes the midpoint between the
+  neighbours and renumbers a column only when floats run out of room.
+
 ## Roles
 
 | Role | Who | Permissions |
 |---|---|---|
 | `admin` | Enigma-Cube team | Full access - create/edit all orgs, projects, milestones, onboarding, roles |
-| `employee` | Enigma-Cube team, not an admin | Reads the company profile, team, departments and `policies`/`brand` documents. **Never** clients, bank accounts, users, settings or HR/finance/legal/contracts documents. Changes nothing yet (tasks will be theirs to edit) |
+| `employee` | Enigma-Cube team, not an admin | Reads the company profile, team, departments and `policies`/`brand` documents. **Never** clients, bank accounts, users, settings or HR/finance/legal/contracts documents. Works on Tasks (see below); changes nothing else |
 | `client_owner` | Primary client contact | View own org, edit org profile, submit requests, comment |
 | `client_member` | Additional client users | View own org, submit requests, comment |
 

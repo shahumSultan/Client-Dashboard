@@ -10,9 +10,11 @@ interface DialogProps {
   children: React.ReactNode;
   /** Accessible name, announced when the dialog opens. */
   label?: string;
+  /** "side": a full-height panel on the right, for detail views like a task. */
+  placement?: "center" | "side";
 }
 
-export function Dialog({ open, onOpenChange, children, label }: DialogProps) {
+export function Dialog({ open, onOpenChange, children, label, placement = "center" }: DialogProps) {
   const panelRef = React.useRef<HTMLDivElement>(null);
   // Callers usually pass an inline arrow, which is a new function on every
   // render. Kept in a ref so the effect below runs once per opening: when it
@@ -83,7 +85,11 @@ export function Dialog({ open, onOpenChange, children, label }: DialogProps) {
       role="dialog"
       aria-modal="true"
       aria-label={label}
-      className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4"
+      className={
+        placement === "side"
+          ? "fixed inset-0 z-50 flex justify-end"
+          : "fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4"
+      }
     >
       <div
         className="absolute inset-0 bg-black/65 backdrop-blur-sm"
@@ -93,8 +99,11 @@ export function Dialog({ open, onOpenChange, children, label }: DialogProps) {
       />
       <div
         ref={panelRef}
-        className="relative z-10 w-full sm:w-auto"
-        style={{ animation: "fade-up var(--dur) var(--ease) both" }}
+        className={placement === "side" ? "relative z-10 flex h-full w-full sm:w-[34rem]" : "relative z-10 w-full sm:w-auto"}
+        style={{
+          animation:
+            placement === "side" ? "slide-in-right var(--dur) var(--ease) both" : "fade-up var(--dur) var(--ease) both",
+        }}
       >
         {children}
       </div>

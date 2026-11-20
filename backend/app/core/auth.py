@@ -100,10 +100,11 @@ async def verify_clerk_token(token: str) -> dict:
     return payload
 
 
-# The only writes an employee may make. Everything else - clients, company
-# records, settings - is admin-only, and tasks join this list when they ship.
+# The only writes an employee may make: their own inbox and profile, and
+# tasks (whose routes apply the finer rules - services/tasks.py). Everything
+# else - clients, company records, settings - is admin-only.
 _EMPLOYEE_WRITABLE = re.compile(
-    r"^/api/v1/(notifications/[^/]+/read|notifications/read-all|users/me)$"
+    r"^/api/v1/(notifications/[^/]+/read|notifications/read-all|users/me|tasks(/.*)?)$"
 )
 SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
 

@@ -10,12 +10,14 @@ import {
   Settings,
   ArrowLeft,
   Network,
+  SquareKanban,
 } from "lucide-react";
 import { SidebarShell, type NavItem } from "@/components/shared/SidebarShell";
 import { useCurrentUser } from "@/hooks/useAuth";
 
 const NAV: NavItem[] = [
   { label: "Overview", href: "/admin", icon: LayoutDashboard, exact: true },
+  { label: "Tasks", href: "/admin/tasks", icon: SquareKanban },
   { label: "Clients", href: "/admin/clients", icon: Building2 },
   { label: "Company", href: "/admin/company", icon: Landmark },
   { label: "Departments", href: "/admin/departments", icon: Network },
@@ -30,7 +32,7 @@ const NAV: NavItem[] = [
  * clients, money or access, and the API refuses it to them anyway; this keeps
  * the UI from offering it. The first entry is where an employee lands.
  */
-export const EMPLOYEE_SECTIONS = ["/admin/company", "/admin/departments"];
+export const EMPLOYEE_SECTIONS = ["/admin/tasks", "/admin/company", "/admin/departments"];
 
 export function employeeMayOpen(pathname: string): boolean {
   return EMPLOYEE_SECTIONS.some((s) => pathname === s || pathname.startsWith(`${s}/`));

@@ -72,8 +72,8 @@ test("a new invitee signs up from the link and lands on the team", async ({ page
   await code.fill("424242");
 
   // Back through the invitation, onto the team.
-  await guest.waitForURL("**/admin/company", { timeout: 60_000 });
-  await expect(guest.getByRole("navigation").getByRole("link", { name: "Departments" })).toBeVisible();
+  await guest.waitForURL("**/admin/tasks", { timeout: 60_000 });
+  await expect(guest.getByRole("navigation").getByRole("link", { name: "Tasks" })).toBeVisible();
   await guest.screenshot({ path: `${OUT}/92-invite-landed.png` });
   await theirs.close();
 

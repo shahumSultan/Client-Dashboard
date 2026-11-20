@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/status-pill";
 import { CommentsPanel } from "@/components/comments/CommentsPanel";
 import { OnboardingCard } from "@/components/admin/OnboardingCard";
+import { ProjectTasksCard } from "@/components/tasks/ProjectTasksCard";
 import { useReadOnly } from "@/lib/read-only";
 import { formatDate, timeAgo, STATUS_LABELS } from "@/lib/utils";
 import type {
@@ -182,6 +183,7 @@ export default function AdminProjectDetailPage() {
       </Link>
 
       <OnboardingCard projectId={project.id} />
+      <ProjectTasksCard projectId={project.id} />
 
       <Card>
         <CardContent className="pt-6">
