@@ -287,6 +287,10 @@ async def add_comment(
 async def delete_comment(
     task_id: str, comment_id: str, user: User = Depends(require_company), db: AsyncSession = Depends(get_db)
 ):
+    # The task's boundary first, as on every other comment route: a task you
+    # can't see (another department's, or one you've been moved away from)
+    # answers 404, and so does any comment on it.
+    await _get(db, task_id, user)
     comment = await db.get(TaskComment, comment_id)
     if not comment or comment.task_id != task_id:
         raise HTTPException(status_code=404, detail="Comment not found")

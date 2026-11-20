@@ -381,3 +381,20 @@ async def test_a_deactivated_account_hears_nothing_more(api, world, session, ayl
     assert await _bells(session, ayla) == []
     await admin.post(f"/tasks/{t['id']}/comments", json={"body": "Still here?"})
     assert await _bells(session, ayla) == []
+
+
+async def test_comment_deletion_respects_the_department_boundary(api, world, ayla, bilal):
+    """Review finding on #13: delete_comment skipped the visibility check."""
+    admin = api(world["admin"])
+    design = await _dept(admin, "Design", members=[ayla, bilal])
+    t = await _task(admin, department_id=design)
+    mine = (await api(ayla).post(f"/tasks/{t['id']}/comments", json={"body": "Mine"})).json()
+    his = (await api(bilal).post(f"/tasks/{t['id']}/comments", json={"body": "His"})).json()
+
+    # Ayla is moved out of Design: the task, and its comments, are gone for her.
+    await admin.delete(f"/departments/{design}/members/{ayla.id}")
+    me = api(ayla)
+    assert (await me.delete(f"/tasks/{t['id']}/comments/{mine['id']}")).status_code == 404
+    # Someone else's comment there: 404, not a 403 that confirms it exists.
+    assert (await me.delete(f"/tasks/{t['id']}/comments/{his['id']}")).status_code == 404
+    assert (await admin.get(f"/tasks/{t['id']}")).json()["comment_count"] == 2
