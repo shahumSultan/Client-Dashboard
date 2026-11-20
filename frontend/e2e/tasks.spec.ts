@@ -94,3 +94,35 @@ test("a task moves across the board and between people", async ({ page, browser 
   await page.getByRole("button", { name: "Delete task" }).click();
   await expect(card(page)).toHaveCount(0);
 });
+
+test("typing in one field survives another field's save", async ({ page }) => {
+  // Review finding on #12: the title's save echoing back replaced the
+  // description being typed, before it was saved.
+  await page.setViewportSize({ width: 1440, height: 1100 });
+  await signIn(page, ADMIN);
+  await page.goto(`${BASE}/admin/tasks`, { waitUntil: "domcontentloaded" });
+  const title = `Draft race ${RUN}`;
+  await page.getByRole("button", { name: "New task", exact: true }).first().click();
+  const form = page.getByRole("dialog", { name: "New task" });
+  await form.getByLabel("What needs doing").fill(title);
+  await form.getByRole("button", { name: "Create task" }).click();
+  await card(column(page, "To do"), title).click();
+
+  const drawer = page.getByRole("dialog", { name: `Task: ${title}` });
+  const renamed = `${title} (renamed)`;
+  await drawer.getByLabel("Title").fill(renamed);
+  await drawer.getByLabel("Details").click(); // blur saves the title...
+  const text = "Typed while the title was saving, and still here.";
+  await page.keyboard.type(text, { delay: 25 }); // ...and its echo lands mid-typing
+  await expect(page.getByRole("dialog", { name: `Task: ${renamed}` })).toBeVisible();
+  await expect(drawer.getByLabel("Details")).toHaveValue(text);
+
+  await drawer.getByLabel("Title").click(); // blur saves the details
+  await page.reload({ waitUntil: "domcontentloaded" });
+  const again = page.getByRole("dialog", { name: `Task: ${renamed}` });
+  await expect(again.getByLabel("Details")).toHaveValue(text);
+
+  page.once("dialog", (d) => d.accept());
+  await again.getByRole("button", { name: "Delete task" }).click();
+  await expect(card(page, renamed.replace(/[()]/g, "\\$&"))).toHaveCount(0);
+});

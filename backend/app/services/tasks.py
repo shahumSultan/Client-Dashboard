@@ -19,7 +19,7 @@ from app.models.notification import Notification, NotificationType
 from app.models.organization import Organization
 from app.models.project import Project
 from app.models.task import Task, TaskActivity, TaskComment, TaskStatus
-from app.models.user import User, UserRole, is_team
+from app.models.user import TEAM_ROLES, User, UserRole, is_team
 from app.schemas.task import TaskDepartment, TaskOut, TaskPerson, TaskProject
 
 STATUS_LABELS = {
@@ -154,12 +154,24 @@ def record(db: AsyncSession, task: Task, actor: User, kind: str, data: dict | No
     db.add(TaskActivity(task_id=task.id, actor_id=actor.id, kind=kind, data=data))
 
 
-def notify(
+async def notify(
     db: AsyncSession, task: Task, actor: User, type: NotificationType, title: str,
     body: str | None, recipients: set[str | None],
 ) -> None:
-    """In-app bells for everyone involved except whoever made the change."""
-    for user_id in recipients - {None, actor.id}:
+    """In-app bells for everyone involved except whoever made the change.
+
+    Only current team accounts hear anything. A task keeps pointing at its
+    assignee and creator after they leave the team (so their name stays on
+    it), but a bell carries the task title and comment text - internal
+    information someone who is now a client, or deactivated, must not get.
+    """
+    ids = recipients - {None, actor.id}
+    if not ids:
+        return
+    current = await db.execute(
+        select(User.id).where(User.id.in_(ids), User.is_active.is_(True), User.role.in_(TEAM_ROLES))
+    )
+    for user_id in current.scalars():
         db.add(Notification(
             user_id=user_id, type=type, title=title[:255], body=body,
             link=f"/admin/tasks?task={task.id}",

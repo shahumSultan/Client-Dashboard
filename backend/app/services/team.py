@@ -10,6 +10,7 @@ from sqlalchemy import delete, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.company import Department, DepartmentMember, TeamMember
+from app.models.notification import TASK_NOTIFICATION_TYPES, Notification
 from app.models.user import User
 
 
@@ -45,8 +46,9 @@ async def join_team(db: AsyncSession, user: User) -> None:
 
 
 async def leave_team(db: AsyncSession, user_id: str) -> None:
-    """Take an account out of every department and lead seat, and mark its
-    directory entry as former (kept, so the history of who was here stays).
+    """Take an account out of every department and lead seat, mark its
+    directory entry as former (kept, so the history of who was here stays),
+    and clear the task notifications from its bell.
 
     Left in place, a client or ex-colleague would show up as part of the
     company, and a department they led could no longer be saved: the update
@@ -58,4 +60,11 @@ async def leave_team(db: AsyncSession, user_id: str) -> None:
     )
     await db.execute(
         update(TeamMember).where(TeamMember.user_id == user_id).values(is_active=False)
+    )
+    # Their bell held internal task titles and comment text; a client (or an
+    # ex-colleague, should access come back later) must not keep them.
+    await db.execute(
+        delete(Notification).where(
+            Notification.user_id == user_id, Notification.type.in_(TASK_NOTIFICATION_TYPES)
+        )
     )

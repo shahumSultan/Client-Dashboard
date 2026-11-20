@@ -259,3 +259,29 @@ async def test_someone_who_left_keeps_their_name_on_the_task(api, world, session
     await admin.patch(f"/admin/users/{ayla.id}/access", json={"active": False})
     seen = (await admin.get(f"/tasks/{t['id']}")).json()
     assert seen["assignee"]["name"] == "Ayla Employee" and seen["assignee"]["is_current"] is False
+
+
+async def test_someone_who_left_the_team_hears_nothing_more(api, world, session, ayla, bilal):
+    """Review finding on #12: a former employee kept getting task bells -
+    titles and comment text - through the task's retained assignee/creator."""
+    admin = api(world["admin"])
+    t = await _task(admin, assignee_id=ayla.id)
+    mine = await _task(api(ayla), title="Ayla's own task")
+    assert [b.type.value for b in await _bells(session, ayla)] == ["task_assigned"]
+
+    # Ayla becomes a client: her task bells go, and no new ones arrive.
+    await admin.patch(f"/admin/users/{ayla.id}/role", json={"role": "client_member"})
+    assert await _bells(session, ayla) == []
+    await api(bilal).post(f"/tasks/{t['id']}/comments", json={"body": "Secret roadmap detail"})
+    await admin.post(f"/tasks/{mine['id']}/move", json={"status": "done"})  # she created this one
+    assert await _bells(session, ayla) == []
+    assert (await api(ayla).get("/tasks")).status_code == 403
+
+
+async def test_a_deactivated_account_hears_nothing_more(api, world, session, ayla):
+    admin = api(world["admin"])
+    t = await _task(admin, assignee_id=ayla.id)
+    await admin.patch(f"/admin/users/{ayla.id}/access", json={"active": False})
+    assert await _bells(session, ayla) == []
+    await admin.post(f"/tasks/{t['id']}/comments", json={"body": "Still here?"})
+    assert await _bells(session, ayla) == []

@@ -105,7 +105,7 @@ async def create_task(
     rules.record(db, task, user, "created")
     if assignee:
         rules.record(db, task, user, "assigned", {"to": rules.display_name(assignee)})
-        rules.notify(
+        await rules.notify(
             db, task, user, NotificationType.TASK_ASSIGNED,
             f"{rules.display_name(user)} assigned you a task", task.title, {assignee.id},
         )
@@ -145,7 +145,7 @@ async def update_task(
             "from": rules.display_name(old), "to": rules.display_name(new),
         })
         if new:
-            rules.notify(
+            await rules.notify(
                 db, task, user, NotificationType.TASK_ASSIGNED,
                 f"{rules.display_name(user)} assigned you a task", task.title, {new.id},
             )
@@ -178,7 +178,7 @@ async def update_task(
     if "status" in sent and data.status and data.status != task.status:
         old_status = task.status
         await rules.place(db, task, data.status, None)
-        _status_changed(db, task, user, old_status, involved)
+        await _status_changed(db, task, user, old_status, involved)
 
     if "is_archived" in sent and data.is_archived is not None and data.is_archived != task.is_archived:
         task.is_archived = data.is_archived
@@ -190,9 +190,9 @@ async def update_task(
     return await _one(db, user, task)
 
 
-def _status_changed(db, task: Task, user: User, old: TaskStatus, involved: set) -> None:
+async def _status_changed(db, task: Task, user: User, old: TaskStatus, involved: set) -> None:
     rules.record(db, task, user, "status", {"from": old.value, "to": task.status.value})
-    rules.notify(
+    await rules.notify(
         db, task, user, NotificationType.TASK_STATUS,
         f"{rules.display_name(user)} moved a task to {rules.STATUS_LABELS[task.status]}",
         task.title, involved | {task.assignee_id, task.created_by},
@@ -211,7 +211,7 @@ async def move_task(
     old_status = task.status
     await rules.place(db, task, data.status, data.after_id)
     if task.status != old_status:
-        _status_changed(db, task, user, old_status, set())
+        await _status_changed(db, task, user, old_status, set())
     await db.commit()
     return await _one(db, user, task)
 
@@ -256,7 +256,7 @@ async def add_comment(
     comment = TaskComment(task_id=task.id, author_id=user.id, body=data.body)
     db.add(comment)
     rules.record(db, task, user, "comment", {"excerpt": data.body[:140]})
-    rules.notify(
+    await rules.notify(
         db, task, user, NotificationType.TASK_COMMENT,
         f"{rules.display_name(user)} commented on a task", f"{task.title}: {data.body[:200]}",
         {task.assignee_id, task.created_by},

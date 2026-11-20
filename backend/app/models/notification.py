@@ -21,6 +21,12 @@ class NotificationType(str, enum.Enum):
     TASK_STATUS = "task_status"
 
 
+# Bells about internal tasks: only ever for current team accounts.
+TASK_NOTIFICATION_TYPES = (
+    NotificationType.TASK_ASSIGNED, NotificationType.TASK_STATUS, NotificationType.TASK_COMMENT,
+)
+
+
 class Notification(Base):
     __tablename__ = "notifications"
 

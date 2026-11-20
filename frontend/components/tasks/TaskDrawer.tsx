@@ -62,12 +62,20 @@ function Details({ task, isAdmin }: { task: Task; isAdmin: boolean }) {
   const projects = useProjectOptions({ enabled: isAdmin });
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description ?? "");
-  // Someone else's save (or our own, echoed back) replaces the draft.
-  const [seen, setSeen] = useState({ title: task.title, description: task.description });
-  if (seen.title !== task.title || seen.description !== task.description) {
-    setSeen({ title: task.title, description: task.description });
-    setTitle(task.title);
-    setDescription(task.description ?? "");
+  // The last server value each field was in step with. When the server's
+  // value changes, a field takes it only if the person hasn't edited that
+  // field since - an unsaved draft is never overwritten (they save on blur,
+  // and another field's save can land while they're mid-sentence). Each
+  // field is tracked on its own.
+  const [seenTitle, setSeenTitle] = useState(task.title);
+  const [seenDescription, setSeenDescription] = useState(task.description ?? "");
+  if (task.title !== seenTitle) {
+    setSeenTitle(task.title);
+    if (title === seenTitle) setTitle(task.title);
+  }
+  if ((task.description ?? "") !== seenDescription) {
+    setSeenDescription(task.description ?? "");
+    if (description === seenDescription) setDescription(task.description ?? "");
   }
 
   const save = (data: Partial<TaskInput> & { is_archived?: boolean }, ok?: string) =>
