@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.company import Department, DepartmentMember, TeamMember
 from app.models.notification import TASK_NOTIFICATION_TYPES, Notification
-from app.models.user import User
+from app.models.user import User, UserRole
 
 
 async def join_team(db: AsyncSession, user: User) -> None:
@@ -68,3 +68,20 @@ async def leave_team(db: AsyncSession, user_id: str) -> None:
             Notification.user_id == user_id, Notification.type.in_(TASK_NOTIFICATION_TYPES)
         )
     )
+
+
+async def visible_people(db: AsyncSession, viewer: User) -> set[str] | None:
+    """Accounts an employee may see: colleagues who share a department with
+    them, every admin (so they know who to ask), and themselves.
+
+    None means no limit - an admin sees everyone. Employees in different
+    departments don't see each other, nor each other's tasks.
+    """
+    if viewer.role == UserRole.ADMIN:
+        return None
+    mine = select(DepartmentMember.department_id).where(DepartmentMember.user_id == viewer.id)
+    colleagues = await db.execute(
+        select(DepartmentMember.user_id).where(DepartmentMember.department_id.in_(mine))
+    )
+    admins = await db.execute(select(User.id).where(User.role == UserRole.ADMIN))
+    return {viewer.id, *colleagues.scalars(), *admins.scalars()}

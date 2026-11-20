@@ -13,7 +13,7 @@ import { DepartmentDot } from "@/components/company/DepartmentChip";
 import { DueChip, formatDue, PriorityMark } from "@/components/tasks/parts";
 import { useDepartments } from "@/hooks/useDepartments";
 import {
-  useAddComment, useAssignablePeople, useDeleteComment, useDeleteTask, useProjectOptions,
+  useAddComment, useAssignOptions, useDeleteComment, useDeleteTask, useProjectOptions,
   useTask, useTaskActivity, useTaskComments, useUpdateTask,
 } from "@/hooks/useTasks";
 import { errorDetail } from "@/hooks/useEngagements";
@@ -57,7 +57,7 @@ function Row({ label: text, children }: { label: string; children: React.ReactNo
 
 function Details({ task, isAdmin }: { task: Task; isAdmin: boolean }) {
   const update = useUpdateTask();
-  const { data: people = [] } = useAssignablePeople();
+  const { people } = useAssignOptions(task.department?.id ?? null);
   const { data: departments = [] } = useDepartments();
   const projects = useProjectOptions({ enabled: isAdmin });
   const [title, setTitle] = useState(task.title);
@@ -121,9 +121,16 @@ function Details({ task, isAdmin }: { task: Task; isAdmin: boolean }) {
             aria-label="Assignee"
             value={task.assignee?.user_id ?? ""}
             onChange={(e) => save({ assignee_id: e.target.value || null })}
+            // Admins, and the lead of this task's department, assign.
+            disabled={!task.can_assign}
+            title={task.can_assign ? undefined : "Only an admin or the department's lead assigns tasks"}
           >
             <option value="">Unassigned</option>
-            {assigneeGone && <option value={task.assignee!.user_id}>{task.assignee!.name} (left)</option>}
+            {assigneeGone && (
+              <option value={task.assignee!.user_id}>
+                {task.assignee!.name}{task.assignee!.is_current ? "" : " (left)"}
+              </option>
+            )}
             {people.map((p) => <option key={p.user_id} value={p.user_id}>{p.name}</option>)}
           </Select>
         </Row>
@@ -151,6 +158,10 @@ function Details({ task, isAdmin }: { task: Task; isAdmin: boolean }) {
             onChange={(e) => save({ department_id: e.target.value || null })}
           >
             <option value="">None</option>
+            {/* A task assigned to you can sit in a department you're not in. */}
+            {task.department && !departments.some((d) => d.id === task.department!.id) && (
+              <option value={task.department.id}>{task.department.name}</option>
+            )}
             {departments.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
           </Select>
         </Row>

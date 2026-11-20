@@ -537,11 +537,18 @@ paste it in.
 carry an assignee (a team account), department, priority, due date and,
 optionally, the client project they're for. Clients never see tasks.
 
-- **Admins** do everything, including deleting tasks and linking a client
-  project.
-- **Employees** create tasks and comment on any task; they edit and move tasks
-  they created, are assigned to, or that sit in one of their departments.
-  They see a linked project's "Client · Project" label but can't open it.
+- **Admins** see and do everything, including assigning anyone, deleting
+  tasks and linking a client project.
+- **Employees** see only tasks in their own departments, plus tasks assigned
+  to them or created by them; any other task answers 404. They edit, move
+  and comment on what they see, and file new tasks only under their own
+  departments. They see a linked project's "Client · Project" label but
+  can't open it.
+- **Assigning**: an admin assigns anyone; a department's lead assigns that
+  department's tasks to its members; nobody else sets or changes assignees.
+- **People**: an employee sees only colleagues who share a department with
+  them, plus the admins - on the Team list, the Departments page and in
+  pickers. An employee in no department sees only their own tasks.
 - Every change writes a `task_activity` row (the history on each task), and
   the people involved - assignee and creator, never whoever made the change -
   get a bell. Done cards leave the board after 30 days; archived ones keep

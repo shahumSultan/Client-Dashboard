@@ -1,6 +1,8 @@
 "use client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
+import { useCurrentUser } from "@/hooks/useAuth";
+import { useDepartments } from "@/hooks/useDepartments";
 import {
   isTeamRole,
   type Organization, type Project, type Task, type TaskActivity, type TaskComment,
@@ -161,4 +163,29 @@ export function useProjectOptions({ enabled }: { enabled: boolean }) {
   return (projects.data ?? [])
     .map((p) => ({ id: p.id, label: `${names.get(p.organization_id) ?? "Client"} · ${p.name}` }))
     .sort((a, b) => a.label.localeCompare(b.label));
+}
+
+/**
+ * Who the current user may assign a task in `departmentId` to. Admins: anyone
+ * on the team. A department's lead: that department's members. Anyone else:
+ * nobody - `canAssign` is false and the picker stays disabled.
+ */
+export function useAssignOptions(departmentId: string | null) {
+  const { data: me } = useCurrentUser();
+  const { data: people = [] } = useAssignablePeople();
+  const { data: departments = [] } = useDepartments();
+  if (me?.role === "admin") return { canAssign: true, people };
+  const dept = departments.find((d) => d.id === departmentId);
+  if (!me || !dept || dept.lead?.user_id !== me.id) return { canAssign: false, people: [] as PersonOption[] };
+  return {
+    canAssign: true,
+    people: dept.members.map((m) => ({ user_id: m.user_id, name: m.name, avatar_url: m.avatar_url })),
+  };
+}
+
+/** Departments the current user leads (so may assign within). */
+export function useLedDepartmentIds(): Set<string> {
+  const { data: me } = useCurrentUser();
+  const { data: departments = [] } = useDepartments();
+  return new Set(departments.filter((d) => me && d.lead?.user_id === me.id).map((d) => d.id));
 }

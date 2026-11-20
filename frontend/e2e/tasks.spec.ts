@@ -76,6 +76,8 @@ test("a task moves across the board and between people", async ({ page, browser 
   await drawer.getByLabel("Status").selectOption("in_review");
   await expect(drawer.getByText(/moved this to In review/)).toBeVisible();
   await expect(drawer.getByLabel("Client project")).toHaveCount(0); // admins only
+  // Not a department lead, so she can't reassign it.
+  await expect(drawer.getByLabel("Assignee")).toBeDisabled();
   // Employees can't delete.
   await expect(drawer.getByRole("button", { name: "Delete task" })).toHaveCount(0);
   await emp.screenshot({ path: `${OUT}/94-tasks-drawer.png` });
@@ -125,4 +127,49 @@ test("typing in one field survives another field's save", async ({ page }) => {
   page.once("dialog", (d) => d.accept());
   await again.getByRole("button", { name: "Delete task" }).click();
   await expect(card(page, renamed.replace(/[()]/g, "\\$&"))).toHaveCount(0);
+});
+
+test("a department lead assigns within their department", async ({ page, browser }) => {
+  await page.setViewportSize({ width: 1440, height: 1100 });
+  await signIn(page, ADMIN);
+  const dept = `Design ${RUN}`;
+  await page.goto(`${BASE}/admin/departments`, { waitUntil: "domcontentloaded" });
+  await page.getByRole("button", { name: "New department" }).first().click();
+  const d = page.getByRole("dialog", { name: "Department" });
+  await d.getByLabel("Name").fill(dept);
+  await d.getByLabel("Lead").selectOption({ label: EMPLOYEE_NAME });
+  await d.getByRole("button", { name: "Create department" }).click();
+  await expect(page.getByRole("region", { name: dept })).toBeVisible();
+
+  const theirs = await browser.newContext();
+  const lead = await theirs.newPage();
+  await lead.setViewportSize({ width: 1440, height: 1100 });
+  await signIn(lead, EMPLOYEE);
+  await lead.goto(`${BASE}/admin/tasks`, { waitUntil: "domcontentloaded" });
+  await lead.getByRole("button", { name: "New task", exact: true }).first().click();
+  const form = lead.getByRole("dialog", { name: "New task" });
+  const title = `Lead-assigned ${RUN}`;
+  await form.getByLabel("What needs doing").fill(title);
+  // No department chosen: nobody to assign.
+  await expect(form.getByLabel("Assignee")).toBeDisabled();
+  await form.getByLabel("Department").selectOption({ label: dept });
+  // Her department: she leads it, so she assigns - to its members only.
+  await expect(form.getByLabel("Assignee")).toBeEnabled();
+  await expect(form.getByLabel("Assignee").locator("option")).toHaveText(["Unassigned", EMPLOYEE_NAME]);
+  await form.getByLabel("Assignee").selectOption({ label: EMPLOYEE_NAME });
+  await form.getByRole("button", { name: "Create task" }).click();
+  await card(column(lead, "To do"), title).click();
+  await expect(lead.getByRole("dialog", { name: `Task: ${title}` }).getByLabel("Assignee")).toBeEnabled();
+  await theirs.close();
+
+  // Clean up: the task, then the department.
+  await page.goto(`${BASE}/admin/tasks`, { waitUntil: "domcontentloaded" });
+  await card(column(page, "To do"), title).click();
+  page.once("dialog", (x) => x.accept());
+  await page.getByRole("button", { name: "Delete task" }).click();
+  await expect(card(page, title)).toHaveCount(0);
+  await page.goto(`${BASE}/admin/departments`, { waitUntil: "domcontentloaded" });
+  page.once("dialog", (x) => x.accept());
+  await page.getByRole("button", { name: `Delete ${dept}` }).click();
+  await expect(page.getByRole("region", { name: dept })).toHaveCount(0);
 });

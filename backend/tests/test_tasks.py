@@ -46,6 +46,16 @@ async def _task(client, **kw):
     return r.json()
 
 
+async def _dept(admin, name, lead=None, members=()):
+    """A department via the API; returns its id. The lead joins it too."""
+    r = await admin.post("/departments", json={"name": name, "lead_user_id": lead.id if lead else None})
+    assert r.status_code == 201, r.text
+    dept_id = r.json()["id"]
+    for m in members:
+        await admin.put(f"/departments/{dept_id}/members/{m.id}")
+    return dept_id
+
+
 async def _bells(session, user):
     rows = await session.execute(select(Notification).where(Notification.user_id == user.id))
     return list(rows.scalars())
@@ -70,26 +80,106 @@ async def test_employee_creates_and_runs_their_own_task(api, world, ayla):
     assert r.json()["status"] == "in_progress"
 
 
-async def test_employees_edit_only_tasks_that_are_theirs(api, world, session, ayla, bilal):
+async def test_employees_see_only_their_departments_and_their_own(api, world, ayla, bilal):
     admin = api(world["admin"])
-    other = await _task(admin, assignee_id=bilal.id)
+    design = await _dept(admin, "Design", members=[ayla])
+    sales = await _dept(admin, "Sales", members=[bilal])
+    in_design = await _task(admin, title="Design task", department_id=design)
+    in_sales = await _task(admin, title="Sales task", department_id=sales)
+    assigned = await _task(admin, title="Assigned to Ayla", assignee_id=ayla.id)
+    loose = await _task(admin, title="No department")
+    own = await _task(api(ayla), title="Ayla filed this")
+
     me = api(ayla)
-    # Readable and commentable, but not editable.
-    listed = {t["id"]: t for t in (await me.get("/tasks")).json()}
-    assert listed[other["id"]]["can_edit"] is False
-    assert (await me.patch(f"/tasks/{other['id']}", json={"title": "Mine now"})).status_code == 403
-    assert (await me.post(f"/tasks/{other['id']}/move", json={"status": "done"})).status_code == 403
-    assert (await me.post(f"/tasks/{other['id']}/comments", json={"body": "Can I help?"})).status_code == 201
+    seen = {t["title"]: t for t in (await me.get("/tasks")).json()}
+    assert set(seen) == {"Design task", "Assigned to Ayla", "Ayla filed this"}
+    assert all(t["can_edit"] for t in seen.values())
 
-    # Assigned to them: editable.
-    mine = await _task(admin, assignee_id=ayla.id)
-    assert (await me.patch(f"/tasks/{mine['id']}", json={"priority": "urgent"})).status_code == 200
+    # Another department's task (or an unrelated one) doesn't exist for her.
+    for hidden in (in_sales, loose):
+        assert (await me.get(f"/tasks/{hidden['id']}")).status_code == 404
+        assert (await me.patch(f"/tasks/{hidden['id']}", json={"title": "x"})).status_code == 404
+        assert (await me.post(f"/tasks/{hidden['id']}/comments", json={"body": "hi"})).status_code == 404
+        assert (await me.get(f"/tasks/{hidden['id']}/activity")).status_code == 404
+    # Filtering by someone else's department doesn't reveal it either.
+    assert (await me.get(f"/tasks?department_id={sales}")).json() == []
 
-    # In one of their departments: editable.
-    dept = (await admin.post("/departments", json={"name": "Design"})).json()
-    await admin.put(f"/departments/{dept['id']}/members/{ayla.id}")
-    team = await _task(admin, department_id=dept["id"])
-    assert (await me.patch(f"/tasks/{team['id']}", json={"priority": "low"})).status_code == 200
+    # What she can see, she can work on.
+    for t in (in_design, assigned, own):
+        assert (await me.patch(f"/tasks/{t['id']}", json={"priority": "high"})).status_code == 200
+
+
+async def test_employees_file_tasks_only_under_their_own_departments(api, world, ayla, bilal):
+    admin = api(world["admin"])
+    design = await _dept(admin, "Design", members=[ayla])
+    sales = await _dept(admin, "Sales", members=[bilal])
+    me = api(ayla)
+    assert (await me.post("/tasks", json={"title": "x", "department_id": sales})).status_code == 403
+    t = await _task(me, department_id=design)
+    assert (await me.patch(f"/tasks/{t['id']}", json={"department_id": sales})).status_code == 403
+
+
+async def test_only_admins_and_department_leads_assign(api, world, session, ayla, bilal):
+    admin = api(world["admin"])
+    carol = await _employee(session, "Carol Lead")
+    design = await _dept(admin, "Design", lead=carol, members=[ayla])
+    sales = await _dept(admin, "Sales", members=[bilal])
+
+    # A plain member can't assign - not even herself.
+    me = api(ayla)
+    assert (await me.post("/tasks", json={"title": "x", "department_id": design, "assignee_id": ayla.id})).status_code == 403
+    t = await _task(me, department_id=design)
+    assert t["can_assign"] is False
+    assert (await me.patch(f"/tasks/{t['id']}", json={"assignee_id": ayla.id})).status_code == 403
+
+    # The lead assigns within her department, to its members only.
+    lead = api(carol)
+    seen = (await lead.get(f"/tasks/{t['id']}")).json()
+    assert seen["can_assign"] is True
+    r = await lead.patch(f"/tasks/{t['id']}", json={"assignee_id": ayla.id})
+    assert r.status_code == 200 and r.json()["assignee"]["user_id"] == ayla.id
+    assert (await lead.patch(f"/tasks/{t['id']}", json={"assignee_id": bilal.id})).status_code == 422
+    assert (await lead.patch(f"/tasks/{t['id']}", json={"assignee_id": None})).status_code == 200
+    r = await lead.post("/tasks", json={"title": "y", "department_id": design, "assignee_id": ayla.id})
+    assert r.status_code == 201
+    # Not in a department she doesn't lead, nor on a task with no department.
+    assert (await lead.post("/tasks", json={"title": "z", "assignee_id": carol.id})).status_code == 403
+
+    # An admin assigns anyone, anywhere.
+    r = await admin.post("/tasks", json={"title": "w", "department_id": sales, "assignee_id": ayla.id})
+    assert r.status_code == 201 and r.json()["can_assign"] is True
+
+
+async def test_employees_see_only_colleagues_and_admins(api, world, session, ayla, bilal):
+    from app.models.company import TeamMember
+    admin = api(world["admin"])
+    carol = await _employee(session, "Carol Colleague")
+    await _dept(admin, "Design", members=[ayla, carol])
+    await _dept(admin, "Sales", members=[bilal])
+    for u in (ayla, bilal, carol, world["admin"]):
+        session.add(TeamMember(name=u.full_name, email=u.email, user_id=u.id))
+    session.add(TeamMember(name="Adviser Without Login"))
+    await session.commit()
+
+    team = {m["name"] for m in (await api(ayla).get("/company/team")).json()}
+    # Her department, plus the admins (other test files add admins of their own).
+    assert {"Ayla Employee", "Carol Colleague", "EC Admin"} <= team
+    assert "Bilal Employee" not in team and "Adviser Without Login" not in team
+    depts = [d["name"] for d in (await api(ayla).get("/departments")).json()]
+    assert depts == ["Design"]
+    # Admins see everyone and every department.
+    everyone = {m["name"] for m in (await admin.get("/company/team")).json()}
+    assert {"Bilal Employee", "Adviser Without Login"} <= everyone
+    assert len((await admin.get("/departments")).json()) == 2
+
+
+async def test_an_employee_in_no_department_sees_only_their_own(api, world, ayla, bilal):
+    admin = api(world["admin"])
+    sales = await _dept(admin, "Sales", members=[bilal])
+    await _task(admin, title="Sales work", department_id=sales)
+    await _task(admin, title="For Ayla", assignee_id=ayla.id)
+    assert [t["title"] for t in (await api(ayla).get("/tasks")).json()] == ["For Ayla"]
+    assert (await api(ayla).get("/departments")).json() == []
 
 
 async def test_only_admins_delete_and_link_client_projects(api, world, ayla):
@@ -220,7 +310,9 @@ async def test_every_change_is_recorded(api, world, ayla):
 
 async def test_bells_go_to_the_people_involved_but_not_the_actor(api, world, session, ayla, bilal):
     admin = api(world["admin"])
-    t = await _task(admin, assignee_id=ayla.id)
+    # Same department, so Bilal can see (and comment on) Ayla's task.
+    design = await _dept(admin, "Design", members=[ayla, bilal])
+    t = await _task(admin, assignee_id=ayla.id, department_id=design)
     bells = await _bells(session, ayla)
     assert [b.type.value for b in bells] == ["task_assigned"]
     assert bells[0].link == f"/admin/tasks?task={t['id']}"
@@ -231,7 +323,7 @@ async def test_bells_go_to_the_people_involved_but_not_the_actor(api, world, ses
     assert [b.type.value for b in await _bells(session, world["admin"])] == ["task_status"]
     assert len(await _bells(session, ayla)) == 1
 
-    # Bilal comments on someone else's task: both people involved hear.
+    # Bilal comments on a colleague's task: both people involved hear.
     await api(bilal).post(f"/tasks/{t['id']}/comments", json={"body": "Need a hand?"})
     assert "task_comment" in [b.type.value for b in await _bells(session, ayla)]
     assert "task_comment" in [b.type.value for b in await _bells(session, world["admin"])]
@@ -243,7 +335,8 @@ async def test_bells_go_to_the_people_involved_but_not_the_actor(api, world, ses
 
 
 async def test_comments_can_be_removed_by_their_author_or_an_admin(api, world, ayla, bilal):
-    t = await _task(api(world["admin"]))
+    design = await _dept(api(world["admin"]), "Design", members=[ayla, bilal])
+    t = await _task(api(world["admin"]), department_id=design)
     c = (await api(ayla).post(f"/tasks/{t['id']}/comments", json={"body": "First"})).json()
     assert c["can_delete"] is True and c["author"]["name"] == "Ayla Employee"
     assert (await api(bilal).delete(f"/tasks/{t['id']}/comments/{c['id']}")).status_code == 403
@@ -265,14 +358,17 @@ async def test_someone_who_left_the_team_hears_nothing_more(api, world, session,
     """Review finding on #12: a former employee kept getting task bells -
     titles and comment text - through the task's retained assignee/creator."""
     admin = api(world["admin"])
-    t = await _task(admin, assignee_id=ayla.id)
+    # Same department, so Bilal's comment actually lands on the task.
+    design = await _dept(admin, "Design", members=[ayla, bilal])
+    t = await _task(admin, assignee_id=ayla.id, department_id=design)
     mine = await _task(api(ayla), title="Ayla's own task")
     assert [b.type.value for b in await _bells(session, ayla)] == ["task_assigned"]
 
     # Ayla becomes a client: her task bells go, and no new ones arrive.
     await admin.patch(f"/admin/users/{ayla.id}/role", json={"role": "client_member"})
     assert await _bells(session, ayla) == []
-    await api(bilal).post(f"/tasks/{t['id']}/comments", json={"body": "Secret roadmap detail"})
+    r = await api(bilal).post(f"/tasks/{t['id']}/comments", json={"body": "Secret roadmap detail"})
+    assert r.status_code == 201
     await admin.post(f"/tasks/{mine['id']}/move", json={"status": "done"})  # she created this one
     assert await _bells(session, ayla) == []
     assert (await api(ayla).get("/tasks")).status_code == 403
@@ -285,3 +381,20 @@ async def test_a_deactivated_account_hears_nothing_more(api, world, session, ayl
     assert await _bells(session, ayla) == []
     await admin.post(f"/tasks/{t['id']}/comments", json={"body": "Still here?"})
     assert await _bells(session, ayla) == []
+
+
+async def test_comment_deletion_respects_the_department_boundary(api, world, ayla, bilal):
+    """Review finding on #13: delete_comment skipped the visibility check."""
+    admin = api(world["admin"])
+    design = await _dept(admin, "Design", members=[ayla, bilal])
+    t = await _task(admin, department_id=design)
+    mine = (await api(ayla).post(f"/tasks/{t['id']}/comments", json={"body": "Mine"})).json()
+    his = (await api(bilal).post(f"/tasks/{t['id']}/comments", json={"body": "His"})).json()
+
+    # Ayla is moved out of Design: the task, and its comments, are gone for her.
+    await admin.delete(f"/departments/{design}/members/{ayla.id}")
+    me = api(ayla)
+    assert (await me.delete(f"/tasks/{t['id']}/comments/{mine['id']}")).status_code == 404
+    # Someone else's comment there: 404, not a 403 that confirms it exists.
+    assert (await me.delete(f"/tasks/{t['id']}/comments/{his['id']}")).status_code == 404
+    assert (await admin.get(f"/tasks/{t['id']}")).json()["comment_count"] == 2
