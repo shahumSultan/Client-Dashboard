@@ -14,6 +14,14 @@ interface DialogProps {
 
 export function Dialog({ open, onOpenChange, children, label }: DialogProps) {
   const panelRef = React.useRef<HTMLDivElement>(null);
+  // Callers usually pass an inline arrow, which is a new function on every
+  // render. Kept in a ref so the effect below runs once per opening: when it
+  // depended on onOpenChange, each keystroke re-ran it and refocused the
+  // first field, so typing anywhere else jumped back to the top input.
+  const onOpenChangeRef = React.useRef(onOpenChange);
+  React.useLayoutEffect(() => {
+    onOpenChangeRef.current = onOpenChange;
+  });
 
   React.useEffect(() => {
     if (!open) return;
@@ -22,7 +30,7 @@ export function Dialog({ open, onOpenChange, children, label }: DialogProps) {
 
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        onOpenChange(false);
+        onOpenChangeRef.current(false);
         return;
       }
       // Keep Tab inside the dialog - an escape route that leaks focus back to
@@ -62,7 +70,7 @@ export function Dialog({ open, onOpenChange, children, label }: DialogProps) {
       cancelAnimationFrame(raf);
       previouslyFocused?.focus?.();
     };
-  }, [open, onOpenChange]);
+  }, [open]);
 
   if (!open || typeof document === "undefined") return null;
 
