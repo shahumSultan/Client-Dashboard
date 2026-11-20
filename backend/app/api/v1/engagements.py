@@ -23,7 +23,7 @@ from app.database import get_db
 from app.models.engagement import Engagement, EngagementDocument
 from app.models.notification import NotificationType
 from app.models.project import Project
-from app.models.user import User, UserRole, is_team
+from app.models.user import User, UserRole, sees_all_clients
 from app.schemas.engagement import (
     AGREEMENT_FIELDS, INVOICE_FIELDS,
     EngagementCreate, EngagementUpdate, EngagementOut, EngagementSent,
@@ -65,7 +65,7 @@ async def _get(db: AsyncSession, engagement_id: str, user: User) -> Engagement:
     e = (await db.execute(_load().where(Engagement.id == engagement_id))).scalar_one_or_none()
     if not e:
         raise HTTPException(status_code=404, detail="Not found")
-    if is_team(user):
+    if sees_all_clients(user):
         return e
     # A draft does not exist as far as the client is concerned, and neither
     # does another organization's paperwork. Same 404 for both.
@@ -171,7 +171,7 @@ async def list_engagements(
     stmt = _load().join(Project).order_by(Engagement.created_at.desc())
     if project_id:
         stmt = stmt.where(Engagement.project_id == project_id)
-    if not is_team(user):
+    if not sees_all_clients(user):
         if not user.organization_id:
             return []
         stmt = stmt.where(

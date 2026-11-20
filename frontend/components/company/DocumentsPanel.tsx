@@ -24,8 +24,9 @@ import {
 } from "@/hooks/useCompany";
 import { errorDetail } from "@/hooks/useEngagements";
 import { useReadOnly } from "@/lib/read-only";
+import { useCurrentUser } from "@/hooks/useAuth";
 import {
-  CATEGORY_LABELS, DOCUMENT_CATEGORIES,
+  CATEGORY_LABELS, DOCUMENT_CATEGORIES, EMPLOYEE_DOC_CATEGORIES,
   type CompanyDocument, type DocumentCategory,
 } from "@/lib/types";
 import { cn, formatBytes, formatDate, parseApiDate, timeAgo } from "@/lib/utils";
@@ -589,6 +590,9 @@ function Row({
 
 export function DocumentsPanel() {
   const viewOnly = useReadOnly();
+  const { data: me } = useCurrentUser();
+  // The server only returns these categories to an employee; don't offer the rest.
+  const visibleCategories = me?.role === "admin" ? DOCUMENT_CATEGORIES : EMPLOYEE_DOC_CATEGORIES;
   const [category, setCategory] = useState<DocumentCategory | "">("");
   const [q, setQ] = useState("");
   const [archived, setArchived] = useState(false);
@@ -610,6 +614,7 @@ export function DocumentsPanel() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             className="pl-10"
+            allowReadOnly
           />
         </div>
         <div className="w-40">
@@ -617,9 +622,10 @@ export function DocumentsPanel() {
             aria-label="Category"
             value={category}
             onChange={(e) => setCategory(e.target.value as DocumentCategory | "")}
+            allowReadOnly
           >
             <option value="">All categories</option>
-            {DOCUMENT_CATEGORIES.map((c) => (
+            {visibleCategories.map((c) => (
               <option key={c} value={c}>{CATEGORY_LABELS[c]}</option>
             ))}
           </Select>

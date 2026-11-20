@@ -10,6 +10,7 @@ import {
   Users,
   Settings,
   ArrowLeft,
+  Network,
 } from "lucide-react";
 import { SidebarShell, type NavItem } from "@/components/shared/SidebarShell";
 import { useCurrentUser } from "@/hooks/useAuth";
@@ -18,6 +19,7 @@ const NAV: NavItem[] = [
   { label: "Overview", href: "/admin", icon: LayoutDashboard, exact: true },
   { label: "Clients", href: "/admin/clients", icon: Building2 },
   { label: "Company", href: "/admin/company", icon: Landmark },
+  { label: "Departments", href: "/admin/departments", icon: Network },
   { label: "Projects", href: "/admin/projects", icon: FolderOpen },
   { label: "Requests", href: "/admin/requests", icon: MessageSquare },
   { label: "Comments", href: "/admin/comments", icon: MessagesSquare },
@@ -25,16 +27,28 @@ const NAV: NavItem[] = [
   { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
+/**
+ * The admin-panel sections an employee may open. Everything else is about
+ * clients, money or access, and the API refuses it to them anyway; this keeps
+ * the UI from offering it. The first entry is where an employee lands.
+ */
+export const EMPLOYEE_SECTIONS = ["/admin/company", "/admin/departments"];
+
+export function employeeMayOpen(pathname: string): boolean {
+  return EMPLOYEE_SECTIONS.some((s) => pathname === s || pathname.startsWith(`${s}/`));
+}
+
 export function AdminSidebar({ open, onClose }: { open?: boolean; onClose?: () => void }) {
   const { data: user } = useCurrentUser();
   // An admin without an organization has no client portal to go back to -
   // the link would just bounce them here again.
   const hasPortal = !!user?.organization_id;
+  const items = user?.role === "employee" ? NAV.filter((i) => employeeMayOpen(i.href)) : NAV;
 
   return (
     <SidebarShell
-      items={NAV}
-      kicker="Admin"
+      items={items}
+      kicker={user?.role === "employee" ? "Team" : "Admin"}
       open={open}
       onClose={onClose}
       footerSlot={

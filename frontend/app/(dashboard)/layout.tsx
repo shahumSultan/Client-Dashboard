@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Sidebar } from "@/components/shared/Sidebar";
 import { Topbar } from "@/components/shared/Topbar";
 import { useCurrentUser } from "@/hooks/useAuth";
+import { isTeamRole } from "@/lib/types";
 import { PageLoader } from "@/components/shared/PageLoader";
 import { titleFor } from "@/lib/page-title";
 
@@ -32,10 +33,10 @@ export default function DashboardLayout({
   useEffect(() => {
     if (isLoading || !user) return;
 
-    // The client portal is scoped to one organization. An admin has none, and
-    // for them `list_projects` returns every client's work, which reads as
+    // The client portal is scoped to one organization. A team account has none;
+    // for an admin `list_projects` returns every client's work, which reads as
     // "why can I see all these projects?" - send them to the admin panel.
-    if ((user.role === "admin" || user.role === "staff") && !user.organization_id) {
+    if (isTeamRole(user.role) && !user.organization_id) {
       router.replace("/admin");
       return;
     }
@@ -52,7 +53,7 @@ export default function DashboardLayout({
   if (!user.organization_id) {
     return (
       <PageLoader
-        label={user.role === "admin" || user.role === "staff" ? "Opening admin" : "Setting up your workspace"}
+        label={isTeamRole(user.role) ? "Opening admin" : "Setting up your workspace"}
       />
     );
   }

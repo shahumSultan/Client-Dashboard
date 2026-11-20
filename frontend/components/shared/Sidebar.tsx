@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { SidebarShell, type NavItem } from "@/components/shared/SidebarShell";
 import { useCurrentUser } from "@/hooks/useAuth";
+import { isTeamRole } from "@/lib/types";
 import { useEngagements, clientActionLabel } from "@/hooks/useEngagements";
 
 const NAV: NavItem[] = [
@@ -49,7 +50,7 @@ export function Sidebar({ open, onClose }: { open?: boolean; onClose?: () => voi
       open={open}
       onClose={onClose}
       footerSlot={
-        user?.role === "admin" || user?.role === "staff" ? (
+        isTeamRole(user?.role) ? (
           <Link
             href="/admin"
             onClick={onClose}

@@ -47,3 +47,23 @@ export function inviteUrl(token: string): string {
   const origin = typeof window === "undefined" ? "" : window.location.origin;
   return `${origin}/join/${token}`;
 }
+
+// ── Team invitations ─────────────────────────────────────────────────────────
+// Same "invitations" key prefix, so revoking (shared endpoint) refreshes both.
+
+export function useTeamInvitations({ enabled = true }: { enabled?: boolean } = {}) {
+  return useQuery<Invitation[]>({
+    queryKey: ["invitations", "team"],
+    queryFn: async () => (await api.get("/company/team/invitations")).data,
+    enabled,
+  });
+}
+
+export function useCreateTeamInvitation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: { email: string; role: "admin" | "employee" }) =>
+      (await api.post("/company/team/invitations", payload)).data as Invitation,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["invitations"] }),
+  });
+}

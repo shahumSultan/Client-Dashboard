@@ -1,5 +1,14 @@
-/** "staff": an Enigma-Cube team member with view-only access to the admin panel. */
-export type UserRole = "admin" | "staff" | "client_owner" | "client_member";
+/**
+ * "employee": on the Enigma-Cube team but not an admin. Reads the company
+ * basics (profile, team, departments, policy and brand documents), never
+ * clients, bank accounts or HR/finance/legal papers. Was "staff" until 2026-11.
+ */
+export type UserRole = "admin" | "employee" | "client_owner" | "client_member";
+
+/** An Enigma-Cube account rather than a client: never in a client workspace. */
+export function isTeamRole(role: UserRole | undefined | null): boolean {
+  return role === "admin" || role === "employee";
+}
 
 export interface User {
   id: string;
@@ -160,7 +169,8 @@ export interface InboxThread extends CommentThread {
 
 export interface Invitation {
   id: string;
-  organization_id: string;
+  /** Null for an invitation onto the Enigma-Cube team. */
+  organization_id: string | null;
   email: string;
   role: UserRole;
   token: string;
@@ -174,7 +184,8 @@ export interface Invitation {
 }
 
 export interface InvitationPreview {
-  organization_name: string;
+  /** Null for a team invitation. */
+  organization_name: string | null;
   email: string;
   role: UserRole;
   expires_at: string;
@@ -347,14 +358,54 @@ export interface TeamMember {
   is_active: boolean;
   sort_order: number;
   created_at: string;
+  /** Through the linked login; empty for a directory-only entry. */
+  departments: DepartmentTag[];
 }
 
-export type TeamMemberInput = Omit<TeamMember, "id" | "created_at">;
+export type TeamMemberInput = Omit<TeamMember, "id" | "created_at" | "departments">;
+
+export const DEPARTMENT_COLOURS = ["slate", "blue", "teal", "green", "amber", "violet", "rose"] as const;
+export type DepartmentColour = (typeof DEPARTMENT_COLOURS)[number];
+
+export interface DepartmentTag {
+  id: string;
+  name: string;
+  colour: DepartmentColour;
+}
+
+export interface DepartmentPerson {
+  user_id: string;
+  name: string;
+  email: string;
+  avatar_url: string | null;
+  role: UserRole;
+}
+
+export interface Department {
+  id: string;
+  name: string;
+  description: string | null;
+  colour: DepartmentColour;
+  sort_order: number;
+  lead: DepartmentPerson | null;
+  members: DepartmentPerson[];
+  created_at: string;
+}
+
+export interface DepartmentInput {
+  name: string;
+  description: string | null;
+  lead_user_id: string | null;
+  colour: DepartmentColour;
+  sort_order: number;
+}
 
 export const DOCUMENT_CATEGORIES = [
   "legal", "finance", "hr", "brand", "contracts", "policies", "other",
 ] as const;
 export type DocumentCategory = (typeof DOCUMENT_CATEGORIES)[number];
+/** Kept in step with EMPLOYEE_DOC_CATEGORIES in backend/app/models/company.py. */
+export const EMPLOYEE_DOC_CATEGORIES: readonly DocumentCategory[] = ["policies", "brand"];
 
 export const CATEGORY_LABELS: Record<DocumentCategory, string> = {
   legal: "Legal",

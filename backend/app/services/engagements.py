@@ -116,9 +116,10 @@ async def client_recipients(db: AsyncSession, organization_id: str) -> list[str]
 
 
 async def admin_users(db: AsyncSession) -> list[User]:
-    """The Enigma-Cube team - everyone who gets a bell for client activity."""
+    """Everyone who gets a bell for client activity: admins, the only team
+    accounts that can open a client's workspace."""
     result = await db.execute(
-        select(User).where(User.role.in_((UserRole.ADMIN, UserRole.STAFF)), User.is_active.is_(True))
+        select(User).where(User.role == UserRole.ADMIN, User.is_active.is_(True))
     )
     return list(result.scalars())
 

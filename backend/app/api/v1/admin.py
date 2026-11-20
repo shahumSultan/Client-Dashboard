@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
+from app.services.departments import remove_from_departments
 from app.database import get_db
 from app.core.auth import require_admin
-from app.models.user import User, UserRole
+from app.models.user import TEAM_ROLES, User, UserRole
 from app.models.organization import Organization
 from app.models.project import Project
 from app.models.request import Request, RequestStatus
@@ -62,7 +63,7 @@ async def update_user_role(
     admin: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
-    """Set someone's role. Admins only - staff are read-only and cannot promote."""
+    """Set someone's role. Admins only."""
     target = await db.get(User, user_id)
     if not target:
         raise HTTPException(status_code=404, detail="User not found")
@@ -70,14 +71,17 @@ async def update_user_role(
     # with no admin left, nobody can promote anyone back.
     if target.id == admin.id:
         raise HTTPException(status_code=409, detail="You can't change your own role.")
-    # Team roles see every client. Someone inside a client's workspace getting
-    # one is almost certainly a mis-click on the wrong row.
-    if data.role in (UserRole.ADMIN, UserRole.STAFF) and target.organization_id:
+    # Team roles are for Enigma-Cube people. Someone inside a client's
+    # workspace getting one is almost certainly a mis-click on the wrong row.
+    if data.role in TEAM_ROLES and target.organization_id:
         raise HTTPException(
             status_code=409,
             detail="This person belongs to a client workspace. Team roles are only for Enigma-Cube staff.",
         )
+    leaving_team = target.role in TEAM_ROLES and data.role not in TEAM_ROLES
     target.role = data.role
+    if leaving_team:
+        await remove_from_departments(db, target.id)
     await db.commit()
     await db.refresh(target)
     return target

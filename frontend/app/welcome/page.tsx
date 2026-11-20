@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { MailQuestion, RefreshCw } from "lucide-react";
 import { useCurrentUser } from "@/hooks/useAuth";
+import { isTeamRole } from "@/lib/types";
 import { BrandMark } from "@/components/shared/BrandMark";
 import { PageLoader } from "@/components/shared/PageLoader";
 import { Card, CardContent } from "@/components/ui/card";
@@ -24,12 +25,12 @@ export default function WelcomePage() {
   useEffect(() => {
     if (isLoading || !user) return;
     if (user.organization_id) router.replace("/dashboard");
-    // Admins never belong to a client workspace.
-    else if (user.role === "admin" || user.role === "staff") router.replace("/admin");
+    // Team accounts (admins, employees) never belong to a client workspace.
+    else if (isTeamRole(user.role)) router.replace("/admin");
   }, [user, isLoading, router]);
 
   if (isLoading || !user) return <PageLoader />;
-  if (user.organization_id || user.role === "admin" || user.role === "staff") {
+  if (user.organization_id || isTeamRole(user.role)) {
     return <PageLoader label="Opening your portal" />;
   }
 

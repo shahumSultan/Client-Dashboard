@@ -54,9 +54,9 @@ async def _no_letterhead(session):
 
 
 @pytest_asyncio.fixture
-async def staff(session):
+async def employee(session):
     u = User(clerk_id=f"c_{uuid.uuid4().hex}", email=f"new-{uuid.uuid4().hex[:6]}@ec.com",
-             full_name="New Hire", role=UserRole.STAFF)
+             full_name="New Hire", role=UserRole.EMPLOYEE)
     session.add(u)
     await session.commit()
     return u
@@ -113,11 +113,11 @@ async def test_only_admins_upload(api, world):
     assert (await _put(api, world, user=world["client_a"])).status_code == 403
 
 
-async def test_staff_may_read_it_but_never_change_it(api, world, staff):
+async def test_employees_may_read_it_but_never_change_it(api, world, employee):
     await _put(api, world)
-    assert (await api(staff).get("/branding/letterhead")).status_code == 200
-    assert (await _put(api, world, user=staff)).status_code == 403
-    assert (await api(staff).delete("/branding/letterhead")).status_code == 403
+    assert (await api(employee).get("/branding/letterhead")).status_code == 200
+    assert (await _put(api, world, user=employee)).status_code == 403
+    assert (await api(employee).delete("/branding/letterhead")).status_code == 403
 
 
 async def test_re_uploading_identical_bytes_is_a_no_op(api, world):

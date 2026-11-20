@@ -11,7 +11,7 @@ import { BrandMark } from "@/components/shared/BrandMark";
 import { PageLoader } from "@/components/shared/PageLoader";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import type { InvitationPreview } from "@/lib/types";
+import { isTeamRole, type InvitationPreview } from "@/lib/types";
 
 export default function JoinPage({
   params,
@@ -37,24 +37,29 @@ export default function JoinPage({
 
   // Signing in with the invited address already places the user, so most
   // people arrive here already in. Send them straight through.
+  const placed = !!user?.organization_id || isTeamRole(user?.role);
   useEffect(() => {
     if (user?.organization_id) router.replace("/dashboard");
+    else if (isTeamRole(user?.role)) router.replace("/admin");
   }, [user, router]);
 
   if (isLoading || !user) return <PageLoader />;
-  if (user.organization_id) return <PageLoader label="Opening your portal" />;
+  if (placed) return <PageLoader label="Opening your portal" />;
   if (previewLoading) return <PageLoader label="Checking your invitation" />;
 
   const mismatch =
     preview && preview.email.toLowerCase() !== (user.email ?? "").toLowerCase();
+  // A team invitation has no client organization behind it.
+  const teamInvite = !!preview && preview.organization_name === null;
+  const joiningName = teamInvite ? "the Enigma-Cube team" : preview?.organization_name;
 
   async function accept() {
     setAccepting(true);
     try {
       await api.post("/invitations/accept", { token });
       await qc.invalidateQueries({ queryKey: ["currentUser"] });
-      toast.success("You're in", { description: `Welcome to ${preview?.organization_name}.` });
-      router.replace("/dashboard");
+      toast.success("You're in", { description: `Welcome to ${joiningName}.` });
+      router.replace(teamInvite ? "/admin" : "/dashboard");
     } catch {
       toast.error("Couldn't accept this invitation");
       setAccepting(false);
@@ -77,11 +82,17 @@ export default function JoinPage({
             ) : (
               <>
                 <h1 className="text-xl font-normal tracking-tight text-fg-strong">
-                  Join {preview.organization_name}
+                  Join {joiningName}
                 </h1>
                 <p className="mt-2.5 text-sm leading-relaxed text-subtle">
-                  You&apos;ve been invited to the Enigma-Cube client portal for{" "}
-                  <span className="text-fg">{preview.organization_name}</span>.
+                  {teamInvite ? (
+                    <>You&apos;ve been invited to the Enigma-Cube team workspace.</>
+                  ) : (
+                    <>
+                      You&apos;ve been invited to the Enigma-Cube client portal for{" "}
+                      <span className="text-fg">{preview.organization_name}</span>.
+                    </>
+                  )}
                 </p>
                 <Button
                   size="lg"
