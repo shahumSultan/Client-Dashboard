@@ -1,5 +1,6 @@
 "use client";
 import * as React from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -63,9 +64,13 @@ export function Dialog({ open, onOpenChange, children, label }: DialogProps) {
     };
   }, [open, onOpenChange]);
 
-  if (!open) return null;
+  if (!open || typeof document === "undefined") return null;
 
-  return (
+  // Portalled to <body>: an ancestor with a transform (the tab panel's
+  // entrance animation keeps one) becomes the containing block for `fixed`,
+  // which centred the dialog in that panel and cut it off at the top instead
+  // of centring it on the screen.
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
@@ -85,7 +90,8 @@ export function Dialog({ open, onOpenChange, children, label }: DialogProps) {
       >
         {children}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
