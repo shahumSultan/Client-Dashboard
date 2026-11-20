@@ -95,11 +95,20 @@ class DepartmentTag(BaseModel):
     colour: str
 
 
+class TeamAccount(BaseModel):
+    """The portal login behind a directory entry."""
+    role: str
+    is_active: bool
+    avatar_url: Optional[str] = None
+
+
 class TeamMemberOut(TeamMemberIn):
     id: str
     created_at: datetime
     # Through the linked login; empty for a directory-only entry.
     departments: list[DepartmentTag] = []
+    # None for someone listed without a portal login.
+    account: Optional[TeamAccount] = None
 
     model_config = {"from_attributes": True}
 

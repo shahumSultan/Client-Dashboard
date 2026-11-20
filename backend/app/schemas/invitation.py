@@ -14,7 +14,7 @@ class InvitationCreate(BaseModel):
     def _client_roles_only(cls, v: UserRole) -> UserRole:
         # Admin is granted deliberately, never handed out by an emailed link.
         if v in TEAM_ROLES:
-            raise ValueError("Invitations are for clients; team roles are set on the Users page")
+            raise ValueError("Invitations here are for clients; invite team members from Company → Team")
         return v
 
 

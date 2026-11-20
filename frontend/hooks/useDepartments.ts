@@ -53,8 +53,8 @@ export function useDepartmentMember() {
 }
 
 /**
- * Team accounts an admin can put in a department. Shares the Users page's
- * cache key, so a role change there shows up here.
+ * Team accounts an admin can put in a department. Shares the "admin-users"
+ * cache key, so a role change anywhere shows up here.
  */
 export function useTeamAccounts({ enabled = true }: { enabled?: boolean } = {}) {
   return useQuery<User[], Error, User[]>({

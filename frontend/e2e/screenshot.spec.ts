@@ -33,7 +33,7 @@ test("admin", async ({ page }) => {
   await shoot(page, "/admin/projects", "12-admin-projects");
   await shoot(page, "/admin/requests", "13-admin-requests");
   await shoot(page, "/admin/comments", "14-admin-comments");
-  await shoot(page, "/admin/users", "15-admin-users");
+  await shoot(page, "/admin/company?tab=team", "15-admin-team");
   await shoot(page, "/admin/projects/new", "16-admin-project-new");
 
   // Client detail carries the invite panel - the piece never seen rendered.

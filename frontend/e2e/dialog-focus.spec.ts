@@ -16,7 +16,7 @@ test("typing in a dialog keeps focus in the field being typed in", async ({ page
   await signIn(page, ADMIN);
   await page.goto(`${BASE}/admin/company?tab=team`, { waitUntil: "domcontentloaded" });
 
-  await page.getByRole("button", { name: "Add person" }).first().click();
+  await page.getByRole("button", { name: /^(Add person|Add someone without a login)$/ }).first().click();
   const dialog = page.getByRole("dialog", { name: "Team member" });
   await expect(dialog).toBeVisible();
 

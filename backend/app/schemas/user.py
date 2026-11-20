@@ -26,3 +26,7 @@ class UserUpdate(BaseModel):
 class UserRoleUpdate(BaseModel):
     role: UserRole
 
+
+class UserAccessUpdate(BaseModel):
+    active: bool
+

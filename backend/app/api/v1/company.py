@@ -32,7 +32,7 @@ from app.models.user import User, UserRole, is_team
 from app.schemas.invitation import InvitationOut, TeamInvitationCreate
 from app.services.email import send_team_invitation_email
 from app.schemas.company import (
-    BankAccountIn, BankAccountOut, CompanyProfileIn, CompanyProfileOut, DepartmentTag,
+    BankAccountIn, BankAccountOut, CompanyProfileIn, CompanyProfileOut, DepartmentTag, TeamAccount,
     DocumentCreate, DocumentOut, DocumentUpdate, DocumentVersionOut, DownloadLink,
     TeamMemberIn, TeamMemberOut, UploadedFile, UploadRequest, UploadTicket,
 )
@@ -149,7 +149,15 @@ async def list_team(_: User = Depends(require_company), db: AsyncSession = Depen
             TeamMember.is_active.desc(), TeamMember.sort_order, TeamMember.name
         )
     )
-    members = list(rows.scalars())
+    return await _team_out(db, list(rows.scalars()))
+
+
+async def _team_member_out(db: AsyncSession, member: TeamMember) -> TeamMemberOut:
+    await db.refresh(member)
+    return (await _team_out(db, [member]))[0]
+
+
+async def _team_out(db: AsyncSession, members: list[TeamMember]) -> list[TeamMemberOut]:
     tags: dict[str, list[DepartmentTag]] = {}
     linked = {m.user_id for m in members if m.user_id}
     if linked:
@@ -161,10 +169,16 @@ async def list_team(_: User = Depends(require_company), db: AsyncSession = Depen
         )
         for r in dept_rows:
             tags.setdefault(r.user_id, []).append(DepartmentTag(id=r.id, name=r.name, colour=r.colour))
+    accounts: dict[str, User] = {}
+    if linked:
+        rows = await db.execute(select(User).where(User.id.in_(linked)))
+        accounts = {u.id: u for u in rows.scalars()}
     out = []
     for m in members:
         o = TeamMemberOut.model_validate(m)
         o.departments = tags.get(m.user_id or "", [])
+        if (u := accounts.get(m.user_id or "")) is not None:
+            o.account = TeamAccount(role=u.role.value, is_active=u.is_active, avatar_url=u.avatar_url)
         out.append(o)
     return out
 
@@ -205,7 +219,7 @@ async def invite_to_team(
     if existing_user and is_team(existing_user):
         raise HTTPException(
             status_code=409,
-            detail=f"{email} is already on the team. Change their role on the Users page.",
+            detail=f"{email} is already on the team. Change their role in the list below.",
         )
     if existing_user and existing_user.organization_id:
         raise HTTPException(
@@ -281,11 +295,16 @@ async def update_team_member(
     if not row:
         raise HTTPException(status_code=404, detail="Team member not found")
     await _check_user(db, data.user_id)
-    for k, v in data.model_dump().items():
+    fields = data.model_dump()
+    if row.user_id:
+        # The login link and "still here" follow the account itself - set by
+        # invitations, role changes and Remove access - not this form.
+        fields.pop("user_id")
+        fields.pop("is_active")
+    for k, v in fields.items():
         setattr(row, k, v)
     await db.commit()
-    await db.refresh(row)
-    return row
+    return await _team_member_out(db, row)
 
 
 @router.delete("/team/{member_id}", status_code=204)
@@ -295,6 +314,13 @@ async def delete_team_member(
     row = await db.get(TeamMember, member_id)
     if not row:
         raise HTTPException(status_code=404, detail="Team member not found")
+    if row.user_id:
+        account = await db.get(User, row.user_id)
+        if account and account.is_active and is_team(account):
+            raise HTTPException(
+                status_code=409,
+                detail="This person still has portal access. Remove their access first.",
+            )
     await db.delete(row)
     await db.commit()
     return Response(status_code=204)
