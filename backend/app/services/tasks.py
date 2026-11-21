@@ -26,6 +26,7 @@ from app.models.project import Project
 from app.models.task import Task, TaskActivity, TaskComment, TaskStatus
 from app.models.user import TEAM_ROLES, User, UserRole, is_team
 from app.schemas.task import TaskDepartment, TaskOut, TaskPerson, TaskProject
+from app.services import team
 from app.services.email import send_task_assigned_email
 
 logger = logging.getLogger(__name__)
@@ -266,24 +267,24 @@ async def email_assigned(db: AsyncSession, task: Task, actor: User, recipients: 
     for u in recipients:
         try:
             await send_task_assigned_email(
-                to=u.email, assigner_name=display_name(actor), task_title=task.title,
+                to=u.email, assigner_name=await display_name(db, actor), task_title=task.title,
                 details=details, description=task.description, task_url=url,
             )
         except Exception:
             logger.exception("Assignment email for task %s failed", task.id)
 
 
-def display_name(u: User | None) -> str | None:
-    return (u.full_name or u.email) if u else None
+async def display_name(db: AsyncSession, u: User | None) -> str | None:
+    return await team.name_of(db, u)
 
 
 # ── Output ───────────────────────────────────────────────────────────────────
 
-def _person(u: User | None) -> TaskPerson | None:
+def _person(u: User | None, called: dict[str, str]) -> TaskPerson | None:
     if u is None:
         return None
     return TaskPerson(
-        user_id=u.id, name=u.full_name or u.email, avatar_url=u.avatar_url,
+        user_id=u.id, name=called.get(u.id) or u.full_name or u.email, avatar_url=u.avatar_url,
         is_current=u.is_active and is_team(u),
     )
 
@@ -297,6 +298,7 @@ async def to_out(db: AsyncSession, user: User, tasks: list[Task]) -> list[TaskOu
     users = {}
     if user_ids:
         users = {u.id: u for u in (await db.execute(select(User).where(User.id.in_(user_ids)))).scalars()}
+    called = await team.names(db, list(users.values()))
     dept_ids = {t.department_id for t in tasks if t.department_id}
     depts = {}
     if dept_ids:
@@ -325,8 +327,8 @@ async def to_out(db: AsyncSession, user: User, tasks: list[Task]) -> list[TaskOu
             id=t.id, title=t.title, description=t.description,
             status=t.status, priority=t.priority,
             department=TaskDepartment(id=d.id, name=d.name, colour=d.colour) if d else None,
-            assignee=_person(users.get(t.assignee_id or "")),
-            creator=_person(users.get(t.created_by or "")),
+            assignee=_person(users.get(t.assignee_id or ""), called),
+            creator=_person(users.get(t.created_by or ""), called),
             project=TaskProject(id=t.project_id, label=projects[t.project_id])
             if t.project_id in projects else None,
             due_date=t.due_date, completed_at=t.completed_at, position=t.position,
@@ -342,8 +344,9 @@ async def people(db: AsyncSession, ids: set[str | None]) -> dict[str, TaskPerson
     ids = {i for i in ids if i}
     if not ids:
         return {}
-    rows = await db.execute(select(User).where(User.id.in_(ids)))
-    return {u.id: _person(u) for u in rows.scalars()}
+    found = list((await db.execute(select(User).where(User.id.in_(ids)))).scalars())
+    called = await team.names(db, found)
+    return {u.id: _person(u, called) for u in found}
 
 
 def fmt_date(d: date | None) -> str | None:

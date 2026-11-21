@@ -116,10 +116,10 @@ async def create_task(
     rules.record(db, task, user, "created")
     told: list[User] = []
     if assignee:
-        rules.record(db, task, user, "assigned", {"to": rules.display_name(assignee)})
+        rules.record(db, task, user, "assigned", {"to": await rules.display_name(db, assignee)})
         told = await rules.notify(
             db, task, user, NotificationType.TASK_ASSIGNED,
-            f"{rules.display_name(user)} assigned you a task", task.title, {assignee.id},
+            f"{await rules.display_name(db, user)} assigned you a task", task.title, {assignee.id},
         )
     await db.commit()
     # Only once the assignment is saved; a failed send never undoes it.
@@ -163,12 +163,12 @@ async def update_task(
         old = await db.get(User, task.assignee_id) if task.assignee_id else None
         task.assignee_id = data.assignee_id
         rules.record(db, task, user, "assigned", {
-            "from": rules.display_name(old), "to": rules.display_name(new),
+            "from": await rules.display_name(db, old), "to": await rules.display_name(db, new),
         })
         if new:
             newly_assigned = await rules.notify(
                 db, task, user, NotificationType.TASK_ASSIGNED,
-                f"{rules.display_name(user)} assigned you a task", task.title, {new.id},
+                f"{await rules.display_name(db, user)} assigned you a task", task.title, {new.id},
             )
 
     if "department_id" in sent and data.department_id != task.department_id:
@@ -217,7 +217,7 @@ async def _status_changed(db, task: Task, user: User, old: TaskStatus, involved:
     rules.record(db, task, user, "status", {"from": old.value, "to": task.status.value})
     await rules.notify(
         db, task, user, NotificationType.TASK_STATUS,
-        f"{rules.display_name(user)} moved a task to {rules.STATUS_LABELS[task.status]}",
+        f"{await rules.display_name(db, user)} moved a task to {rules.STATUS_LABELS[task.status]}",
         task.title, involved | {task.assignee_id, task.created_by},
     )
 
@@ -281,7 +281,7 @@ async def add_comment(
     rules.record(db, task, user, "comment", {"excerpt": data.body[:140]})
     await rules.notify(
         db, task, user, NotificationType.TASK_COMMENT,
-        f"{rules.display_name(user)} commented on a task", f"{task.title}: {data.body[:200]}",
+        f"{await rules.display_name(db, user)} commented on a task", f"{task.title}: {data.body[:200]}",
         {task.assignee_id, task.created_by},
     )
     await db.commit()

@@ -15,14 +15,15 @@ from app.database import get_db
 from app.models.company import Department, DepartmentMember
 from app.models.user import User, UserRole, is_team
 from app.schemas.company import DepartmentIn, DepartmentOut, DepartmentPerson
+from app.services import team
 
 router = APIRouter(prefix="/departments", tags=["Departments"])
 
 
-def _person(u: User) -> DepartmentPerson:
+def _person(u: User, called: dict[str, str]) -> DepartmentPerson:
     return DepartmentPerson(
         user_id=u.id,
-        name=u.full_name or u.email,
+        name=called[u.id],
         email=u.email,
         avatar_url=u.avatar_url,
         role=u.role.value,
@@ -39,18 +40,19 @@ async def _out(db: AsyncSession, depts: list[Department]) -> list[DepartmentOut]
     # (services.departments), but a deactivated or stray row must still never
     # show a client - or an ex-colleague - as part of a department.
     current = {uid: u for uid, u in users.items() if u.is_active and is_team(u)}
+    called = await team.names(db, list(current.values()))
     out = []
     for d in depts:
         members = sorted(
             (current[m.user_id] for m in d.members if m.user_id in current),
-            key=lambda u: (u.full_name or u.email).lower(),
+            key=lambda u: called[u.id].lower(),
         )
         lead = current.get(d.lead_user_id or "")
         out.append(DepartmentOut(
             id=d.id, name=d.name, description=d.description, colour=d.colour,
             sort_order=d.sort_order, created_at=d.created_at,
-            lead=_person(lead) if lead else None,
-            members=[_person(u) for u in members],
+            lead=_person(lead, called) if lead else None,
+            members=[_person(u, called) for u in members],
         ))
     return out
 
