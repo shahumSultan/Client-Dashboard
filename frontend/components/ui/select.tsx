@@ -29,7 +29,8 @@ export const Select = React.forwardRef<
         "hover:border-muted focus:border-brand focus:outline-none focus-visible:outline-none",
         "disabled:cursor-not-allowed disabled:opacity-45",
         // The dropdown list itself is painted by the OS - force dark options
-        "[&>option]:bg-elevated [&>option]:text-fg",
+        // (descendants, not just children: options inside an <optgroup> too).
+        "[&_option]:bg-elevated [&_option]:text-fg [&_optgroup]:bg-elevated [&_optgroup]:text-subtle",
         className
       )}
       {...props}

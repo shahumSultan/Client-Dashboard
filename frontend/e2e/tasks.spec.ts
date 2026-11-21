@@ -172,6 +172,10 @@ test("a department lead assigns within their department", async ({ page, browser
   await expect(picker.locator(`optgroup[label="${dept}"] option`)).toHaveText([EMPLOYEE_NAME]);
   await expect(picker.locator('optgroup[label="Everyone else"] option')).toHaveCount(everyone - 2);
   await expect(picker.locator("option")).toHaveCount(everyone);
+  // Grouped names are painted like the rest (not light text on the OS's white list).
+  const paint = (l: Locator) => l.evaluate((el) => [getComputedStyle(el).backgroundColor, getComputedStyle(el).color]);
+  expect(await paint(picker.locator(`optgroup[label="${dept}"] option`).first()))
+    .toEqual(await paint(picker.locator("option").first()));
   await mine.getByRole("button", { name: "Cancel" }).click();
 
   // Clean up: the task, then the department.
