@@ -450,3 +450,41 @@ async def test_no_email_to_yourself_or_on_failure(api, world, session, ayla, out
     monkeypatch.setattr(email_service, "_send", boom)
     r = await admin.post("/tasks", json={"title": "x", "assignee_id": ayla.id})
     assert r.status_code == 201 and r.json()["assignee"]["user_id"] == ayla.id
+
+
+# ── Names ────────────────────────────────────────────────────────────────────
+
+async def test_people_go_by_their_directory_name_everywhere(api, world, session, outbox):
+    """A login without a name shows the Team directory name, not the email -
+    for a lead as much as for an admin."""
+    from app.models.company import TeamMember
+    admin = api(world["admin"])
+    nameless = User(clerk_id=f"c_{uuid.uuid4().hex}", email=f"n-{uuid.uuid4().hex[:6]}@ec.com",
+                    full_name=None, role=UserRole.EMPLOYEE)
+    lead_user = await _employee(session, "Carol Lead")
+    session.add(nameless)
+    await session.commit()
+    session.add_all([
+        TeamMember(name="Nadia Nameless", email=nameless.email, user_id=nameless.id),
+        TeamMember(name="Carol (Design lead)", email=lead_user.email, user_id=lead_user.id),
+    ])
+    await session.commit()
+    design = await _dept(admin, "Design", lead=lead_user, members=[nameless])
+
+    lead = api(lead_user)
+    dept = (await lead.get("/departments")).json()[0]
+    assert {m["name"] for m in dept["members"]} == {"Nadia Nameless", "Carol (Design lead)"}
+    assert dept["lead"]["name"] == "Carol (Design lead)"
+
+    t = await _task(lead, department_id=design, assignee_id=nameless.id)
+    assert t["assignee"]["name"] == "Nadia Nameless"
+    assert t["creator"]["name"] == "Carol (Design lead)"
+    # The bell and email name the assigner the same way.
+    assert "Carol (Design lead) assigned you a task" in outbox[0]["html"]
+    bell = (await _bells(session, nameless))[0]
+    assert bell.title == "Carol (Design lead) assigned you a task"
+
+    # With no directory entry, the login's name, then the email.
+    loose = await _employee(session, "Loose Login")
+    r = await admin.patch(f"/tasks/{t['id']}", json={"assignee_id": loose.id})
+    assert r.json()["assignee"]["name"] == "Loose Login"

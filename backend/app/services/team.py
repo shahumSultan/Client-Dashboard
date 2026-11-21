@@ -85,3 +85,26 @@ async def visible_people(db: AsyncSession, viewer: User) -> set[str] | None:
     )
     admins = await db.execute(select(User.id).where(User.role == UserRole.ADMIN))
     return {viewer.id, *colleagues.scalars(), *admins.scalars()}
+
+
+async def names(db: AsyncSession, users: "list[User] | set[User]") -> dict[str, str]:
+    """What to call each account, the same everywhere: its Team directory
+    name (what admins see and edit on Company -> Team), else the name on its
+    login, else its email. Many accounts sign up without a name, so the
+    login alone often has only the email.
+    """
+    users = list(users)
+    if not users:
+        return {}
+    rows = await db.execute(
+        select(TeamMember.user_id, TeamMember.name)
+        .where(TeamMember.user_id.in_([u.id for u in users]))
+        # A current entry wins over a former one.
+        .order_by(TeamMember.is_active)
+    )
+    listed = {uid: name for uid, name in rows if name and name.strip()}
+    return {u.id: (listed.get(u.id) or u.full_name or u.email) for u in users}
+
+
+async def name_of(db: AsyncSession, user: User | None) -> str | None:
+    return (await names(db, [user]))[user.id] if user else None
