@@ -544,14 +544,17 @@ optionally, the client project they're for. Clients never see tasks.
   and comment on what they see, and file new tasks only under their own
   departments. They see a linked project's "Client · Project" label but
   can't open it.
-- **Assigning**: an admin assigns anyone; a department's lead assigns that
-  department's tasks to its members; nobody else sets or changes assignees.
+- **Assigning**: an admin assigns anyone (with a department chosen, the
+  picker lists its members first, then everyone else); a department's lead
+  assigns that department's tasks to its members; nobody else sets or
+  changes assignees.
 - **People**: an employee sees only colleagues who share a department with
   them, plus the admins - on the Team list, the Departments page and in
   pickers. An employee in no department sees only their own tasks.
 - Every change writes a `task_activity` row (the history on each task), and
   the people involved - assignee and creator, never whoever made the change -
-  get a bell. Done cards leave the board after 30 days; archived ones keep
+  get a bell. Whoever is newly assigned also gets an email (via Resend,
+  best-effort, to the same people the bell reaches). Done cards leave the board after 30 days; archived ones keep
   their comments and history.
 - Moves send `{status, after_id}`; the server takes the midpoint between the
   neighbours and renumbers a column only when floats run out of room.

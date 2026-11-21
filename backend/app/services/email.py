@@ -191,3 +191,40 @@ async def send_team_invitation_email(
         "subject": "You're invited to the Enigma-Cube team workspace",
         "html": _shell("Join the team", body, "Accept invitation", join_url, footer=TEAM_INVITE_FOOTER),
     })
+
+
+TASK_FOOTER = (
+    "You received this because a task was assigned to you on the Enigma&#8209;Cube team workspace."
+)
+
+
+async def send_task_assigned_email(
+    *, to: str, assigner_name: str | None, task_title: str, details: list[tuple[str, str]],
+    description: str | None, task_url: str,
+) -> bool:
+    """Tell someone a task is now theirs. Returns whether it was sent.
+
+    Everything here is user-authored, so all of it is escaped.
+    """
+    who = html.escape(assigner_name) if assigner_name else "Someone"
+    rows = "".join(
+        f'<tr><td style="padding:4px 16px 4px 0;font-size:13px;color:#7c7c7c;">{html.escape(k)}</td>'
+        f'<td style="padding:4px 0;font-size:13px;color:#0d0d0d;">{html.escape(v)}</td></tr>'
+        for k, v in details
+    )
+    body = _p(f"{who} assigned you a task.")
+    if rows:
+        body += (
+            '<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 14px;">'
+            f"{rows}</table>"
+        )
+    if description:
+        text = description if len(description) <= 400 else description[:400].rstrip() + "…"
+        body += _p(html.escape(text).replace("\n", "<br>"), muted=True)
+    body += '<div style="height:10px"></div>'
+    return await _send_async({
+        "from": f"Enigma-Cube <{settings.FROM_EMAIL}>",
+        "to": [to],
+        "subject": f"New task: {task_title}",
+        "html": _shell(html.escape(task_title), body, "Open the task", task_url, footer=TASK_FOOTER),
+    })

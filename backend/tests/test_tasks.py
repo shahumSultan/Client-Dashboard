@@ -6,11 +6,13 @@ import pytest
 import pytest_asyncio
 from sqlalchemy import delete, select
 
+from app.config import settings
 from app.core.time import utcnow
 from app.models.company import Department
 from app.models.notification import Notification
 from app.models.task import Task
 from app.models.user import User, UserRole
+from app.services import email as email_service
 
 pytestmark = pytest.mark.asyncio
 
@@ -398,3 +400,53 @@ async def test_comment_deletion_respects_the_department_boundary(api, world, ayl
     # Someone else's comment there: 404, not a 403 that confirms it exists.
     assert (await me.delete(f"/tasks/{t['id']}/comments/{his['id']}")).status_code == 404
     assert (await admin.get(f"/tasks/{t['id']}")).json()["comment_count"] == 2
+
+
+# ── Assignment emails ────────────────────────────────────────────────────────
+
+@pytest.fixture
+def outbox(monkeypatch):
+    sent: list[dict] = []
+    monkeypatch.setattr(settings, "RESEND_API_KEY", "re_test", raising=False)
+    monkeypatch.setattr(email_service, "_send", lambda payload: sent.append(payload))
+    return sent
+
+
+async def test_the_assignee_gets_an_email(api, world, ayla, bilal, outbox):
+    admin = api(world["admin"])
+    design = await _dept(admin, "Design", members=[ayla])
+    t = await _task(
+        admin, title="Fix <the> footer", department_id=design, assignee_id=ayla.id,
+        priority="high", due_date="2026-12-01", description="Line one\nLine <two>",
+    )
+    assert [m["to"] for m in outbox] == [[ayla.email]]
+    mail = outbox[0]
+    assert mail["subject"] == "New task: Fix <the> footer"
+    # User-authored text is escaped; the details and link are there.
+    assert "Fix &lt;the&gt; footer" in mail["html"] and "<the>" not in mail["html"]
+    assert "Line one<br>Line &lt;two&gt;" in mail["html"]
+    for bit in ("High", "Tue 1 Dec 2026", "Design", f"/admin/tasks?task={t['id']}"):
+        assert bit in mail["html"]
+
+    # Reassigning emails the new person only; other edits and unassigning email nobody.
+    outbox.clear()
+    await admin.patch(f"/tasks/{t['id']}", json={"assignee_id": bilal.id})
+    assert [m["to"] for m in outbox] == [[bilal.email]]
+    outbox.clear()
+    await admin.patch(f"/tasks/{t['id']}", json={"title": "Fix the footer", "priority": "low"})
+    await admin.patch(f"/tasks/{t['id']}", json={"assignee_id": None})
+    assert outbox == []
+
+
+async def test_no_email_to_yourself_or_on_failure(api, world, session, ayla, outbox, monkeypatch):
+    admin = api(world["admin"])
+    # Assigning yourself: no bell, no email.
+    await _task(admin, assignee_id=world["admin"].id)
+    assert outbox == []
+
+    # A failed send never undoes the assignment.
+    def boom(payload):
+        raise RuntimeError("Resend is down")
+    monkeypatch.setattr(email_service, "_send", boom)
+    r = await admin.post("/tasks", json={"title": "x", "assignee_id": ayla.id})
+    assert r.status_code == 201 and r.json()["assignee"]["user_id"] == ayla.id

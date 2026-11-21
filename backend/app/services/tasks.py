@@ -10,12 +10,14 @@ Who may do what:
   department's tasks to its members; nobody else sets or changes assignees.
 - Clients: nothing - the routes refuse them before any of this runs.
 """
+import logging
 from datetime import date
 
 from fastapi import HTTPException
 from sqlalchemy import func, or_, select, true
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import settings
 from app.core.time import utcnow
 from app.models.company import Department, DepartmentMember
 from app.models.notification import Notification, NotificationType
@@ -24,6 +26,9 @@ from app.models.project import Project
 from app.models.task import Task, TaskActivity, TaskComment, TaskStatus
 from app.models.user import TEAM_ROLES, User, UserRole, is_team
 from app.schemas.task import TaskDepartment, TaskOut, TaskPerson, TaskProject
+from app.services.email import send_task_assigned_email
+
+logger = logging.getLogger(__name__)
 
 STATUS_LABELS = {
     TaskStatus.TODO: "To do",
@@ -215,8 +220,10 @@ def record(db: AsyncSession, task: Task, actor: User, kind: str, data: dict | No
 async def notify(
     db: AsyncSession, task: Task, actor: User, type: NotificationType, title: str,
     body: str | None, recipients: set[str | None],
-) -> None:
+) -> list[User]:
     """In-app bells for everyone involved except whoever made the change.
+    Returns the people it rang - anything else sent about this change (an
+    email) goes to exactly them and nobody more.
 
     Only current team accounts hear anything. A task keeps pointing at its
     assignee and creator after they leave the team (so their name stays on
@@ -225,15 +232,45 @@ async def notify(
     """
     ids = recipients - {None, actor.id}
     if not ids:
-        return
+        return []
     current = await db.execute(
-        select(User.id).where(User.id.in_(ids), User.is_active.is_(True), User.role.in_(TEAM_ROLES))
+        select(User).where(User.id.in_(ids), User.is_active.is_(True), User.role.in_(TEAM_ROLES))
     )
-    for user_id in current.scalars():
+    users = list(current.scalars())
+    for u in users:
         db.add(Notification(
-            user_id=user_id, type=type, title=title[:255], body=body,
+            user_id=u.id, type=type, title=title[:255], body=body,
             link=f"/admin/tasks?task={task.id}",
         ))
+    return users
+
+
+async def email_assigned(db: AsyncSession, task: Task, actor: User, recipients: list[User]) -> None:
+    """Email each newly assigned person (already filtered by `notify`).
+    Best-effort: a failed send never undoes the assignment."""
+    if not recipients:
+        return
+    details = [("Priority", task.priority.value.capitalize())]
+    if task.due_date:
+        details.append(("Due", f"{task.due_date:%a %-d %b %Y}"))
+    if task.department_id:
+        dept = await db.get(Department, task.department_id)
+        if dept:
+            details.append(("Department", dept.name))
+    if task.project_id:
+        project = await db.get(Project, task.project_id)
+        if project:
+            org = await db.get(Organization, project.organization_id)
+            details.append(("Client project", f"{org.name if org else 'Client'} · {project.name}"))
+    url = f"{settings.FRONTEND_URL.rstrip('/')}/admin/tasks?task={task.id}"
+    for u in recipients:
+        try:
+            await send_task_assigned_email(
+                to=u.email, assigner_name=display_name(actor), task_title=task.title,
+                details=details, description=task.description, task_url=url,
+            )
+        except Exception:
+            logger.exception("Assignment email for task %s failed", task.id)
 
 
 def display_name(u: User | None) -> str | None:

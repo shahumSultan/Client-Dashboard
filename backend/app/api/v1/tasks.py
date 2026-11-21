@@ -114,13 +114,16 @@ async def create_task(
     db.add(task)
     await db.flush()
     rules.record(db, task, user, "created")
+    told: list[User] = []
     if assignee:
         rules.record(db, task, user, "assigned", {"to": rules.display_name(assignee)})
-        await rules.notify(
+        told = await rules.notify(
             db, task, user, NotificationType.TASK_ASSIGNED,
             f"{rules.display_name(user)} assigned you a task", task.title, {assignee.id},
         )
     await db.commit()
+    # Only once the assignment is saved; a failed send never undoes it.
+    await rules.email_assigned(db, task, user, told)
     return await _one(db, user, task)
 
 
@@ -138,6 +141,7 @@ async def update_task(
 ):
     task = await _editable(db, user, task_id)
     sent = data.model_fields_set
+    newly_assigned: list[User] = []
     involved = {task.assignee_id, task.created_by}
 
     if "title" in sent and data.title is None:
@@ -162,7 +166,7 @@ async def update_task(
             "from": rules.display_name(old), "to": rules.display_name(new),
         })
         if new:
-            await rules.notify(
+            newly_assigned = await rules.notify(
                 db, task, user, NotificationType.TASK_ASSIGNED,
                 f"{rules.display_name(user)} assigned you a task", task.title, {new.id},
             )
@@ -204,6 +208,8 @@ async def update_task(
         rules.record(db, task, user, "archived" if data.is_archived else "restored")
 
     await db.commit()
+    # Only once the change is saved, so the email shows where the task ended up.
+    await rules.email_assigned(db, task, user, newly_assigned)
     return await _one(db, user, task)
 
 

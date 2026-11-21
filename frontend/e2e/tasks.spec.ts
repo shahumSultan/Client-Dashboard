@@ -162,6 +162,18 @@ test("a department lead assigns within their department", async ({ page, browser
   await expect(lead.getByRole("dialog", { name: `Task: ${title}` }).getByLabel("Assignee")).toBeEnabled();
   await theirs.close();
 
+  // An admin choosing that department still sees everyone, its people first.
+  await page.goto(`${BASE}/admin/tasks`, { waitUntil: "domcontentloaded" });
+  await page.getByRole("button", { name: "New task", exact: true }).first().click();
+  const mine = page.getByRole("dialog", { name: "New task" });
+  const picker = mine.getByLabel("Assignee");
+  const everyone = await picker.locator("option").count();
+  await mine.getByLabel("Department").selectOption({ label: dept });
+  await expect(picker.locator(`optgroup[label="${dept}"] option`)).toHaveText([EMPLOYEE_NAME]);
+  await expect(picker.locator('optgroup[label="Everyone else"] option')).toHaveCount(everyone - 2);
+  await expect(picker.locator("option")).toHaveCount(everyone);
+  await mine.getByRole("button", { name: "Cancel" }).click();
+
   // Clean up: the task, then the department.
   await page.goto(`${BASE}/admin/tasks`, { waitUntil: "domcontentloaded" });
   await card(column(page, "To do"), title).click();

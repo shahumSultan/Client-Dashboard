@@ -10,6 +10,7 @@ import {
   Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import { useDepartments } from "@/hooks/useDepartments";
+import { AssigneeOptions } from "@/components/tasks/AssigneeOptions";
 import { useAssignOptions, useCreateTask, useProjectOptions } from "@/hooks/useTasks";
 import { errorDetail } from "@/hooks/useEngagements";
 import {
@@ -38,8 +39,9 @@ export function NewTaskDialog({
   });
   const set = <K extends keyof TaskInput>(k: K, v: TaskInput[K]) => setForm((f) => ({ ...f, [k]: v }));
   // Who may be assigned depends on the department (a lead assigns within
-  // theirs). Changing department drops an assignee who isn't in the new one.
-  const { canAssign, people } = useAssignOptions(form.department_id);
+  // theirs; an admin anyone, members first). Changing department drops an
+  // assignee the new choice doesn't allow.
+  const { canAssign, people, members, others } = useAssignOptions(form.department_id);
   const assigneeOk = !form.assignee_id || (canAssign && people.some((p) => p.user_id === form.assignee_id));
   const setDepartment = (id: string | null) => setForm((f) => ({ ...f, department_id: id }));
 
@@ -99,7 +101,11 @@ export function NewTaskDialog({
             <Field
               label="Assignee"
               htmlFor="task-assignee"
-              hint={canAssign ? undefined : "Only an admin or the department's lead assigns tasks."}
+              hint={
+                !canAssign ? "Only an admin or the department's lead assigns tasks."
+                  : form.department_id && members.length === 0 ? "No one is in this department yet."
+                  : undefined
+              }
             >
               <Select
                 id="task-assignee"
@@ -108,7 +114,11 @@ export function NewTaskDialog({
                 disabled={!canAssign}
               >
                 <option value="">Unassigned</option>
-                {people.map((p) => <option key={p.user_id} value={p.user_id}>{p.name}</option>)}
+                <AssigneeOptions
+                  department={departments.find((d) => d.id === form.department_id)?.name ?? null}
+                  members={members}
+                  others={others}
+                />
               </Select>
             </Field>
             <Field label="Priority" htmlFor="task-priority">
