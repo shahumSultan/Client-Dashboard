@@ -167,20 +167,30 @@ export function useProjectOptions({ enabled }: { enabled: boolean }) {
 
 /**
  * Who the current user may assign a task in `departmentId` to. Admins: anyone
- * on the team. A department's lead: that department's members. Anyone else:
- * nobody - `canAssign` is false and the picker stays disabled.
+ * on the team, with the department's members listed first (`members`) and
+ * everyone else after (`others`). A department's lead: that department's
+ * members only. Anyone else: nobody - `canAssign` is false and the picker
+ * stays disabled. `people` is every choice, in order.
  */
 export function useAssignOptions(departmentId: string | null) {
   const { data: me } = useCurrentUser();
-  const { data: people = [] } = useAssignablePeople();
+  const { data: team = [] } = useAssignablePeople();
   const { data: departments = [] } = useDepartments();
-  if (me?.role === "admin") return { canAssign: true, people };
   const dept = departments.find((d) => d.id === departmentId);
-  if (!me || !dept || dept.lead?.user_id !== me.id) return { canAssign: false, people: [] as PersonOption[] };
-  return {
-    canAssign: true,
-    people: dept.members.map((m) => ({ user_id: m.user_id, name: m.name, avatar_url: m.avatar_url })),
-  };
+  const members: PersonOption[] = (dept?.members ?? [])
+    .map((m) => ({ user_id: m.user_id, name: m.name, avatar_url: m.avatar_url }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+  if (me?.role === "admin") {
+    if (!dept) return { canAssign: true, people: team, members: [] as PersonOption[], others: team };
+    const ids = new Set(members.map((m) => m.user_id));
+    const inDept = team.filter((p) => ids.has(p.user_id));
+    const others = team.filter((p) => !ids.has(p.user_id));
+    return { canAssign: true, people: [...inDept, ...others], members: inDept, others };
+  }
+  if (!me || !dept || dept.lead?.user_id !== me.id) {
+    return { canAssign: false, people: [] as PersonOption[], members: [] as PersonOption[], others: [] as PersonOption[] };
+  }
+  return { canAssign: true, people: members, members, others: [] as PersonOption[] };
 }
 
 /** Departments the current user leads (so may assign within). */

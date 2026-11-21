@@ -10,6 +10,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog } from "@/components/ui/dialog";
 import { DepartmentDot } from "@/components/company/DepartmentChip";
+import { AssigneeOptions } from "@/components/tasks/AssigneeOptions";
 import { DueChip, formatDue, PriorityMark } from "@/components/tasks/parts";
 import { useDepartments } from "@/hooks/useDepartments";
 import {
@@ -57,7 +58,7 @@ function Row({ label: text, children }: { label: string; children: React.ReactNo
 
 function Details({ task, isAdmin }: { task: Task; isAdmin: boolean }) {
   const update = useUpdateTask();
-  const { people } = useAssignOptions(task.department?.id ?? null);
+  const { people, members, others } = useAssignOptions(task.department?.id ?? null);
   const { data: departments = [] } = useDepartments();
   const projects = useProjectOptions({ enabled: isAdmin });
   const [title, setTitle] = useState(task.title);
@@ -131,7 +132,7 @@ function Details({ task, isAdmin }: { task: Task; isAdmin: boolean }) {
                 {task.assignee!.name}{task.assignee!.is_current ? "" : " (left)"}
               </option>
             )}
-            {people.map((p) => <option key={p.user_id} value={p.user_id}>{p.name}</option>)}
+            <AssigneeOptions department={task.department?.name ?? null} members={members} others={others} />
           </Select>
         </Row>
         <Row label="Priority">
